@@ -162,7 +162,7 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
 <body>
 <div id="app">
 
-<div class="header" id="main-header" ondblclick="openDev()">
+<div class="header" id="main-header">
   <div class="logo-area">
     <div class="logo-img-wrap" id="logo-wrap">
       <img id="logo-img" src="" alt="Logo"/>
@@ -181,6 +181,7 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
   </div>
   <div class="header-divider"></div>
   <div class="header-title" id="header-title">Registro de Atendimento</div>
+  <div id="sync-status" style="display:none;font-size:11px;color:rgba(255,255,255,0.7);white-space:nowrap;flex-shrink:0"></div>
   <button class="dev-btn" id="dev-btn-el" onclick="openDev()">⚙ Dev</button>
 </div>
 
@@ -384,6 +385,11 @@ function init(){
   var nr=getNextReportDate();
   document.getElementById('next-report-date').textContent=nr.toLocaleDateString('pt-BR',{day:'numeric',month:'long',year:'numeric'});
   loadDevSettings();
+  // Sincroniza registros e config do Sheets ao abrir
+  setTimeout(function(){
+    syncFromSheets(function(){});
+    loadConfigSheets();
+  }, 800);
   checkAutoReport();
   renderHistory();
   document.addEventListener('click',function(e){if(!e.target.closest('.autocomplete-wrap'))closeAc()});
@@ -438,7 +444,9 @@ function showTab(t){
     document.getElementById('tab-'+x).style.display=x===t?'block':'none';
     document.querySelectorAll('.tab')[i].classList.toggle('active',x===t);
   });
-  if(t==='list')renderList();if(t==='stats')renderStats();if(t==='report')renderHistory();
+  if(t==='list'){syncFromSheets(renderList)}
+  else if(t==='stats'){syncFromSheets(renderStats)}
+  else if(t==='report')renderHistory();
 }
 
 function submitForm(){
@@ -490,7 +498,63 @@ function renderStats(){
   if(Object.keys(bL).length)bar(bL,'st-loc');else document.getElementById('st-loc').innerHTML='<span style="font-size:13px;color:var(--tx3)">Sem dados.</span>';
 }
 
-function sendRecord(rec,url){try{fetch(url,{method:'POST',mode:'no-cors',body:JSON.stringify({action:'addRecord',record:rec})})}catch(e){}}
+// ── SINCRONIZAÇÃO COM SHEETS ─────────────────────────────────
+
+function getGs(){return document.getElementById('gs-url').value.trim()}
+
+// Envia um registro novo ao Sheets
+function sendRecord(rec,url){
+  try{fetch(url,{method:'POST',mode:'no-cors',body:JSON.stringify({action:'addRecord',record:rec})})}catch(e){}
+}
+
+// Busca TODOS os registros do Sheets e substitui o local
+function syncFromSheets(callback){
+  var gs=getGs();if(!gs){if(callback)callback();return}
+  showSyncStatus('Sincronizando...');
+  fetch(gs,{method:'POST',body:JSON.stringify({action:'getRecords'})})
+    .then(function(r){return r.json()})
+    .then(function(data){
+      if(data.records&&Array.isArray(data.records)){
+        records=data.records;
+        try{localStorage.setItem('arp_rec',JSON.stringify(records))}catch(e){}
+      }
+      showSyncStatus('✓ Sincronizado',2000);
+      if(callback)callback();
+    })
+    .catch(function(){
+      showSyncStatus('');
+      if(callback)callback();
+    });
+}
+
+function showSyncStatus(msg,hideAfter){
+  var el=document.getElementById('sync-status');
+  if(!el)return;
+  el.textContent=msg;el.style.display=msg?'block':'none';
+  if(hideAfter)setTimeout(function(){el.style.display='none'},hideAfter);
+}
+
+// Salva config do Dev no Sheets
+function saveConfigSheets(cfg){
+  var gs=getGs();if(!gs)return;
+  try{fetch(gs,{method:'POST',mode:'no-cors',body:JSON.stringify({action:'saveConfig',config:cfg})})}catch(e){}
+}
+
+// Carrega config do Dev do Sheets
+function loadConfigSheets(){
+  var gs=getGs();if(!gs)return;
+  fetch(gs,{method:'POST',body:JSON.stringify({action:'loadConfig'})})
+    .then(function(r){return r.json()})
+    .then(function(data){
+      if(data.config){
+        try{
+          var cfg=typeof data.config==='string'?JSON.parse(data.config):data.config;
+          localStorage.setItem('arp_dev_cfg',JSON.stringify(cfg));
+          loadDevSettings();
+        }catch(e){}
+      }
+    }).catch(function(){});
+}
 
 function sendToSheets(){
   var gs=document.getElementById('gs-url').value.trim();if(!gs){alert('Configure a URL do Apps Script primeiro.');return}
@@ -606,8 +670,9 @@ function devPreview(){
 function devSave(){
   var cfg={hc:document.getElementById('dev-hc').value,mc:document.getElementById('dev-mc').value,lc:document.getElementById('dev-lc').value,tc:document.getElementById('dev-tc').value,l1:document.getElementById('dev-line1').value,l2:document.getElementById('dev-line2').value,sub:document.getElementById('dev-sub').value,ht:document.getElementById('dev-headertitle').value,showBtn:document.getElementById('dev-show-btn').checked,bgOp:document.getElementById('dev-bg-op').value};
   try{localStorage.setItem('arp_dev_cfg',JSON.stringify(cfg))}catch(e){}
+  saveConfigSheets(cfg);
   devPreview();document.getElementById('dev-overlay').classList.remove('open');
-  var b=document.getElementById('success-banner');b.textContent='✓ Configurações salvas!';b.classList.add('show');
+  var b=document.getElementById('success-banner');b.textContent='✓ Configurações salvas e sincronizadas!';b.classList.add('show');
   setTimeout(function(){b.classList.remove('show');b.textContent='✓ Atendimento registrado com sucesso!'},2500);
 }
 function devReset(){if(!confirm('Restaurar configurações para o padrão?'))return;try{localStorage.removeItem('arp_dev_cfg');localStorage.removeItem('arp_dev_logo');localStorage.removeItem('arp_dev_bg')}catch(e){}location.reload()}
