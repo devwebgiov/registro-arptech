@@ -295,7 +295,12 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
     <div class="dev-section">
       <div class="dev-section-title">Logo e Identidade Visual</div>
       <div class="dev-field">
-        <label>Imagem do logo (PNG, SVG, JPG)</label>
+        <label>URL da imagem do logo <span style="background:#E1F5EE;color:#085041;font-size:10px;padding:2px 6px;border-radius:8px;font-weight:700">SINCRONIZA EM TODOS OS DISPOSITIVOS</span></label>
+        <input type="text" id="dev-logo-url" placeholder="https://raw.githubusercontent.com/usuario/repo/main/logo.png" oninput="devLogoUrl()"/>
+        <div style="font-size:11px;color:var(--tx3);margin-top:4px">Cole o link da imagem hospedada no GitHub ou outra URL pública</div>
+      </div>
+      <div class="dev-field">
+        <label style="color:var(--tx3)">— ou — Upload direto (somente neste dispositivo)</label>
         <input type="file" id="dev-logo-file" accept="image/*" onchange="devLogoUpload(this)"/>
         <img id="dev-logo-preview" class="dev-img-preview" src="" alt="Preview"/>
         <div style="margin-top:8px"><button class="btn-secondary" style="font-size:12px;padding:6px 12px" onclick="devRemoveLogo()">Remover imagem</button></div>
@@ -330,7 +335,15 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
 
     <div class="dev-section">
       <div class="dev-section-title">Imagem de Fundo (opcional)</div>
-      <div class="dev-field"><label>Upload de imagem de fundo</label><input type="file" id="dev-bg-file" accept="image/*" onchange="devBgUpload(this)"/></div>
+      <div class="dev-field">
+        <label>URL da imagem de fundo <span style="background:#E1F5EE;color:#085041;font-size:10px;padding:2px 6px;border-radius:8px;font-weight:700">SINCRONIZA EM TODOS OS DISPOSITIVOS</span></label>
+        <input type="text" id="dev-bg-url" placeholder="https://raw.githubusercontent.com/usuario/repo/main/fundo.jpg" oninput="devBgUrl()"/>
+        <div style="font-size:11px;color:var(--tx3);margin-top:4px">Cole o link da imagem hospedada no GitHub ou outra URL pública</div>
+      </div>
+      <div class="dev-field">
+        <label style="color:var(--tx3)">— ou — Upload direto (somente neste dispositivo)</label>
+        <input type="file" id="dev-bg-file" accept="image/*" onchange="devBgUpload(this)"/>
+      </div>
       <div class="dev-field">
         <label>Opacidade da sobreposição branca: <span id="dev-bg-op-val">90%</span></label>
         <input type="range" id="dev-bg-op" min="0" max="100" value="90" oninput="devPreview()"/>
@@ -617,6 +630,22 @@ function renderHistory(){
 function openDev(){document.getElementById('dev-overlay').classList.add('open');loadDevFields()}
 function closeDev(force){if(force===true||(force&&force.target===document.getElementById('dev-overlay'))){document.getElementById('dev-overlay').classList.remove('open')}}
 
+function devLogoUrl(){
+  var url=document.getElementById('dev-logo-url').value.trim();
+  if(!url)return;
+  document.getElementById('logo-img').src=url;
+  document.getElementById('logo-wrap').classList.add('has-img');
+  document.getElementById('dev-logo-preview').src=url;
+  document.getElementById('dev-logo-preview').classList.add('show');
+}
+
+function devBgUrl(){
+  var url=document.getElementById('dev-bg-url').value.trim();
+  if(!url)return;
+  var op=parseInt(document.getElementById('dev-bg-op').value);
+  applyBg(url,op);
+}
+
 function devLogoUpload(inp){
   var file=inp.files[0];if(!file)return;
   var reader=new FileReader();
@@ -668,7 +697,20 @@ function devPreview(){
   try{var bg=localStorage.getItem('arp_dev_bg');if(bg)applyBg(bg,parseInt(op))}catch(e){}
 }
 function devSave(){
-  var cfg={hc:document.getElementById('dev-hc').value,mc:document.getElementById('dev-mc').value,lc:document.getElementById('dev-lc').value,tc:document.getElementById('dev-tc').value,l1:document.getElementById('dev-line1').value,l2:document.getElementById('dev-line2').value,sub:document.getElementById('dev-sub').value,ht:document.getElementById('dev-headertitle').value,showBtn:document.getElementById('dev-show-btn').checked,bgOp:document.getElementById('dev-bg-op').value};
+  var cfg={
+    hc:document.getElementById('dev-hc').value,
+    mc:document.getElementById('dev-mc').value,
+    lc:document.getElementById('dev-lc').value,
+    tc:document.getElementById('dev-tc').value,
+    l1:document.getElementById('dev-line1').value,
+    l2:document.getElementById('dev-line2').value,
+    sub:document.getElementById('dev-sub').value,
+    ht:document.getElementById('dev-headertitle').value,
+    showBtn:document.getElementById('dev-show-btn').checked,
+    bgOp:document.getElementById('dev-bg-op').value,
+    logoUrl:document.getElementById('dev-logo-url').value.trim(),
+    bgUrl:document.getElementById('dev-bg-url').value.trim()
+  };
   try{localStorage.setItem('arp_dev_cfg',JSON.stringify(cfg))}catch(e){}
   saveConfigSheets(cfg);
   devPreview();document.getElementById('dev-overlay').classList.remove('open');
@@ -678,7 +720,6 @@ function devSave(){
 function devReset(){if(!confirm('Restaurar configurações para o padrão?'))return;try{localStorage.removeItem('arp_dev_cfg');localStorage.removeItem('arp_dev_logo');localStorage.removeItem('arp_dev_bg')}catch(e){}location.reload()}
 function loadDevSettings(){
   try{
-    var logo=localStorage.getItem('arp_dev_logo');if(logo){document.getElementById('logo-img').src=logo;document.getElementById('logo-wrap').classList.add('has-img')}
     var cfg=JSON.parse(localStorage.getItem('arp_dev_cfg')||'null');if(!cfg)return;
     if(cfg.hc)document.documentElement.style.setProperty('--header-bg',cfg.hc);
     if(cfg.mc){document.documentElement.style.setProperty('--gr',cfg.mc);document.documentElement.style.setProperty('--gr-d',shade(cfg.mc,-40));document.documentElement.style.setProperty('--gr-l',shade(cfg.mc,80))}
@@ -689,7 +730,20 @@ function loadDevSettings(){
     if(cfg.sub)document.getElementById('logo-sub').textContent=cfg.sub;
     if(cfg.ht)document.getElementById('header-title').textContent=cfg.ht;
     if(cfg.showBtn===false)document.getElementById('dev-btn-el').style.display='none';
-    var bg=localStorage.getItem('arp_dev_bg');if(bg)applyBg(bg,parseInt(cfg.bgOp||90));
+    // Logo: URL tem prioridade sobre upload local
+    if(cfg.logoUrl){
+      document.getElementById('logo-img').src=cfg.logoUrl;
+      document.getElementById('logo-wrap').classList.add('has-img');
+    } else {
+      var logo=localStorage.getItem('arp_dev_logo');
+      if(logo){document.getElementById('logo-img').src=logo;document.getElementById('logo-wrap').classList.add('has-img')}
+    }
+    // Fundo: URL tem prioridade sobre upload local
+    if(cfg.bgUrl){
+      applyBg(cfg.bgUrl,parseInt(cfg.bgOp||90));
+    } else {
+      var bg=localStorage.getItem('arp_dev_bg');if(bg)applyBg(bg,parseInt(cfg.bgOp||90));
+    }
   }catch(e){}
 }
 function loadDevFields(){
@@ -705,8 +759,15 @@ function loadDevFields(){
     if(cfg.ht)document.getElementById('dev-headertitle').value=cfg.ht;
     if(cfg.showBtn===false)document.getElementById('dev-show-btn').checked=false;
     if(cfg.bgOp)document.getElementById('dev-bg-op').value=cfg.bgOp;
-    var logo=localStorage.getItem('arp_dev_logo');
-    if(logo){document.getElementById('dev-logo-preview').src=logo;document.getElementById('dev-logo-preview').classList.add('show')}
+    if(cfg.logoUrl){
+      document.getElementById('dev-logo-url').value=cfg.logoUrl;
+      document.getElementById('dev-logo-preview').src=cfg.logoUrl;
+      document.getElementById('dev-logo-preview').classList.add('show');
+    } else {
+      var logo=localStorage.getItem('arp_dev_logo');
+      if(logo){document.getElementById('dev-logo-preview').src=logo;document.getElementById('dev-logo-preview').classList.add('show')}
+    }
+    if(cfg.bgUrl)document.getElementById('dev-bg-url').value=cfg.bgUrl;
     devPreview();
   }catch(e){}
 }
