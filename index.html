@@ -162,7 +162,7 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
 <body>
 <div id="app">
 
-<div class="header" id="main-header">
+<div class="header" id="main-header" ondblclick="openDev()">
   <div class="logo-area">
     <div class="logo-img-wrap" id="logo-wrap">
       <img id="logo-img" src="" alt="Logo"/>
@@ -182,8 +182,6 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
   <div class="header-divider"></div>
   <div class="header-title" id="header-title">Registro de Atendimento</div>
   <button class="dev-btn" id="dev-btn-el" onclick="openDev()">⚙ Dev</button>
-  ondblclick="openDev()"
-  <div class="header" id="main-header" ondblclick="openDev()">
 </div>
 
 <div class="tabs">
@@ -328,19 +326,7 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
         </div>
       </div>
     </div>
-<div class="dev-section">
-  <div class="dev-section-title">Tipografia</div>
-  <div class="dev-field">
-    <label>Tamanho da fonte base: <span id="dev-fontsize-val">16px</span></label>
-    <input type="range" id="dev-fontsize" min="14" max="22" value="16" step="1" oninput="devPreview()"/>
-  </div>
-  <div style="display:flex;gap:8px;margin-top:6px">
-    <button class="btn-secondary" style="font-size:12px;padding:6px 12px" onclick="setFont(14)">Pequena</button>
-    <button class="btn-secondary" style="font-size:12px;padding:6px 12px" onclick="setFont(16)">Normal</button>
-    <button class="btn-secondary" style="font-size:12px;padding:6px 12px" onclick="setFont(18)">Grande</button>
-    <button class="btn-secondary" style="font-size:12px;padding:6px 12px" onclick="setFont(20)">Extra</button>
-  </div>
-</div>
+
     <div class="dev-section">
       <div class="dev-section-title">Imagem de Fundo (opcional)</div>
       <div class="dev-field"><label>Upload de imagem de fundo</label><input type="file" id="dev-bg-file" accept="image/*" onchange="devBgUpload(this)"/></div>
@@ -615,39 +601,31 @@ function devPreview(){
   document.getElementById('logo-sub').textContent=document.getElementById('dev-sub').value;
   document.getElementById('header-title').textContent=document.getElementById('dev-headertitle').value;
   document.getElementById('dev-btn-el').style.display=document.getElementById('dev-show-btn').checked?'':'none';
-  var fs = document.getElementById('dev-fontsize');
-if (fs) {
-  document.getElementById('dev-fontsize-val').textContent = fs.value + 'px';
-  document.body.style.fontSize = fs.value + 'px';
-}
   try{var bg=localStorage.getItem('arp_dev_bg');if(bg)applyBg(bg,parseInt(op))}catch(e){}
 }
- function devSave() {
-  var cfg = {
-    hc: document.getElementById('dev-hc').value,
-    mc: document.getElementById('dev-mc').value,
-    lc: document.getElementById('dev-lc').value,
-    tc: document.getElementById('dev-tc').value,
-    l1: document.getElementById('dev-line1').value,
-    l2: document.getElementById('dev-line2').value,
-    sub: document.getElementById('dev-sub').value,
-    ht: document.getElementById('dev-headertitle').value,
-    showBtn: document.getElementById('dev-show-btn').checked,
-    bgOp: document.getElementById('dev-bg-op').value,
-    fontSize: document.getElementById('dev-fontsize').value
-  };
-  // Salva local
-  try { localStorage.setItem('arp_dev_cfg', JSON.stringify(cfg)); } catch(e) {}
-  // Salva no Sheets para sincronizar todos os dispositivos
-  var gs = document.getElementById('gs-url').value.trim();
-  if (gs) {
-    fetch(gs, { method:'POST', body: JSON.stringify({ action:'saveConfig', config: cfg }) })
-      .then(function() { console.log('Config sincronizada'); })
-      .catch(function() {});
-  }
-  devPreview();
-  document.getElementById('dev-overlay').classList.remove('open');
-  alert('✓ Configurações salvas e sincronizadas em todos os dispositivos!');
+function devSave(){
+  var cfg={hc:document.getElementById('dev-hc').value,mc:document.getElementById('dev-mc').value,lc:document.getElementById('dev-lc').value,tc:document.getElementById('dev-tc').value,l1:document.getElementById('dev-line1').value,l2:document.getElementById('dev-line2').value,sub:document.getElementById('dev-sub').value,ht:document.getElementById('dev-headertitle').value,showBtn:document.getElementById('dev-show-btn').checked,bgOp:document.getElementById('dev-bg-op').value};
+  try{localStorage.setItem('arp_dev_cfg',JSON.stringify(cfg))}catch(e){}
+  devPreview();document.getElementById('dev-overlay').classList.remove('open');
+  var b=document.getElementById('success-banner');b.textContent='✓ Configurações salvas!';b.classList.add('show');
+  setTimeout(function(){b.classList.remove('show');b.textContent='✓ Atendimento registrado com sucesso!'},2500);
+}
+function devReset(){if(!confirm('Restaurar configurações para o padrão?'))return;try{localStorage.removeItem('arp_dev_cfg');localStorage.removeItem('arp_dev_logo');localStorage.removeItem('arp_dev_bg')}catch(e){}location.reload()}
+function loadDevSettings(){
+  try{
+    var logo=localStorage.getItem('arp_dev_logo');if(logo){document.getElementById('logo-img').src=logo;document.getElementById('logo-wrap').classList.add('has-img')}
+    var cfg=JSON.parse(localStorage.getItem('arp_dev_cfg')||'null');if(!cfg)return;
+    if(cfg.hc)document.documentElement.style.setProperty('--header-bg',cfg.hc);
+    if(cfg.mc){document.documentElement.style.setProperty('--gr',cfg.mc);document.documentElement.style.setProperty('--gr-d',shade(cfg.mc,-40));document.documentElement.style.setProperty('--gr-l',shade(cfg.mc,80))}
+    if(cfg.lc)document.documentElement.style.setProperty('--header-logo-text',cfg.lc);
+    if(cfg.tc)document.documentElement.style.setProperty('--tab-active',cfg.tc);
+    if(cfg.l1)document.getElementById('logo-line1').textContent=cfg.l1;
+    if(cfg.l2)document.getElementById('logo-line2').textContent=cfg.l2;
+    if(cfg.sub)document.getElementById('logo-sub').textContent=cfg.sub;
+    if(cfg.ht)document.getElementById('header-title').textContent=cfg.ht;
+    if(cfg.showBtn===false)document.getElementById('dev-btn-el').style.display='none';
+    var bg=localStorage.getItem('arp_dev_bg');if(bg)applyBg(bg,parseInt(cfg.bgOp||90));
+  }catch(e){}
 }
 function loadDevFields(){
   try{
@@ -667,30 +645,7 @@ function loadDevFields(){
     devPreview();
   }catch(e){}
 }
-function setFont(size) {
-  document.getElementById('dev-fontsize').value = size;
-  devPreview();
-}
 init();
-// Dentro da função init(), adicione no final:
-var gs = document.getElementById('gs-url').value.trim();
-if (gs) {
-  fetch(gs, { method:'POST', body: JSON.stringify({ action:'loadConfig' }) })
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      if (data.config) {
-        try { localStorage.setItem('arp_dev_cfg', data.config); } catch(e) {}
-        loadDevSettings();
-      }
-    }).catch(function() {});
-}
 </script>
 </body>
-<script>
-  // Força viewport mobile no Apps Script
-  var meta = document.createElement('meta');
-  meta.name = 'viewport';
-  meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
-  document.getElementsByTagName('head')[0].appendChild(meta);
-</script>
 </html>
