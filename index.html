@@ -157,6 +157,26 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
   .stat-card:last-child{grid-column:auto}
   .radio-group{grid-template-columns:1fr}
 }
+/* MODAL CONFIRMAÇÃO */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:2000;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.open{display:flex}
+.modal-box{background:#fff;border-radius:var(--radl);padding:24px;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,0.2);animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0;transform:scale(0.95)}to{opacity:1;transform:scale(1)}}
+.modal-icon{font-size:36px;text-align:center;margin-bottom:12px}
+.modal-title{font-size:17px;font-weight:700;color:var(--tx);text-align:center;margin-bottom:6px}
+.modal-sub{font-size:13px;color:var(--tx2);text-align:center;margin-bottom:20px;line-height:1.5}
+.modal-detail{background:var(--bg2);border-radius:8px;padding:12px;margin-bottom:18px;font-size:13px;color:var(--tx2);line-height:1.6}
+.modal-detail strong{color:var(--tx);display:block;margin-bottom:2px}
+.modal-btns{display:flex;gap:10px}
+.modal-btns button{flex:1;padding:13px;border-radius:var(--rad);font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font);border:none}
+.btn-confirm{background:var(--gr);color:#fff;box-shadow:0 4px 12px rgba(29,158,117,0.3)}
+.btn-confirm:hover{opacity:.9}
+.btn-cancel-modal{background:var(--bg2);color:var(--tx2);border:1.5px solid var(--bd)!important}
+.btn-cancel-modal:hover{background:var(--bd)}
+/* DELETE RECORD */
+.record-del{background:none;border:none;color:#dc2626;font-size:16px;cursor:pointer;padding:4px 6px;border-radius:6px;display:none;flex-shrink:0}
+.record-del:hover{background:#FEE2E2}
+.dev-mode .record-del{display:flex}
 </style>
 </head>
 <body>
@@ -283,6 +303,32 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
 
 </div><!-- /content -->
 </div><!-- /app -->
+
+<!-- MODAL CONFIRMAÇÃO -->
+<div class="modal-overlay" id="confirm-modal">
+  <div class="modal-box">
+    <div class="modal-icon">📋</div>
+    <div class="modal-title">Confirmar Registro</div>
+    <div class="modal-sub">Verifique os dados antes de salvar</div>
+    <div class="modal-detail" id="modal-detail"></div>
+    <div class="modal-btns">
+      <button class="btn-cancel-modal" onclick="closeConfirm()">Cancelar</button>
+      <button class="btn-confirm" onclick="confirmSave()">✓ Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL SUCESSO -->
+<div class="modal-overlay" id="success-modal">
+  <div class="modal-box">
+    <div class="modal-icon">✅</div>
+    <div class="modal-title">Registrado com sucesso!</div>
+    <div class="modal-sub" id="success-modal-sub">Atendimento salvo no sistema.</div>
+    <div class="modal-btns">
+      <button class="btn-confirm" style="flex:none;width:100%" onclick="closeSuccess()">OK</button>
+    </div>
+  </div>
+</div>
 
 <!-- DEV PANEL -->
 <div class="dev-overlay" id="dev-overlay" onclick="closeDev(event)">
@@ -462,6 +508,8 @@ function showTab(t){
   else if(t==='report')renderHistory();
 }
 
+var pendingRec=null;
+
 function submitForm(){
   var resp=selResp_;
   if(resp==='Outros')resp=document.getElementById('other-name').value.trim()||'Outros';
@@ -471,14 +519,38 @@ function submitForm(){
   var desc=document.getElementById('f-desc').value.trim();
   if(!desc){alert('Preencha a descrição.');return}
   var locType=LOCAL_TYPE[local]||'setor';
-  var rec={id:Date.now(),resp:resp,date:document.getElementById('f-date').value,start:document.getElementById('f-start').value,local:local,locType:locType,desc:desc,ts:new Date().toISOString()};
-  records.unshift(rec);save();
-  var gs=document.getElementById('gs-url').value.trim();if(gs)sendRecord(rec,gs);
+  pendingRec={id:Date.now(),resp:resp,date:document.getElementById('f-date').value,start:document.getElementById('f-start').value,local:local,locType:locType,desc:desc,ts:new Date().toISOString()};
+  var locLabel=locType==='setor'?'Setor':locType==='urbana'?'Escola Urbana':'Escola Rural';
+  document.getElementById('modal-detail').innerHTML=
+    '<strong>Responsável:</strong>'+resp+
+    '<strong style="margin-top:8px">Data / Hora:</strong>'+pendingRec.date+(pendingRec.start?' às '+pendingRec.start:'')+
+    '<strong style="margin-top:8px">Local ('+locLabel+'):</strong>'+local+
+    '<strong style="margin-top:8px">Descrição:</strong>'+desc;
+  document.getElementById('confirm-modal').classList.add('open');
+}
+
+function closeConfirm(){
+  document.getElementById('confirm-modal').classList.remove('open');
+  pendingRec=null;
+}
+
+function confirmSave(){
+  document.getElementById('confirm-modal').classList.remove('open');
+  if(!pendingRec)return;
+  records.unshift(pendingRec);save();
+  var gs=document.getElementById('gs-url').value.trim();if(gs)sendRecord(pendingRec,gs);
   document.getElementById('f-desc').value='';updCount();
   document.querySelectorAll('.rpill').forEach(function(e){e.classList.remove('sel')});selResp_='';
   document.getElementById('other-name-wrap').style.display='none';
   document.getElementById('ac-input').value='';
-  var b=document.getElementById('success-banner');b.classList.add('show');setTimeout(function(){b.classList.remove('show')},3000);
+  var gs2=document.getElementById('gs-url').value.trim();
+  document.getElementById('success-modal-sub').textContent='Atendimento de '+pendingRec.resp+' salvo'+(gs2?' e enviado ao Sheets.':'.');
+  document.getElementById('success-modal').classList.add('open');
+  pendingRec=null;
+}
+
+function closeSuccess(){
+  document.getElementById('success-modal').classList.remove('open');
 }
 
 function renderList(){
@@ -489,8 +561,18 @@ function renderList(){
   var tl={'setor':'Setor','urbana':'Escola Urbana','rural':'Escola Rural'};
   el.innerHTML=f.map(function(r){
     var tc=r.locType==='urbana'?'blue':r.locType==='rural'?'orange':'';
-    return '<div class="record-item"><div class="record-header"><div class="record-name">'+r.resp+'</div><div class="record-date">'+r.date+(r.start?' · '+r.start:'')+'</div></div><div class="record-desc">'+r.desc+'</div><div class="record-tags"><span class="tag '+tc+'">'+(tl[r.locType]||'Setor')+'</span><span class="tag">'+r.local+'</span></div></div>';
+    return '<div class="record-item"><div class="record-header"><div class="record-name">'+r.resp+'</div><div style="display:flex;align-items:center;gap:6px"><div class="record-date">'+r.date+(r.start?' · '+r.start:'')+'</div><button class="record-del" onclick="deleteRecord('+r.id+')" title="Apagar registro">🗑</button></div></div><div class="record-desc">'+r.desc+'</div><div class="record-tags"><span class="tag '+tc+'">'+(tl[r.locType]||'Setor')+'</span><span class="tag">'+r.local+'</span></div></div>';
   }).join('');
+}
+
+function deleteRecord(id){
+  if(!confirm('Apagar este registro? A ação não pode ser desfeita.'))return;
+  var gs=document.getElementById('gs-url').value.trim();
+  if(gs){
+    try{fetch(gs,{method:'POST',mode:'no-cors',body:JSON.stringify({action:'deleteRecord',id:id})})}catch(e){}
+  }
+  records=records.filter(function(r){return r.id!=id});
+  save();renderList();
 }
 
 function renderStats(){
@@ -623,12 +705,24 @@ function renderHistory(){
   var h=[];try{h=JSON.parse(localStorage.getItem('arp_hist')||'[]')}catch(e){}
   var el=document.getElementById('send-history');if(!el)return;
   if(!h.length){el.textContent='Nenhum envio registrado ainda.';return}
-  el.innerHTML=h.map(function(x){return '<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f1f5f9;font-size:13px"><span>'+x.msg+'</span><span style="color:var(--tx3);font-size:11px;white-space:nowrap;margin-left:8px">'+new Date(x.ts).toLocaleDateString('pt-BR')+'</span></div>'}).join('');
+  var isDevMode=document.getElementById('app').classList.contains('dev-mode');
+  el.innerHTML=h.map(function(x,i){
+    var delBtn=isDevMode?'<button onclick="deleteHistory('+i+')" style="background:none;border:none;color:#dc2626;cursor:pointer;font-size:14px;padding:2px 6px;border-radius:4px;flex-shrink:0" title="Apagar">🗑</button>':'';
+    return '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f1f5f9;font-size:13px"><span>'+x.msg+'</span><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span style="color:var(--tx3);font-size:11px">'+new Date(x.ts).toLocaleDateString('pt-BR')+'</span>'+delBtn+'</div></div>';
+  }).join('');
+}
+
+function deleteHistory(idx){
+  if(!confirm('Apagar este item do histórico?'))return;
+  var h=[];try{h=JSON.parse(localStorage.getItem('arp_hist')||'[]')}catch(e){}
+  h.splice(idx,1);
+  try{localStorage.setItem('arp_hist',JSON.stringify(h))}catch(e){}
+  renderHistory();
 }
 
 // DEV PANEL
-function openDev(){document.getElementById('dev-overlay').classList.add('open');loadDevFields()}
-function closeDev(force){if(force===true||(force&&force.target===document.getElementById('dev-overlay'))){document.getElementById('dev-overlay').classList.remove('open')}}
+function openDev(){document.getElementById('dev-overlay').classList.add('open');document.getElementById('app').classList.add('dev-mode');loadDevFields()}
+function closeDev(force){if(force===true||(force&&force.target===document.getElementById('dev-overlay'))){document.getElementById('dev-overlay').classList.remove('open');document.getElementById('app').classList.remove('dev-mode');renderList();renderHistory();}}
 
 function devLogoUrl(){
   var url=document.getElementById('dev-logo-url').value.trim();
