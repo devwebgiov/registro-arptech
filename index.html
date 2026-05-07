@@ -566,13 +566,17 @@ function renderList(){
 }
 
 function deleteRecord(id){
-  if(!confirm('Apagar este registro? A ação não pode ser desfeita.'))return;
+  if(!confirm('Apagar este registro? A acao nao pode ser desfeita.'))return;
   var gs=document.getElementById('gs-url').value.trim();
   if(gs){
-    try{fetch(gs,{method:'POST',mode:'no-cors',body:JSON.stringify({action:'deleteRecord',id:id})})}catch(e){}
+    showSyncStatus('Apagando...');
+    fetch(gs,{method:'POST',body:JSON.stringify({action:'deleteRecord',id:id})})
+      .then(function(){syncFromSheets(function(){renderList();showSyncStatus('Registro apagado',2000)})})
+      .catch(function(){records=records.filter(function(r){return r.id!=id});save();renderList();showSyncStatus('')});
+  } else {
+    records=records.filter(function(r){return r.id!=id});
+    save();renderList();
   }
-  records=records.filter(function(r){return r.id!=id});
-  save();renderList();
 }
 
 function renderStats(){
@@ -654,12 +658,19 @@ function loadConfigSheets(){
 function sendToSheets(){
   var gs=document.getElementById('gs-url').value.trim();if(!gs){alert('Configure a URL do Apps Script primeiro.');return}
   var m=parseInt(document.getElementById('rep-month').value),y=parseInt(document.getElementById('rep-year').value);
-  var recs=records.filter(function(r){var d=new Date(r.date);return d.getMonth()===m&&d.getFullYear()===y});
-  var msg=document.getElementById('export-msg');msg.style.display='block';msg.textContent='Enviando...';
-  var MESES=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
-  fetch(gs,{method:'POST',mode:'no-cors',body:JSON.stringify({action:'monthlyReport',month:m+1,year:y,records:recs})})
-    .then(function(){msg.textContent='✓ Enviado! '+recs.length+' registro(s) para '+MESES[m]+'/'+y+'.';logHistory('Relatório '+MESES[m].substring(0,3)+'/'+y+' — '+recs.length+' registros')})
-    .catch(function(){msg.textContent='Erro. Verifique a URL.';msg.style.color='#dc2626'});
+  var msg=document.getElementById('export-msg');msg.style.display='block';msg.textContent='Buscando registros do Sheets...';
+  var MESES=['Janeiro','Fevereiro','Marco','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  fetch(gs,{method:'POST',body:JSON.stringify({action:'getRecords'})})
+    .then(function(r){return r.json()})
+    .then(function(data){
+      var allRecs=(data&&data.records)||records;
+      var recs=allRecs.filter(function(r){var d=new Date(r.date);return d.getMonth()===m&&d.getFullYear()===y});
+      msg.textContent='Enviando '+recs.length+' registro(s)...';
+      return fetch(gs,{method:'POST',body:JSON.stringify({action:'monthlyReport',month:m+1,year:y,records:recs})})
+        .then(function(res){return res.text()})
+        .then(function(){msg.textContent='Enviado! '+recs.length+' registro(s) para '+MESES[m]+'/'+y+'.';logHistory('Relatorio '+MESES[m].substring(0,3)+'/'+y+' - '+recs.length+' registros')});
+    })
+    .catch(function(e){msg.textContent='Erro: '+e.message;msg.style.color='#dc2626'});
 }
 
 function autoSendReport(m,y){
