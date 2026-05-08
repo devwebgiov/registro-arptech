@@ -557,6 +557,12 @@ function renderList(){
   var q=(document.getElementById('search-q').value||'').toLowerCase();
   var el=document.getElementById('rec-list');
   var f=records.filter(function(r){return r.resp.toLowerCase().includes(q)||r.local.toLowerCase().includes(q)||r.desc.toLowerCase().includes(q)});
+  // Ordena por data+hora decrescente (mais recente no topo)
+  f.sort(function(a,b){
+    var da=(a.date||'')+(a.start?'T'+a.start:'T00:00');
+    var db=(b.date||'')+(b.start?'T'+b.start:'T00:00');
+    return db.localeCompare(da);
+  });
   if(!f.length){el.innerHTML='<div class="empty-state">Nenhum registro encontrado.</div>';return}
   var tl={'setor':'Setor','urbana':'Escola Urbana','rural':'Escola Rural'};
   el.innerHTML=f.map(function(r){
