@@ -748,7 +748,11 @@ function entrarSistema(user){
   document.getElementById('logout-btn').style.display='block';
   document.getElementById('chpwd-btn').style.display='block';
   if(isAdmin){
-    document.getElementById('admin-btn').style.display='block';
+    // Verifica se admin escolheu ocultar o botão
+    var cfg=null;try{cfg=JSON.parse(localStorage.getItem('arp_dev_cfg')||'null')}catch(e){}
+    if(!cfg||cfg.showBtn!==false){
+      document.getElementById('admin-btn').style.display='block';
+    }
     setupAdminTabs();
     syncFromSheets(function(){renderList();renderStats()});
     loadConfigSheets();
@@ -1367,7 +1371,7 @@ function loadSettings(){
     if(cfg.sub){document.getElementById('logo-sub').textContent=cfg.sub;document.getElementById('lld-sub').textContent=cfg.sub}
     if(cfg.ht)document.getElementById('header-title').textContent=cfg.ht;
     if(cfg.fs)document.body.style.fontSize=cfg.fs+'px';
-    if(cfg.showBtn===false)document.getElementById('admin-btn').style.display='none';
+    if(cfg.showBtn===false&&isAdmin)document.getElementById('admin-btn').style.display='none';
     if(cfg.logoUrl){document.getElementById('logo-img').src=cfg.logoUrl;document.getElementById('logo-wrap').classList.add('has-img')}
     else{var logo=localStorage.getItem('arp_dev_logo');if(logo){document.getElementById('logo-img').src=logo;document.getElementById('logo-wrap').classList.add('has-img')}}
     if(cfg.bgUrl)applyBg(cfg.bgUrl,parseInt(cfg.bgOp||90));
