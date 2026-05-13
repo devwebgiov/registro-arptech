@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8"/>
@@ -157,29 +158,92 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
   .stat-card:last-child{grid-column:auto}
   .radio-group{grid-template-columns:1fr}
 }
-/* MODAL CONFIRMAÇÃO */
+/* LOGIN */
+.login-screen{position:fixed;inset:0;background:linear-gradient(135deg,#0a2540 0%,#0f3d2e 100%);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px}
+.login-box{background:#fff;border-radius:20px;padding:32px 28px;width:100%;max-width:380px;box-shadow:0 20px 60px rgba(0,0,0,0.3)}
+.login-logo{display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:24px}
+.login-logo svg{width:48px;height:48px}
+.login-logo-words{display:flex;flex-direction:column}
+.login-logo-l1{font-size:20px;font-weight:700;letter-spacing:2px;color:#0a2540;line-height:1}
+.login-logo-l2{font-size:20px;font-weight:700;letter-spacing:2px;color:#0a2540;line-height:1}
+.login-logo-sub{font-size:10px;letter-spacing:1px;color:#94a3b8;margin-top:2px}
+.login-title{font-size:16px;font-weight:700;color:var(--tx);text-align:center;margin-bottom:4px}
+.login-sub{font-size:13px;color:var(--tx3);text-align:center;margin-bottom:24px}
+.login-field{margin-bottom:14px}
+.login-field label{display:block;font-size:13px;font-weight:600;color:var(--tx2);margin-bottom:6px}
+.login-field select,.login-field input{width:100%;padding:12px 14px;font-size:15px;border:1.5px solid var(--bd);border-radius:var(--rad);background:var(--bg2);color:var(--tx);font-family:var(--font);outline:none;-webkit-appearance:none}
+.login-field select:focus,.login-field input:focus{border-color:var(--gr)}
+.login-btn{width:100%;padding:14px;background:var(--gr);color:#fff;border:none;border-radius:var(--rad);font-size:15px;font-weight:700;cursor:pointer;font-family:var(--font);box-shadow:0 4px 12px rgba(29,158,117,0.3);margin-top:4px}
+.login-btn:hover{opacity:.9}
+.login-err{background:#FEE2E2;color:#991B1B;border-radius:8px;padding:10px 14px;font-size:13px;margin-bottom:14px;display:none;text-align:center}
+.login-err.show{display:block}
+.user-badge{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.9);padding:6px 12px;border-radius:20px;font-size:12px;font-weight:600;white-space:nowrap;flex-shrink:0}
+.logout-btn{background:none;border:1px solid rgba(255,255,255,0.3);color:rgba(255,255,255,0.6);padding:6px 10px;border-radius:8px;font-size:11px;cursor:pointer;font-family:var(--font);white-space:nowrap;flex-shrink:0;transition:all .15s}
+.logout-btn:hover{background:rgba(255,255,255,0.1);color:#fff}
+/* REPORT PERIOD */
+.period-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.period-tab{padding:7px 14px;border:1.5px solid var(--bd);border-radius:20px;font-size:13px;font-weight:500;cursor:pointer;color:var(--tx2);background:var(--bg2);transition:all .12s}
+.period-tab.active{border-color:var(--gr);background:var(--gr-l);color:var(--gr-d);font-weight:700}
+
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:2000;display:none;align-items:center;justify-content:center;padding:20px}
 .modal-overlay.open{display:flex}
-.modal-box{background:#fff;border-radius:var(--radl);padding:24px;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,0.2);animation:fadeIn .2s ease}
+.modal-box{background:#fff;border-radius:var(–radl);padding:24px;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,0.2);animation:fadeIn .2s ease}
 @keyframes fadeIn{from{opacity:0;transform:scale(0.95)}to{opacity:1;transform:scale(1)}}
 .modal-icon{font-size:36px;text-align:center;margin-bottom:12px}
-.modal-title{font-size:17px;font-weight:700;color:var(--tx);text-align:center;margin-bottom:6px}
-.modal-sub{font-size:13px;color:var(--tx2);text-align:center;margin-bottom:20px;line-height:1.5}
-.modal-detail{background:var(--bg2);border-radius:8px;padding:12px;margin-bottom:18px;font-size:13px;color:var(--tx2);line-height:1.6}
-.modal-detail strong{color:var(--tx);display:block;margin-bottom:2px}
+.modal-title{font-size:17px;font-weight:700;color:var(–tx);text-align:center;margin-bottom:6px}
+.modal-sub{font-size:13px;color:var(–tx2);text-align:center;margin-bottom:20px;line-height:1.5}
+.modal-detail{background:var(–bg2);border-radius:8px;padding:12px;margin-bottom:18px;font-size:13px;color:var(–tx2);line-height:1.6}
+.modal-detail strong{color:var(–tx);display:block;margin-bottom:2px}
 .modal-btns{display:flex;gap:10px}
-.modal-btns button{flex:1;padding:13px;border-radius:var(--rad);font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font);border:none}
-.btn-confirm{background:var(--gr);color:#fff;box-shadow:0 4px 12px rgba(29,158,117,0.3)}
+.modal-btns button{flex:1;padding:13px;border-radius:var(–rad);font-size:14px;font-weight:700;cursor:pointer;font-family:var(–font);border:none}
+.btn-confirm{background:var(–gr);color:#fff;box-shadow:0 4px 12px rgba(29,158,117,0.3)}
 .btn-confirm:hover{opacity:.9}
-.btn-cancel-modal{background:var(--bg2);color:var(--tx2);border:1.5px solid var(--bd)!important}
-.btn-cancel-modal:hover{background:var(--bd)}
+.btn-cancel-modal{background:var(–bg2);color:var(–tx2);border:1.5px solid var(–bd)!important}
+.btn-cancel-modal:hover{background:var(–bd)}
 /* DELETE RECORD */
 .record-del{background:none;border:none;color:#dc2626;font-size:16px;cursor:pointer;padding:4px 6px;border-radius:6px;display:none;flex-shrink:0}
 .record-del:hover{background:#FEE2E2}
 .dev-mode .record-del{display:flex}
 </style>
+
 </head>
 <body>
+<!-- LOGIN SCREEN -->
+<div class="login-screen" id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">
+      <svg viewBox="0 0 40 40" fill="none">
+        <polygon points="20,2 36,38 27,38 20,20 13,38 4,38" fill="#1D9E75"/>
+        <polygon points="20,20 27,38 13,38" fill="#085041" opacity="0.7"/>
+      </svg>
+      <div class="login-logo-words">
+        <span class="login-logo-l1">ARP</span>
+        <span class="login-logo-l2">TECH</span>
+        <span class="login-logo-sub">AMAZÔNIA</span>
+      </div>
+    </div>
+    <div class="login-title">Acesso ao Sistema</div>
+    <div class="login-sub">Registro de Atendimento Diário</div>
+    <div class="login-err" id="login-err">Senha incorreta. Tente novamente.</div>
+    <div class="login-field">
+      <label>Responsável</label>
+      <select id="login-user">
+        <option value="">Selecione...</option>
+        <option value="Ayrton">Ayrton</option>
+        <option value="Giovanna">Giovanna</option>
+        <option value="Neudson">Neudson</option>
+        <option value="Rodrigo">Rodrigo</option>
+        <option value="Admin">Administrador</option>
+      </select>
+    </div>
+    <div class="login-field">
+      <label>Senha</label>
+      <input type="password" id="login-pass" placeholder="Digite sua senha..." onkeydown="if(event.key==='Enter')doLogin()"/>
+    </div>
+    <button class="login-btn" onclick="doLogin()">Entrar</button>
+  </div>
+</div>
+
 <div id="app">
 
 <div class="header" id="main-header" ondblclick="openDev()">
@@ -202,6 +266,8 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
   <div class="header-divider"></div>
   <div class="header-title" id="header-title">Registro de Atendimento</div>
   <div id="sync-status" style="display:none;font-size:11px;color:rgba(255,255,255,0.7);white-space:nowrap;flex-shrink:0"></div>
+  <div id="user-badge" class="user-badge" style="display:none"></div>
+  <button class="logout-btn" id="logout-btn" style="display:none" onclick="doLogout()">Sair</button>
   <button class="dev-btn" id="dev-btn-el" onclick="openDev()">⚙ Dev</button>
 </div>
 
@@ -215,6 +281,7 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
 <div class="content">
 
   <!-- FORM -->
+
   <div id="tab-form">
     <div id="success-banner" class="success-msg">✓ Atendimento registrado com sucesso!</div>
     <div class="card">
@@ -256,12 +323,14 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
   </div>
 
   <!-- LIST -->
+
   <div id="tab-list" style="display:none">
     <div class="search-bar"><input type="text" id="search-q" placeholder="🔍  Buscar por responsável, local ou descrição..." oninput="renderList()"/></div>
     <div id="rec-list" class="records-list"></div>
   </div>
 
   <!-- STATS -->
+
   <div id="tab-stats" style="display:none">
     <div class="stats-row">
       <div class="stat-card"><div class="stat-num" id="st-tot">0</div><div class="stat-label">Total</div></div>
@@ -273,6 +342,7 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
   </div>
 
   <!-- REPORT -->
+
   <div id="tab-report" style="display:none">
     <div class="info-box"><strong>Integração com Google Sheets</strong><br>Cole a URL do Apps Script abaixo. Registros são enviados automaticamente ao salvar. O relatório mensal é gerado no dia 23 (ou último dia útil anterior).<br><br><strong>Próximo relatório:</strong><span class="next-badge" id="next-report-date">—</span></div>
     <div class="report-section">
@@ -284,27 +354,83 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
       <div class="btn-row"><button class="btn-secondary" onclick="testConnection()">Testar conexão</button></div>
     </div>
     <div class="report-section">
-      <div class="card-title">Gerar relatório manual</div>
-      <div class="form-row" style="margin-bottom:14px">
-        <div class="field"><label>Mês</label><select id="rep-month"><option value="0">Janeiro</option><option value="1">Fevereiro</option><option value="2">Março</option><option value="3">Abril</option><option value="4">Maio</option><option value="5">Junho</option><option value="6">Julho</option><option value="7">Agosto</option><option value="8">Setembro</option><option value="9">Outubro</option><option value="10">Novembro</option><option value="11">Dezembro</option></select></div>
-        <div class="field"><label>Ano</label><input type="number" id="rep-year" value="2025" min="2024" max="2035"/></div>
+      <div class="card-title">Gerar relatório por período</div>
+      <div class="period-tabs">
+        <div class="period-tab active" onclick="setPeriod('mensal')">Mensal</div>
+        <div class="period-tab" onclick="setPeriod('quinzenal')">Quinzenal</div>
+        <div class="period-tab" onclick="setPeriod('semanal')">Semanal</div>
+        <div class="period-tab" onclick="setPeriod('personalizado')">Personalizado</div>
       </div>
-      <div class="btn-row">
-        <button class="btn-secondary" onclick="exportCSV()">Exportar CSV</button>
-        <button class="btn-secondary" onclick="sendToSheets()">Enviar ao Sheets</button>
-      </div>
-      <div id="export-msg"></div>
+
+```
+  <!-- MENSAL -->
+  <div id="period-mensal">
+    <div class="form-row" style="margin-bottom:14px">
+      <div class="field"><label>Mês</label><select id="rep-month"><option value="0">Janeiro</option><option value="1">Fevereiro</option><option value="2">Março</option><option value="3">Abril</option><option value="4">Maio</option><option value="5">Junho</option><option value="6">Julho</option><option value="7">Agosto</option><option value="8">Setembro</option><option value="9">Outubro</option><option value="10">Novembro</option><option value="11">Dezembro</option></select></div>
+      <div class="field"><label>Ano</label><input type="number" id="rep-year" value="2025" min="2024" max="2035"/></div>
     </div>
-    <div class="report-section">
-      <div class="card-title">Histórico de envios</div>
-      <div id="send-history" style="font-size:13px;color:var(--tx2)">Nenhum envio registrado ainda.</div>
+  </div>
+
+  <!-- QUINZENAL -->
+  <div id="period-quinzenal" style="display:none">
+    <div class="form-row" style="margin-bottom:14px">
+      <div class="field"><label>Mês</label><select id="rep-month-q"><option value="0">Janeiro</option><option value="1">Fevereiro</option><option value="2">Março</option><option value="3">Abril</option><option value="4">Maio</option><option value="5">Junho</option><option value="6">Julho</option><option value="7">Agosto</option><option value="8">Setembro</option><option value="9">Outubro</option><option value="10">Novembro</option><option value="11">Dezembro</option></select></div>
+      <div class="field"><label>Ano</label><input type="number" id="rep-year-q" value="2025" min="2024" max="2035"/></div>
     </div>
+    <div class="field" style="margin-bottom:14px">
+      <label>Quinzena</label>
+      <select id="rep-quinzena">
+        <option value="1">1ª quinzena (dia 1 ao 15)</option>
+        <option value="2">2ª quinzena (dia 16 ao último)</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- SEMANAL -->
+  <div id="period-semanal" style="display:none">
+    <div class="form-row" style="margin-bottom:14px">
+      <div class="field"><label>Data início</label><input type="date" id="rep-sem-ini"/></div>
+      <div class="field"><label>Data fim</label><input type="date" id="rep-sem-fim"/></div>
+    </div>
+  </div>
+
+  <!-- PERSONALIZADO -->
+  <div id="period-personalizado" style="display:none">
+    <div class="form-row" style="margin-bottom:8px">
+      <div class="field"><label>Data início</label><input type="date" id="rep-per-ini"/></div>
+      <div class="field"><label>Data fim</label><input type="date" id="rep-per-fim"/></div>
+    </div>
+    <div class="field" style="margin-bottom:14px">
+      <label>Responsável (opcional — deixe vazio para todos)</label>
+      <select id="rep-per-resp">
+        <option value="">Todos</option>
+        <option value="Ayrton">Ayrton</option>
+        <option value="Giovanna">Giovanna</option>
+        <option value="Neudson">Neudson</option>
+        <option value="Rodrigo">Rodrigo</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn-secondary" onclick="exportCSV()">Exportar CSV</button>
+    <button class="btn-secondary" onclick="sendToSheets()">Enviar ao Sheets</button>
+  </div>
+  <div id="export-msg"></div>
+</div>
+<div class="report-section">
+  <div class="card-title">Histórico de envios</div>
+  <div id="send-history" style="font-size:13px;color:var(--tx2)">Nenhum envio registrado ainda.</div>
+</div>
+```
+
   </div>
 
 </div><!-- /content -->
 </div><!-- /app -->
 
 <!-- MODAL CONFIRMAÇÃO -->
+
 <div class="modal-overlay" id="confirm-modal">
   <div class="modal-box">
     <div class="modal-icon">📋</div>
@@ -319,6 +445,7 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
 </div>
 
 <!-- MODAL SUCESSO -->
+
 <div class="modal-overlay" id="success-modal">
   <div class="modal-box">
     <div class="modal-icon">✅</div>
@@ -331,6 +458,7 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
 </div>
 
 <!-- DEV PANEL -->
+
 <div class="dev-overlay" id="dev-overlay" onclick="closeDev(event)">
   <div class="dev-panel" id="dev-panel">
     <div class="dev-header">
@@ -338,77 +466,80 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
       <button class="dev-close" onclick="closeDev(true)">×</button>
     </div>
 
-    <div class="dev-section">
-      <div class="dev-section-title">Logo e Identidade Visual</div>
-      <div class="dev-field">
-        <label>URL da imagem do logo <span style="background:#E1F5EE;color:#085041;font-size:10px;padding:2px 6px;border-radius:8px;font-weight:700">SINCRONIZA EM TODOS OS DISPOSITIVOS</span></label>
-        <input type="text" id="dev-logo-url" placeholder="https://raw.githubusercontent.com/usuario/repo/main/logo.png" oninput="devLogoUrl()"/>
-        <div style="font-size:11px;color:var(--tx3);margin-top:4px">Cole o link da imagem hospedada no GitHub ou outra URL pública</div>
-      </div>
-      <div class="dev-field">
-        <label style="color:var(--tx3)">— ou — Upload direto (somente neste dispositivo)</label>
-        <input type="file" id="dev-logo-file" accept="image/*" onchange="devLogoUpload(this)"/>
-        <img id="dev-logo-preview" class="dev-img-preview" src="" alt="Preview"/>
-        <div style="margin-top:8px"><button class="btn-secondary" style="font-size:12px;padding:6px 12px" onclick="devRemoveLogo()">Remover imagem</button></div>
-      </div>
-      <div class="dev-field"><label>Linha 1 do nome (ex: ARP)</label><input type="text" id="dev-line1" value="ARP" oninput="devPreview()"/></div>
-      <div class="dev-field"><label>Linha 2 do nome (ex: TECH)</label><input type="text" id="dev-line2" value="TECH" oninput="devPreview()"/></div>
-      <div class="dev-field"><label>Subtítulo do logo (ex: AMAZÔNIA)</label><input type="text" id="dev-sub" value="AMAZÔNIA" oninput="devPreview()"/></div>
-      <div class="dev-field"><label>Título no cabeçalho</label><input type="text" id="dev-headertitle" value="Registro de Atendimento" oninput="devPreview()"/></div>
-    </div>
+```
+<div class="dev-section">
+  <div class="dev-section-title">Logo e Identidade Visual</div>
+  <div class="dev-field">
+    <label>URL da imagem do logo <span style="background:#E1F5EE;color:#085041;font-size:10px;padding:2px 6px;border-radius:8px;font-weight:700">SINCRONIZA EM TODOS OS DISPOSITIVOS</span></label>
+    <input type="text" id="dev-logo-url" placeholder="https://raw.githubusercontent.com/usuario/repo/main/logo.png" oninput="devLogoUrl()"/>
+    <div style="font-size:11px;color:var(--tx3);margin-top:4px">Cole o link da imagem hospedada no GitHub ou outra URL pública</div>
+  </div>
+  <div class="dev-field">
+    <label style="color:var(--tx3)">— ou — Upload direto (somente neste dispositivo)</label>
+    <input type="file" id="dev-logo-file" accept="image/*" onchange="devLogoUpload(this)"/>
+    <img id="dev-logo-preview" class="dev-img-preview" src="" alt="Preview"/>
+    <div style="margin-top:8px"><button class="btn-secondary" style="font-size:12px;padding:6px 12px" onclick="devRemoveLogo()">Remover imagem</button></div>
+  </div>
+  <div class="dev-field"><label>Linha 1 do nome (ex: ARP)</label><input type="text" id="dev-line1" value="ARP" oninput="devPreview()"/></div>
+  <div class="dev-field"><label>Linha 2 do nome (ex: TECH)</label><input type="text" id="dev-line2" value="TECH" oninput="devPreview()"/></div>
+  <div class="dev-field"><label>Subtítulo do logo (ex: AMAZÔNIA)</label><input type="text" id="dev-sub" value="AMAZÔNIA" oninput="devPreview()"/></div>
+  <div class="dev-field"><label>Título no cabeçalho</label><input type="text" id="dev-headertitle" value="Registro de Atendimento" oninput="devPreview()"/></div>
+</div>
 
-    <div class="dev-section">
-      <div class="dev-section-title">Cores</div>
-      <div class="color-grid">
-        <div class="color-item">
-          <label>Cor do cabeçalho</label>
-          <div class="color-pick"><input type="color" id="dev-hc" value="#0a2540" oninput="devPreview()"/><code id="dev-hc-val">#0a2540</code></div>
-        </div>
-        <div class="color-item">
-          <label>Cor principal</label>
-          <div class="color-pick"><input type="color" id="dev-mc" value="#1D9E75" oninput="devPreview()"/><code id="dev-mc-val">#1D9E75</code></div>
-        </div>
-        <div class="color-item">
-          <label>Cor do texto do logo</label>
-          <div class="color-pick"><input type="color" id="dev-lc" value="#ffffff" oninput="devPreview()"/><code id="dev-lc-val">#ffffff</code></div>
-        </div>
-        <div class="color-item">
-          <label>Cor das abas ativas</label>
-          <div class="color-pick"><input type="color" id="dev-tc" value="#1D9E75" oninput="devPreview()"/><code id="dev-tc-val">#1D9E75</code></div>
-        </div>
-      </div>
+<div class="dev-section">
+  <div class="dev-section-title">Cores</div>
+  <div class="color-grid">
+    <div class="color-item">
+      <label>Cor do cabeçalho</label>
+      <div class="color-pick"><input type="color" id="dev-hc" value="#0a2540" oninput="devPreview()"/><code id="dev-hc-val">#0a2540</code></div>
     </div>
+    <div class="color-item">
+      <label>Cor principal</label>
+      <div class="color-pick"><input type="color" id="dev-mc" value="#1D9E75" oninput="devPreview()"/><code id="dev-mc-val">#1D9E75</code></div>
+    </div>
+    <div class="color-item">
+      <label>Cor do texto do logo</label>
+      <div class="color-pick"><input type="color" id="dev-lc" value="#ffffff" oninput="devPreview()"/><code id="dev-lc-val">#ffffff</code></div>
+    </div>
+    <div class="color-item">
+      <label>Cor das abas ativas</label>
+      <div class="color-pick"><input type="color" id="dev-tc" value="#1D9E75" oninput="devPreview()"/><code id="dev-tc-val">#1D9E75</code></div>
+    </div>
+  </div>
+</div>
 
-    <div class="dev-section">
-      <div class="dev-section-title">Imagem de Fundo (opcional)</div>
-      <div class="dev-field">
-        <label>URL da imagem de fundo <span style="background:#E1F5EE;color:#085041;font-size:10px;padding:2px 6px;border-radius:8px;font-weight:700">SINCRONIZA EM TODOS OS DISPOSITIVOS</span></label>
-        <input type="text" id="dev-bg-url" placeholder="https://raw.githubusercontent.com/usuario/repo/main/fundo.jpg" oninput="devBgUrl()"/>
-        <div style="font-size:11px;color:var(--tx3);margin-top:4px">Cole o link da imagem hospedada no GitHub ou outra URL pública</div>
-      </div>
-      <div class="dev-field">
-        <label style="color:var(--tx3)">— ou — Upload direto (somente neste dispositivo)</label>
-        <input type="file" id="dev-bg-file" accept="image/*" onchange="devBgUpload(this)"/>
-      </div>
-      <div class="dev-field">
-        <label>Opacidade da sobreposição branca: <span id="dev-bg-op-val">90%</span></label>
-        <input type="range" id="dev-bg-op" min="0" max="100" value="90" oninput="devPreview()"/>
-      </div>
-      <button class="btn-secondary" style="font-size:12px;padding:7px 14px" onclick="devRemoveBg()">Remover fundo</button>
-    </div>
+<div class="dev-section">
+  <div class="dev-section-title">Imagem de Fundo (opcional)</div>
+  <div class="dev-field">
+    <label>URL da imagem de fundo <span style="background:#E1F5EE;color:#085041;font-size:10px;padding:2px 6px;border-radius:8px;font-weight:700">SINCRONIZA EM TODOS OS DISPOSITIVOS</span></label>
+    <input type="text" id="dev-bg-url" placeholder="https://raw.githubusercontent.com/usuario/repo/main/fundo.jpg" oninput="devBgUrl()"/>
+    <div style="font-size:11px;color:var(--tx3);margin-top:4px">Cole o link da imagem hospedada no GitHub ou outra URL pública</div>
+  </div>
+  <div class="dev-field">
+    <label style="color:var(--tx3)">— ou — Upload direto (somente neste dispositivo)</label>
+    <input type="file" id="dev-bg-file" accept="image/*" onchange="devBgUpload(this)"/>
+  </div>
+  <div class="dev-field">
+    <label>Opacidade da sobreposição branca: <span id="dev-bg-op-val">90%</span></label>
+    <input type="range" id="dev-bg-op" min="0" max="100" value="90" oninput="devPreview()"/>
+  </div>
+  <button class="btn-secondary" style="font-size:12px;padding:7px 14px" onclick="devRemoveBg()">Remover fundo</button>
+</div>
 
-    <div class="dev-section">
-      <div class="dev-section-title">Visibilidade</div>
-      <div class="switch-row">
-        <span>Mostrar botão "Dev" no cabeçalho</span>
-        <label class="switch"><input type="checkbox" id="dev-show-btn" checked onchange="devPreview()"/><span class="slider"></span></label>
-      </div>
-    </div>
+<div class="dev-section">
+  <div class="dev-section-title">Visibilidade</div>
+  <div class="switch-row">
+    <span>Mostrar botão "Dev" no cabeçalho</span>
+    <label class="switch"><input type="checkbox" id="dev-show-btn" checked onchange="devPreview()"/><span class="slider"></span></label>
+  </div>
+</div>
 
-    <button class="btn-dev-save" onclick="devSave()">✓ Salvar configurações</button>
-    <div style="margin-top:10px">
-      <button class="btn-secondary" style="width:100%;font-size:13px" onclick="devReset()">Restaurar padrão</button>
-    </div>
+<button class="btn-dev-save" onclick="devSave()">✓ Salvar configurações</button>
+<div style="margin-top:10px">
+  <button class="btn-secondary" style="width:100%;font-size:13px" onclick="devReset()">Restaurar padrão</button>
+</div>
+```
+
   </div>
 </div>
 
@@ -440,17 +571,24 @@ function init(){
   document.getElementById('f-start').value=p(d.getHours())+':'+p(d.getMinutes());
   document.getElementById('rep-month').value=d.getMonth();
   document.getElementById('rep-year').value=d.getFullYear();
+  document.getElementById('rep-month-q').value=d.getMonth();
+  document.getElementById('rep-year-q').value=d.getFullYear();
+  // Semana atual
+  var semIni=new Date(d);semIni.setDate(d.getDate()-d.getDay()+1);
+  var semFim=new Date(semIni);semFim.setDate(semIni.getDate()+6);
+  document.getElementById('rep-sem-ini').value=semIni.toISOString().split('T')[0];
+  document.getElementById('rep-sem-fim').value=semFim.toISOString().split('T')[0];
+  // Período personalizado — hoje
+  document.getElementById('rep-per-ini').value=d.toISOString().split('T')[0];
+  document.getElementById('rep-per-fim').value=d.toISOString().split('T')[0];
   try{var u=localStorage.getItem('arp_gs');if(u)document.getElementById('gs-url').value=u}catch(e){}
   var nr=getNextReportDate();
   document.getElementById('next-report-date').textContent=nr.toLocaleDateString('pt-BR',{day:'numeric',month:'long',year:'numeric'});
   loadDevSettings();
-  // Sincroniza registros e config do Sheets ao abrir
-  setTimeout(function(){
-    syncFromSheets(function(){});
-    loadConfigSheets();
-  }, 800);
+  setTimeout(function(){syncFromSheets(function(){});loadConfigSheets()},800);
   checkAutoReport();
   renderHistory();
+  checkSession();
   document.addEventListener('click',function(e){if(!e.target.closest('.autocomplete-wrap'))closeAc()});
 }
 
@@ -663,18 +801,21 @@ function loadConfigSheets(){
 
 function sendToSheets(){
   var gs=document.getElementById('gs-url').value.trim();if(!gs){alert('Configure a URL do Apps Script primeiro.');return}
-  var m=parseInt(document.getElementById('rep-month').value),y=parseInt(document.getElementById('rep-year').value);
   var msg=document.getElementById('export-msg');msg.style.display='block';msg.textContent='Buscando registros do Sheets...';
-  var MESES=['Janeiro','Fevereiro','Marco','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  var label=getPeriodLabel();
   fetch(gs,{method:'POST',body:JSON.stringify({action:'getRecords'})})
     .then(function(r){return r.json()})
     .then(function(data){
       var allRecs=(data&&data.records)||records;
-      var recs=allRecs.filter(function(r){var d=new Date(r.date);return d.getMonth()===m&&d.getFullYear()===y});
+      var recs=getFilteredRecords(allRecs);
+      if(!recs)return;
       msg.textContent='Enviando '+recs.length+' registro(s)...';
-      return fetch(gs,{method:'POST',body:JSON.stringify({action:'monthlyReport',month:m+1,year:y,records:recs})})
+      // Envia período e label para o Sheets formatar corretamente
+      var ini=recs.length?recs.reduce(function(a,b){return a.date<b.date?a:b}).date:'';
+      var fim=recs.length?recs.reduce(function(a,b){return a.date>b.date?a:b}).date:'';
+      return fetch(gs,{method:'POST',body:JSON.stringify({action:'monthlyReport',month:0,year:0,records:recs,periodoLabel:label,dataInicio:ini,dataFim:fim})})
         .then(function(res){return res.text()})
-        .then(function(){msg.textContent='Enviado! '+recs.length+' registro(s) para '+MESES[m]+'/'+y+'.';logHistory('Relatorio '+MESES[m].substring(0,3)+'/'+y+' - '+recs.length+' registros')});
+        .then(function(){msg.textContent='✓ Enviado! '+recs.length+' registro(s) — '+label+'.';logHistory('Relatório '+label+' — '+recs.length+' registros')});
     })
     .catch(function(e){msg.textContent='Erro: '+e.message;msg.style.color='#dc2626'});
 }
@@ -693,8 +834,8 @@ function testConnection(){
 }
 
 function exportCSV(){
-  var m=parseInt(document.getElementById('rep-month').value),y=parseInt(document.getElementById('rep-year').value);
-  var recs=records.filter(function(r){var d=new Date(r.date);return d.getMonth()===m&&d.getFullYear()===y});
+  var recs=getFilteredRecords(records);
+  if(!recs)return;
   if(!recs.length){alert('Nenhum registro para este período.');return}
   var header='Responsável,Data,Hora,Tipo,Setor,Escola Urbana,Escola Rural,Descrição\n';
   var rows=recs.map(function(r){
@@ -707,10 +848,9 @@ function exportCSV(){
   var blob=new Blob(['\uFEFF'+header+rows],{type:'text/csv;charset=utf-8'});
   var url=URL.createObjectURL(blob);
   var a=document.createElement('a');
-  var MESES=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
-  a.href=url;a.download='relatorio_'+MESES[m]+'_'+y+'.csv';a.click();URL.revokeObjectURL(url);
+  a.href=url;a.download='relatorio_'+getPeriodLabel().replace(/[\/\s]/g,'_')+'.csv';a.click();URL.revokeObjectURL(url);
   document.getElementById('export-msg').style.display='block';
-  document.getElementById('export-msg').textContent='✓ CSV exportado com '+recs.length+' registro(s). Colunas: Setor | Escola Urbana | Escola Rural';
+  document.getElementById('export-msg').textContent='✓ CSV exportado com '+recs.length+' registro(s).';
 }
 
 function logHistory(msg){
@@ -882,7 +1022,76 @@ function loadDevFields(){
     devPreview();
   }catch(e){}
 }
-init();
-</script>
-</body>
-</html>
+// ── AUTENTICAÇÃO ─────────────────────────────────────────────
+// Senhas por responsável — altere aqui
+var SENHAS = {
+  'Ayrton':   'ayrton123',
+  'Giovanna': 'giovanna123',
+  'Neudson':  'neudson123',
+  'Rodrigo':  'rodrigo123',
+  'Admin':    'admin@arptech'
+};
+
+var currentUser = '';
+
+function doLogin(){
+  var user = document.getElementById('login-user').value;
+  var pass = document.getElementById('login-pass').value;
+  var err  = document.getElementById('login-err');
+  if(!user){err.textContent='Selecione o responsável.';err.classList.add('show');return}
+  if(!pass){err.textContent='Digite a senha.';err.classList.add('show');return}
+  if(SENHAS[user] && pass === SENHAS[user]){
+    currentUser = user;
+    try{sessionStorage.setItem('arp_user', user)}catch(e){}
+    err.classList.remove('show');
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('user-badge').textContent='👤 '+user;
+    document.getElementById('user-badge').style.display='block';
+    document.getElementById('logout-btn').style.display='block';
+    // Pré-seleciona responsável no formulário
+    document.querySelectorAll('.rpill').forEach(function(el){
+      if(el.textContent.trim()===user){selResp(el,user)}
+    });
+    // Pré-seleciona no filtro de relatório personalizado
+    var repResp=document.getElementById('rep-per-resp');
+    if(repResp)repResp.value=user==='Admin'?'':user;
+  } else {
+    err.textContent='Senha incorreta. Tente novamente.';
+    err.classList.add('show');
+    document.getElementById('login-pass').value='';
+  }
+}
+
+function doLogout(){
+  if(!confirm('Deseja sair do sistema?'))return;
+  currentUser='';
+  try{sessionStorage.removeItem('arp_user')}catch(e){}
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('user-badge').style.display='none';
+  document.getElementById('logout-btn').style.display='none';
+  document.getElementById('login-pass').value='';
+  document.getElementById('login-user').value='';
+}
+
+function checkSession(){
+  try{
+    var u=sessionStorage.getItem('arp_user');
+    if(u&&SENHAS[u]){
+      currentUser=u;
+      document.getElementById('login-screen').style.display='none';
+      document.getElementById('user-badge').textContent='👤 '+u;
+      document.getElementById('user-badge').style.display='block';
+      document.getElementById('logout-btn').style.display='block';
+      document.querySelectorAll('.rpill').forEach(function(el){
+        if(el.textContent.trim()===u){selResp(el,u)}
+      });
+      var repResp=document.getElementById('rep-per-resp');
+      if(repResp)repResp.value=u==='Admin'?'':u;
+    }
+  }catch(e){}
+}
+
+// ── PERÍODO DO RELATÓRIO ──────────────────────────────────────
+var currentPeriod = 'mensal';
+
+func
