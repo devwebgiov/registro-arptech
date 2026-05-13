@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8"/>
@@ -187,44 +186,51 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
 
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:2000;display:none;align-items:center;justify-content:center;padding:20px}
 .modal-overlay.open{display:flex}
-.modal-box{background:#fff;border-radius:var(–radl);padding:24px;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,0.2);animation:fadeIn .2s ease}
+.modal-box{background:#fff;border-radius:var(--radl);padding:24px;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,0.2);animation:fadeIn .2s ease}
 @keyframes fadeIn{from{opacity:0;transform:scale(0.95)}to{opacity:1;transform:scale(1)}}
 .modal-icon{font-size:36px;text-align:center;margin-bottom:12px}
-.modal-title{font-size:17px;font-weight:700;color:var(–tx);text-align:center;margin-bottom:6px}
-.modal-sub{font-size:13px;color:var(–tx2);text-align:center;margin-bottom:20px;line-height:1.5}
-.modal-detail{background:var(–bg2);border-radius:8px;padding:12px;margin-bottom:18px;font-size:13px;color:var(–tx2);line-height:1.6}
-.modal-detail strong{color:var(–tx);display:block;margin-bottom:2px}
+.modal-title{font-size:17px;font-weight:700;color:var(--tx);text-align:center;margin-bottom:6px}
+.modal-sub{font-size:13px;color:var(--tx2);text-align:center;margin-bottom:20px;line-height:1.5}
+.modal-detail{background:var(--bg2);border-radius:8px;padding:12px;margin-bottom:18px;font-size:13px;color:var(--tx2);line-height:1.6}
+.modal-detail strong{color:var(--tx);display:block;margin-bottom:2px}
 .modal-btns{display:flex;gap:10px}
-.modal-btns button{flex:1;padding:13px;border-radius:var(–rad);font-size:14px;font-weight:700;cursor:pointer;font-family:var(–font);border:none}
-.btn-confirm{background:var(–gr);color:#fff;box-shadow:0 4px 12px rgba(29,158,117,0.3)}
+.modal-btns button{flex:1;padding:13px;border-radius:var(--rad);font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font);border:none}
+.btn-confirm{background:var(--gr);color:#fff;box-shadow:0 4px 12px rgba(29,158,117,0.3)}
 .btn-confirm:hover{opacity:.9}
-.btn-cancel-modal{background:var(–bg2);color:var(–tx2);border:1.5px solid var(–bd)!important}
-.btn-cancel-modal:hover{background:var(–bd)}
+.btn-cancel-modal{background:var(--bg2);color:var(--tx2);border:1.5px solid var(--bd)!important}
+.btn-cancel-modal:hover{background:var(--bd)}
 /* DELETE RECORD */
 .record-del{background:none;border:none;color:#dc2626;font-size:16px;cursor:pointer;padding:4px 6px;border-radius:6px;display:none;flex-shrink:0}
 .record-del:hover{background:#FEE2E2}
 .dev-mode .record-del{display:flex}
 </style>
-
 </head>
 <body>
 <!-- LOGIN SCREEN -->
 <div class="login-screen" id="login-screen">
   <div class="login-box">
-    <div class="login-logo">
-      <svg viewBox="0 0 40 40" fill="none">
-        <polygon points="20,2 36,38 27,38 20,20 13,38 4,38" fill="#1D9E75"/>
-        <polygon points="20,20 27,38 13,38" fill="#085041" opacity="0.7"/>
-      </svg>
-      <div class="login-logo-words">
-        <span class="login-logo-l1">ARP</span>
-        <span class="login-logo-l2">TECH</span>
-        <span class="login-logo-sub">AMAZÔNIA</span>
+    <div class="login-logo" id="login-logo-area">
+      <div id="login-logo-img-wrap" style="display:none;justify-content:center;margin-bottom:4px">
+        <img id="login-logo-img" src="" alt="Logo" style="max-height:70px;max-width:180px;object-fit:contain"/>
+      </div>
+      <div id="login-logo-default" style="display:flex;align-items:center;gap:12px">
+        <svg viewBox="0 0 40 40" fill="none">
+          <polygon points="20,2 36,38 27,38 20,20 13,38 4,38" fill="#1D9E75"/>
+          <polygon points="20,20 27,38 13,38" fill="#085041" opacity="0.7"/>
+        </svg>
+        <div class="login-logo-words">
+          <span class="login-logo-l1" id="login-l1">ARP</span>
+          <span class="login-logo-l2" id="login-l2">TECH</span>
+          <span class="login-logo-sub" id="login-sub">AMAZÔNIA</span>
+        </div>
       </div>
     </div>
     <div class="login-title">Acesso ao Sistema</div>
     <div class="login-sub">Registro de Atendimento Diário</div>
     <div class="login-err" id="login-err">Senha incorreta. Tente novamente.</div>
+    <div class="login-warn" id="login-warn" style="background:#FEF3C7;color:#92400e;border:1px solid #FCD34D;border-radius:8px;padding:10px 14px;font-size:13px;margin-bottom:14px;display:none">
+      ⚠️ Você está usando a senha padrão. Por segurança, altere sua senha no <strong>Painel Dev → Gerenciar Senhas</strong>.
+    </div>
     <div class="login-field">
       <label>Responsável</label>
       <select id="login-user">
@@ -281,7 +287,6 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
 <div class="content">
 
   <!-- FORM -->
-
   <div id="tab-form">
     <div id="success-banner" class="success-msg">✓ Atendimento registrado com sucesso!</div>
     <div class="card">
@@ -323,14 +328,12 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
   </div>
 
   <!-- LIST -->
-
   <div id="tab-list" style="display:none">
     <div class="search-bar"><input type="text" id="search-q" placeholder="🔍  Buscar por responsável, local ou descrição..." oninput="renderList()"/></div>
     <div id="rec-list" class="records-list"></div>
   </div>
 
   <!-- STATS -->
-
   <div id="tab-stats" style="display:none">
     <div class="stats-row">
       <div class="stat-card"><div class="stat-num" id="st-tot">0</div><div class="stat-label">Total</div></div>
@@ -342,7 +345,6 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
   </div>
 
   <!-- REPORT -->
-
   <div id="tab-report" style="display:none">
     <div class="info-box"><strong>Integração com Google Sheets</strong><br>Cole a URL do Apps Script abaixo. Registros são enviados automaticamente ao salvar. O relatório mensal é gerado no dia 23 (ou último dia útil anterior).<br><br><strong>Próximo relatório:</strong><span class="next-badge" id="next-report-date">—</span></div>
     <div class="report-section">
@@ -362,75 +364,71 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
         <div class="period-tab" onclick="setPeriod('personalizado')">Personalizado</div>
       </div>
 
-```
-  <!-- MENSAL -->
-  <div id="period-mensal">
-    <div class="form-row" style="margin-bottom:14px">
-      <div class="field"><label>Mês</label><select id="rep-month"><option value="0">Janeiro</option><option value="1">Fevereiro</option><option value="2">Março</option><option value="3">Abril</option><option value="4">Maio</option><option value="5">Junho</option><option value="6">Julho</option><option value="7">Agosto</option><option value="8">Setembro</option><option value="9">Outubro</option><option value="10">Novembro</option><option value="11">Dezembro</option></select></div>
-      <div class="field"><label>Ano</label><input type="number" id="rep-year" value="2025" min="2024" max="2035"/></div>
-    </div>
-  </div>
+      <!-- MENSAL -->
+      <div id="period-mensal">
+        <div class="form-row" style="margin-bottom:14px">
+          <div class="field"><label>Mês</label><select id="rep-month"><option value="0">Janeiro</option><option value="1">Fevereiro</option><option value="2">Março</option><option value="3">Abril</option><option value="4">Maio</option><option value="5">Junho</option><option value="6">Julho</option><option value="7">Agosto</option><option value="8">Setembro</option><option value="9">Outubro</option><option value="10">Novembro</option><option value="11">Dezembro</option></select></div>
+          <div class="field"><label>Ano</label><input type="number" id="rep-year" value="2025" min="2024" max="2035"/></div>
+        </div>
+      </div>
 
-  <!-- QUINZENAL -->
-  <div id="period-quinzenal" style="display:none">
-    <div class="form-row" style="margin-bottom:14px">
-      <div class="field"><label>Mês</label><select id="rep-month-q"><option value="0">Janeiro</option><option value="1">Fevereiro</option><option value="2">Março</option><option value="3">Abril</option><option value="4">Maio</option><option value="5">Junho</option><option value="6">Julho</option><option value="7">Agosto</option><option value="8">Setembro</option><option value="9">Outubro</option><option value="10">Novembro</option><option value="11">Dezembro</option></select></div>
-      <div class="field"><label>Ano</label><input type="number" id="rep-year-q" value="2025" min="2024" max="2035"/></div>
-    </div>
-    <div class="field" style="margin-bottom:14px">
-      <label>Quinzena</label>
-      <select id="rep-quinzena">
-        <option value="1">1ª quinzena (dia 1 ao 15)</option>
-        <option value="2">2ª quinzena (dia 16 ao último)</option>
-      </select>
-    </div>
-  </div>
+      <!-- QUINZENAL -->
+      <div id="period-quinzenal" style="display:none">
+        <div class="form-row" style="margin-bottom:14px">
+          <div class="field"><label>Mês</label><select id="rep-month-q"><option value="0">Janeiro</option><option value="1">Fevereiro</option><option value="2">Março</option><option value="3">Abril</option><option value="4">Maio</option><option value="5">Junho</option><option value="6">Julho</option><option value="7">Agosto</option><option value="8">Setembro</option><option value="9">Outubro</option><option value="10">Novembro</option><option value="11">Dezembro</option></select></div>
+          <div class="field"><label>Ano</label><input type="number" id="rep-year-q" value="2025" min="2024" max="2035"/></div>
+        </div>
+        <div class="field" style="margin-bottom:14px">
+          <label>Quinzena</label>
+          <select id="rep-quinzena">
+            <option value="1">1ª quinzena (dia 1 ao 15)</option>
+            <option value="2">2ª quinzena (dia 16 ao último)</option>
+          </select>
+        </div>
+      </div>
 
-  <!-- SEMANAL -->
-  <div id="period-semanal" style="display:none">
-    <div class="form-row" style="margin-bottom:14px">
-      <div class="field"><label>Data início</label><input type="date" id="rep-sem-ini"/></div>
-      <div class="field"><label>Data fim</label><input type="date" id="rep-sem-fim"/></div>
-    </div>
-  </div>
+      <!-- SEMANAL -->
+      <div id="period-semanal" style="display:none">
+        <div class="form-row" style="margin-bottom:14px">
+          <div class="field"><label>Data início</label><input type="date" id="rep-sem-ini"/></div>
+          <div class="field"><label>Data fim</label><input type="date" id="rep-sem-fim"/></div>
+        </div>
+      </div>
 
-  <!-- PERSONALIZADO -->
-  <div id="period-personalizado" style="display:none">
-    <div class="form-row" style="margin-bottom:8px">
-      <div class="field"><label>Data início</label><input type="date" id="rep-per-ini"/></div>
-      <div class="field"><label>Data fim</label><input type="date" id="rep-per-fim"/></div>
-    </div>
-    <div class="field" style="margin-bottom:14px">
-      <label>Responsável (opcional — deixe vazio para todos)</label>
-      <select id="rep-per-resp">
-        <option value="">Todos</option>
-        <option value="Ayrton">Ayrton</option>
-        <option value="Giovanna">Giovanna</option>
-        <option value="Neudson">Neudson</option>
-        <option value="Rodrigo">Rodrigo</option>
-      </select>
-    </div>
-  </div>
+      <!-- PERSONALIZADO -->
+      <div id="period-personalizado" style="display:none">
+        <div class="form-row" style="margin-bottom:8px">
+          <div class="field"><label>Data início</label><input type="date" id="rep-per-ini"/></div>
+          <div class="field"><label>Data fim</label><input type="date" id="rep-per-fim"/></div>
+        </div>
+        <div class="field" style="margin-bottom:14px">
+          <label>Responsável (opcional — deixe vazio para todos)</label>
+          <select id="rep-per-resp">
+            <option value="">Todos</option>
+            <option value="Ayrton">Ayrton</option>
+            <option value="Giovanna">Giovanna</option>
+            <option value="Neudson">Neudson</option>
+            <option value="Rodrigo">Rodrigo</option>
+          </select>
+        </div>
+      </div>
 
-  <div class="btn-row">
-    <button class="btn-secondary" onclick="exportCSV()">Exportar CSV</button>
-    <button class="btn-secondary" onclick="sendToSheets()">Enviar ao Sheets</button>
-  </div>
-  <div id="export-msg"></div>
-</div>
-<div class="report-section">
-  <div class="card-title">Histórico de envios</div>
-  <div id="send-history" style="font-size:13px;color:var(--tx2)">Nenhum envio registrado ainda.</div>
-</div>
-```
-
+      <div class="btn-row">
+        <button class="btn-secondary" onclick="exportCSV()">Exportar CSV</button>
+        <button class="btn-secondary" onclick="sendToSheets()">Enviar ao Sheets</button>
+      </div>
+      <div id="export-msg"></div>
+    </div>
+    <div class="report-section">
+      <div class="card-title">Histórico de envios</div>
+      <div id="send-history" style="font-size:13px;color:var(--tx2)">Nenhum envio registrado ainda.</div>
+    </div>
   </div>
 
 </div><!-- /content -->
 </div><!-- /app -->
 
 <!-- MODAL CONFIRMAÇÃO -->
-
 <div class="modal-overlay" id="confirm-modal">
   <div class="modal-box">
     <div class="modal-icon">📋</div>
@@ -445,7 +443,6 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
 </div>
 
 <!-- MODAL SUCESSO -->
-
 <div class="modal-overlay" id="success-modal">
   <div class="modal-box">
     <div class="modal-icon">✅</div>
@@ -458,7 +455,6 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
 </div>
 
 <!-- DEV PANEL -->
-
 <div class="dev-overlay" id="dev-overlay" onclick="closeDev(event)">
   <div class="dev-panel" id="dev-panel">
     <div class="dev-header">
@@ -466,80 +462,91 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
       <button class="dev-close" onclick="closeDev(true)">×</button>
     </div>
 
-```
-<div class="dev-section">
-  <div class="dev-section-title">Logo e Identidade Visual</div>
-  <div class="dev-field">
-    <label>URL da imagem do logo <span style="background:#E1F5EE;color:#085041;font-size:10px;padding:2px 6px;border-radius:8px;font-weight:700">SINCRONIZA EM TODOS OS DISPOSITIVOS</span></label>
-    <input type="text" id="dev-logo-url" placeholder="https://raw.githubusercontent.com/usuario/repo/main/logo.png" oninput="devLogoUrl()"/>
-    <div style="font-size:11px;color:var(--tx3);margin-top:4px">Cole o link da imagem hospedada no GitHub ou outra URL pública</div>
-  </div>
-  <div class="dev-field">
-    <label style="color:var(--tx3)">— ou — Upload direto (somente neste dispositivo)</label>
-    <input type="file" id="dev-logo-file" accept="image/*" onchange="devLogoUpload(this)"/>
-    <img id="dev-logo-preview" class="dev-img-preview" src="" alt="Preview"/>
-    <div style="margin-top:8px"><button class="btn-secondary" style="font-size:12px;padding:6px 12px" onclick="devRemoveLogo()">Remover imagem</button></div>
-  </div>
-  <div class="dev-field"><label>Linha 1 do nome (ex: ARP)</label><input type="text" id="dev-line1" value="ARP" oninput="devPreview()"/></div>
-  <div class="dev-field"><label>Linha 2 do nome (ex: TECH)</label><input type="text" id="dev-line2" value="TECH" oninput="devPreview()"/></div>
-  <div class="dev-field"><label>Subtítulo do logo (ex: AMAZÔNIA)</label><input type="text" id="dev-sub" value="AMAZÔNIA" oninput="devPreview()"/></div>
-  <div class="dev-field"><label>Título no cabeçalho</label><input type="text" id="dev-headertitle" value="Registro de Atendimento" oninput="devPreview()"/></div>
-</div>
-
-<div class="dev-section">
-  <div class="dev-section-title">Cores</div>
-  <div class="color-grid">
-    <div class="color-item">
-      <label>Cor do cabeçalho</label>
-      <div class="color-pick"><input type="color" id="dev-hc" value="#0a2540" oninput="devPreview()"/><code id="dev-hc-val">#0a2540</code></div>
+    <div class="dev-section">
+      <div class="dev-section-title">Logo e Identidade Visual</div>
+      <div class="dev-field">
+        <label>URL da imagem do logo <span style="background:#E1F5EE;color:#085041;font-size:10px;padding:2px 6px;border-radius:8px;font-weight:700">SINCRONIZA EM TODOS OS DISPOSITIVOS</span></label>
+        <input type="text" id="dev-logo-url" placeholder="https://raw.githubusercontent.com/usuario/repo/main/logo.png" oninput="devLogoUrl()"/>
+        <div style="font-size:11px;color:var(--tx3);margin-top:4px">Cole o link da imagem hospedada no GitHub ou outra URL pública</div>
+      </div>
+      <div class="dev-field">
+        <label style="color:var(--tx3)">— ou — Upload direto (somente neste dispositivo)</label>
+        <input type="file" id="dev-logo-file" accept="image/*" onchange="devLogoUpload(this)"/>
+        <img id="dev-logo-preview" class="dev-img-preview" src="" alt="Preview"/>
+        <div style="margin-top:8px"><button class="btn-secondary" style="font-size:12px;padding:6px 12px" onclick="devRemoveLogo()">Remover imagem</button></div>
+      </div>
+      <div class="dev-field"><label>Linha 1 do nome (ex: ARP)</label><input type="text" id="dev-line1" value="ARP" oninput="devPreview()"/></div>
+      <div class="dev-field"><label>Linha 2 do nome (ex: TECH)</label><input type="text" id="dev-line2" value="TECH" oninput="devPreview()"/></div>
+      <div class="dev-field"><label>Subtítulo do logo (ex: AMAZÔNIA)</label><input type="text" id="dev-sub" value="AMAZÔNIA" oninput="devPreview()"/></div>
+      <div class="dev-field"><label>Título no cabeçalho</label><input type="text" id="dev-headertitle" value="Registro de Atendimento" oninput="devPreview()"/></div>
+      <div class="dev-field">
+        <label>URL da logo na tela de login <span style="background:#E1F5EE;color:#085041;font-size:10px;padding:2px 6px;border-radius:8px;font-weight:700">SINCRONIZA</span></label>
+        <input type="text" id="dev-login-logo-url" placeholder="https://raw.githubusercontent.com/..." oninput="devPreviewLoginLogo()"/>
+        <div style="font-size:11px;color:var(--tx3);margin-top:4px">Se preenchido, substitui o logo padrão na tela de login</div>
+        <img id="dev-login-logo-preview" style="max-height:50px;max-width:140px;object-fit:contain;margin-top:8px;border:1px solid var(--bd);border-radius:6px;display:none" src="" alt="Preview login"/>
+      </div>
     </div>
-    <div class="color-item">
-      <label>Cor principal</label>
-      <div class="color-pick"><input type="color" id="dev-mc" value="#1D9E75" oninput="devPreview()"/><code id="dev-mc-val">#1D9E75</code></div>
+
+    <div class="dev-section">
+      <div class="dev-section-title">Cores</div>
+      <div class="color-grid">
+        <div class="color-item">
+          <label>Cor do cabeçalho</label>
+          <div class="color-pick"><input type="color" id="dev-hc" value="#0a2540" oninput="devPreview()"/><code id="dev-hc-val">#0a2540</code></div>
+        </div>
+        <div class="color-item">
+          <label>Cor principal</label>
+          <div class="color-pick"><input type="color" id="dev-mc" value="#1D9E75" oninput="devPreview()"/><code id="dev-mc-val">#1D9E75</code></div>
+        </div>
+        <div class="color-item">
+          <label>Cor do texto do logo</label>
+          <div class="color-pick"><input type="color" id="dev-lc" value="#ffffff" oninput="devPreview()"/><code id="dev-lc-val">#ffffff</code></div>
+        </div>
+        <div class="color-item">
+          <label>Cor das abas ativas</label>
+          <div class="color-pick"><input type="color" id="dev-tc" value="#1D9E75" oninput="devPreview()"/><code id="dev-tc-val">#1D9E75</code></div>
+        </div>
+      </div>
     </div>
-    <div class="color-item">
-      <label>Cor do texto do logo</label>
-      <div class="color-pick"><input type="color" id="dev-lc" value="#ffffff" oninput="devPreview()"/><code id="dev-lc-val">#ffffff</code></div>
+
+    <div class="dev-section">
+      <div class="dev-section-title">Imagem de Fundo (opcional)</div>
+      <div class="dev-field">
+        <label>URL da imagem de fundo <span style="background:#E1F5EE;color:#085041;font-size:10px;padding:2px 6px;border-radius:8px;font-weight:700">SINCRONIZA EM TODOS OS DISPOSITIVOS</span></label>
+        <input type="text" id="dev-bg-url" placeholder="https://raw.githubusercontent.com/usuario/repo/main/fundo.jpg" oninput="devBgUrl()"/>
+        <div style="font-size:11px;color:var(--tx3);margin-top:4px">Cole o link da imagem hospedada no GitHub ou outra URL pública</div>
+      </div>
+      <div class="dev-field">
+        <label style="color:var(--tx3)">— ou — Upload direto (somente neste dispositivo)</label>
+        <input type="file" id="dev-bg-file" accept="image/*" onchange="devBgUpload(this)"/>
+      </div>
+      <div class="dev-field">
+        <label>Opacidade da sobreposição branca: <span id="dev-bg-op-val">90%</span></label>
+        <input type="range" id="dev-bg-op" min="0" max="100" value="90" oninput="devPreview()"/>
+      </div>
+      <button class="btn-secondary" style="font-size:12px;padding:7px 14px" onclick="devRemoveBg()">Remover fundo</button>
     </div>
-    <div class="color-item">
-      <label>Cor das abas ativas</label>
-      <div class="color-pick"><input type="color" id="dev-tc" value="#1D9E75" oninput="devPreview()"/><code id="dev-tc-val">#1D9E75</code></div>
+
+    <div class="dev-section">
+      <div class="dev-section-title">Visibilidade</div>
+      <div class="switch-row">
+        <span>Mostrar botão "Dev" no cabeçalho</span>
+        <label class="switch"><input type="checkbox" id="dev-show-btn" checked onchange="devPreview()"/><span class="slider"></span></label>
+      </div>
     </div>
-  </div>
-</div>
 
-<div class="dev-section">
-  <div class="dev-section-title">Imagem de Fundo (opcional)</div>
-  <div class="dev-field">
-    <label>URL da imagem de fundo <span style="background:#E1F5EE;color:#085041;font-size:10px;padding:2px 6px;border-radius:8px;font-weight:700">SINCRONIZA EM TODOS OS DISPOSITIVOS</span></label>
-    <input type="text" id="dev-bg-url" placeholder="https://raw.githubusercontent.com/usuario/repo/main/fundo.jpg" oninput="devBgUrl()"/>
-    <div style="font-size:11px;color:var(--tx3);margin-top:4px">Cole o link da imagem hospedada no GitHub ou outra URL pública</div>
-  </div>
-  <div class="dev-field">
-    <label style="color:var(--tx3)">— ou — Upload direto (somente neste dispositivo)</label>
-    <input type="file" id="dev-bg-file" accept="image/*" onchange="devBgUpload(this)"/>
-  </div>
-  <div class="dev-field">
-    <label>Opacidade da sobreposição branca: <span id="dev-bg-op-val">90%</span></label>
-    <input type="range" id="dev-bg-op" min="0" max="100" value="90" oninput="devPreview()"/>
-  </div>
-  <button class="btn-secondary" style="font-size:12px;padding:7px 14px" onclick="devRemoveBg()">Remover fundo</button>
-</div>
+    <div class="dev-section">
+      <div class="dev-section-title">Gerenciar Senhas de Acesso</div>
+      <div style="font-size:12px;color:var(--tx3);margin-bottom:10px">Altere as senhas dos responsáveis. Deixe em branco para manter a atual.</div>
+      <div id="dev-senhas-fields"></div>
+      <button class="btn-secondary" style="font-size:12px;padding:7px 14px;margin-top:4px" onclick="devSalvarSenhas()">Salvar senhas</button>
+      <div id="dev-senhas-msg" style="font-size:12px;color:var(--gr-d);margin-top:6px;display:none"></div>
+    </div>
 
-<div class="dev-section">
-  <div class="dev-section-title">Visibilidade</div>
-  <div class="switch-row">
-    <span>Mostrar botão "Dev" no cabeçalho</span>
-    <label class="switch"><input type="checkbox" id="dev-show-btn" checked onchange="devPreview()"/><span class="slider"></span></label>
-  </div>
-</div>
-
-<button class="btn-dev-save" onclick="devSave()">✓ Salvar configurações</button>
-<div style="margin-top:10px">
-  <button class="btn-secondary" style="width:100%;font-size:13px" onclick="devReset()">Restaurar padrão</button>
-</div>
-```
-
+    <button class="btn-dev-save" onclick="devSave()">✓ Salvar configurações</button>
+    <div style="margin-top:10px">
+      <button class="btn-secondary" style="width:100%;font-size:13px" onclick="devReset()">Restaurar padrão</button>
+    </div>
   </div>
 </div>
 
@@ -588,6 +595,7 @@ function init(){
   setTimeout(function(){syncFromSheets(function(){});loadConfigSheets()},800);
   checkAutoReport();
   renderHistory();
+  carregarSenhas();
   checkSession();
   document.addEventListener('click',function(e){if(!e.target.closest('.autocomplete-wrap'))closeAc()});
 }
@@ -878,7 +886,7 @@ function deleteHistory(idx){
 }
 
 // DEV PANEL
-function openDev(){document.getElementById('dev-overlay').classList.add('open');document.getElementById('app').classList.add('dev-mode');loadDevFields()}
+function openDev(){document.getElementById('dev-overlay').classList.add('open');document.getElementById('app').classList.add('dev-mode');loadDevFields();devCarregarSenhasFields()}
 function closeDev(force){if(force===true||(force&&force.target===document.getElementById('dev-overlay'))){document.getElementById('dev-overlay').classList.remove('open');document.getElementById('app').classList.remove('dev-mode');renderList();renderHistory();}}
 
 function devLogoUrl(){
@@ -960,15 +968,40 @@ function devSave(){
     showBtn:document.getElementById('dev-show-btn').checked,
     bgOp:document.getElementById('dev-bg-op').value,
     logoUrl:document.getElementById('dev-logo-url').value.trim(),
-    bgUrl:document.getElementById('dev-bg-url').value.trim()
+    bgUrl:document.getElementById('dev-bg-url').value.trim(),
+    loginLogoUrl:document.getElementById('dev-login-logo-url').value.trim()
   };
   try{localStorage.setItem('arp_dev_cfg',JSON.stringify(cfg))}catch(e){}
   saveConfigSheets(cfg);
-  devPreview();document.getElementById('dev-overlay').classList.remove('open');
+  devPreview();
+  applyLoginLogo(cfg.loginLogoUrl);
+  document.getElementById('dev-overlay').classList.remove('open');
+  document.getElementById('app').classList.remove('dev-mode');
+  renderList();renderHistory();
   var b=document.getElementById('success-banner');b.textContent='✓ Configurações salvas e sincronizadas!';b.classList.add('show');
   setTimeout(function(){b.classList.remove('show');b.textContent='✓ Atendimento registrado com sucesso!'},2500);
 }
 function devReset(){if(!confirm('Restaurar configurações para o padrão?'))return;try{localStorage.removeItem('arp_dev_cfg');localStorage.removeItem('arp_dev_logo');localStorage.removeItem('arp_dev_bg')}catch(e){}location.reload()}
+function applyLoginLogo(url){
+  if(url){
+    document.getElementById('login-logo-img').src=url;
+    document.getElementById('login-logo-img-wrap').style.display='flex';
+    document.getElementById('login-logo-default').style.display='none';
+    // Sync login text from cfg
+    try{
+      var cfg=JSON.parse(localStorage.getItem('arp_dev_cfg')||'null');
+      if(cfg){
+        if(cfg.l1)document.getElementById('login-l1').textContent=cfg.l1;
+        if(cfg.l2)document.getElementById('login-l2').textContent=cfg.l2;
+        if(cfg.sub)document.getElementById('login-sub').textContent=cfg.sub;
+      }
+    }catch(e){}
+  } else {
+    document.getElementById('login-logo-img-wrap').style.display='none';
+    document.getElementById('login-logo-default').style.display='flex';
+  }
+}
+
 function loadDevSettings(){
   try{
     var cfg=JSON.parse(localStorage.getItem('arp_dev_cfg')||'null');if(!cfg)return;
@@ -976,12 +1009,11 @@ function loadDevSettings(){
     if(cfg.mc){document.documentElement.style.setProperty('--gr',cfg.mc);document.documentElement.style.setProperty('--gr-d',shade(cfg.mc,-40));document.documentElement.style.setProperty('--gr-l',shade(cfg.mc,80))}
     if(cfg.lc)document.documentElement.style.setProperty('--header-logo-text',cfg.lc);
     if(cfg.tc)document.documentElement.style.setProperty('--tab-active',cfg.tc);
-    if(cfg.l1)document.getElementById('logo-line1').textContent=cfg.l1;
-    if(cfg.l2)document.getElementById('logo-line2').textContent=cfg.l2;
-    if(cfg.sub)document.getElementById('logo-sub').textContent=cfg.sub;
+    if(cfg.l1){document.getElementById('logo-line1').textContent=cfg.l1;document.getElementById('login-l1').textContent=cfg.l1;}
+    if(cfg.l2){document.getElementById('logo-line2').textContent=cfg.l2;document.getElementById('login-l2').textContent=cfg.l2;}
+    if(cfg.sub){document.getElementById('logo-sub').textContent=cfg.sub;document.getElementById('login-sub').textContent=cfg.sub;}
     if(cfg.ht)document.getElementById('header-title').textContent=cfg.ht;
     if(cfg.showBtn===false)document.getElementById('dev-btn-el').style.display='none';
-    // Logo: URL tem prioridade sobre upload local
     if(cfg.logoUrl){
       document.getElementById('logo-img').src=cfg.logoUrl;
       document.getElementById('logo-wrap').classList.add('has-img');
@@ -989,12 +1021,13 @@ function loadDevSettings(){
       var logo=localStorage.getItem('arp_dev_logo');
       if(logo){document.getElementById('logo-img').src=logo;document.getElementById('logo-wrap').classList.add('has-img')}
     }
-    // Fundo: URL tem prioridade sobre upload local
     if(cfg.bgUrl){
       applyBg(cfg.bgUrl,parseInt(cfg.bgOp||90));
     } else {
       var bg=localStorage.getItem('arp_dev_bg');if(bg)applyBg(bg,parseInt(cfg.bgOp||90));
     }
+    // Aplica logo da tela de login
+    applyLoginLogo(cfg.loginLogoUrl||'');
   }catch(e){}
 }
 function loadDevFields(){
@@ -1019,12 +1052,17 @@ function loadDevFields(){
       if(logo){document.getElementById('dev-logo-preview').src=logo;document.getElementById('dev-logo-preview').classList.add('show')}
     }
     if(cfg.bgUrl)document.getElementById('dev-bg-url').value=cfg.bgUrl;
+    if(cfg.loginLogoUrl){
+      document.getElementById('dev-login-logo-url').value=cfg.loginLogoUrl;
+      var prev=document.getElementById('dev-login-logo-preview');
+      prev.src=cfg.loginLogoUrl;prev.style.display='block';
+    }
     devPreview();
   }catch(e){}
 }
 // ── AUTENTICAÇÃO ─────────────────────────────────────────────
-// Senhas por responsável — altere aqui
-var SENHAS = {
+// Senhas por responsável — podem ser alteradas pelo Painel Dev
+var SENHAS_PADRAO = {
   'Ayrton':   'ayrton123',
   'Giovanna': 'giovanna123',
   'Neudson':  'neudson123',
@@ -1032,34 +1070,124 @@ var SENHAS = {
   'Admin':    'admin@arptech'
 };
 
+var SENHAS = {};
+
+function carregarSenhas(){
+  try{
+    var s=localStorage.getItem('arp_senhas');
+    SENHAS = s ? JSON.parse(s) : JSON.parse(JSON.stringify(SENHAS_PADRAO));
+  }catch(e){
+    SENHAS = JSON.parse(JSON.stringify(SENHAS_PADRAO));
+  }
+  // Tenta carregar do Sheets para sincronizar
+  var gs=document.getElementById('gs-url').value.trim();
+  if(gs){
+    fetch(gs,{method:'POST',body:JSON.stringify({action:'getSenhas'})})
+      .then(function(r){return r.json()})
+      .then(function(data){
+        if(data.senhas){
+          var s=typeof data.senhas==='string'?JSON.parse(data.senhas):data.senhas;
+          SENHAS=s;
+          try{localStorage.setItem('arp_senhas',JSON.stringify(SENHAS))}catch(e){}
+        }
+      }).catch(function(){});
+  }
+}
+
+function devCarregarSenhasFields(){
+  var html='';
+  Object.keys(SENHAS_PADRAO).forEach(function(user){
+    html+='<div class="dev-field"><label>'+user+'</label><input type="password" id="dev-senha-'+user+'" placeholder="Nova senha (deixe vazio para manter)" autocomplete="new-password"/></div>';
+  });
+  document.getElementById('dev-senhas-fields').innerHTML=html;
+}
+
+function devSalvarSenhas(){
+  var alteradas=0;
+  Object.keys(SENHAS_PADRAO).forEach(function(user){
+    var inp=document.getElementById('dev-senha-'+user);
+    if(inp&&inp.value.trim()){
+      SENHAS[user]=inp.value.trim();
+      inp.value='';
+      alteradas++;
+    }
+  });
+  if(alteradas>0){
+    try{localStorage.setItem('arp_senhas',JSON.stringify(SENHAS))}catch(e){}
+    // Sincroniza senhas no Sheets
+    var gs=document.getElementById('gs-url').value.trim();
+    if(gs){
+      fetch(gs,{method:'POST',body:JSON.stringify({action:'saveSenhas',senhas:SENHAS})})
+        .catch(function(){});
+    }
+    var msg=document.getElementById('dev-senhas-msg');
+    msg.style.display='block';
+    msg.textContent='✓ '+alteradas+' senha(s) atualizada(s) e sincronizada(s)!';
+    setTimeout(function(){msg.style.display='none'},3000);
+  } else {
+    alert('Nenhuma senha foi alterada.');
+  }
+}
+
+function devPreviewLoginLogo(){
+  var url=document.getElementById('dev-login-logo-url').value.trim();
+  var prev=document.getElementById('dev-login-logo-preview');
+  if(url){
+    prev.src=url;prev.style.display='block';
+    // Aplica na tela de login
+    document.getElementById('login-logo-img').src=url;
+    document.getElementById('login-logo-img-wrap').style.display='flex';
+    document.getElementById('login-logo-default').style.display='none';
+  } else {
+    prev.style.display='none';
+    document.getElementById('login-logo-img-wrap').style.display='none';
+    document.getElementById('login-logo-default').style.display='flex';
+  }
+}
+
 var currentUser = '';
 
 function doLogin(){
   var user = document.getElementById('login-user').value;
   var pass = document.getElementById('login-pass').value;
   var err  = document.getElementById('login-err');
+  var warn = document.getElementById('login-warn');
   if(!user){err.textContent='Selecione o responsável.';err.classList.add('show');return}
   if(!pass){err.textContent='Digite a senha.';err.classList.add('show');return}
   if(SENHAS[user] && pass === SENHAS[user]){
     currentUser = user;
     try{sessionStorage.setItem('arp_user', user)}catch(e){}
     err.classList.remove('show');
+    // Verifica se está usando senha padrão
+    var usandoPadrao = SENHAS_PADRAO[user] && pass === SENHAS_PADRAO[user];
+    warn.style.display = usandoPadrao ? 'block' : 'none';
+    if(usandoPadrao){
+      // Mantém na tela de login para mostrar aviso, só entra após fechar
+      setTimeout(function(){
+        document.getElementById('login-screen').style.display='none';
+        warn.style.display='none';
+        entrarSistema(user);
+      }, 3500);
+      return;
+    }
     document.getElementById('login-screen').style.display='none';
-    document.getElementById('user-badge').textContent='👤 '+user;
-    document.getElementById('user-badge').style.display='block';
-    document.getElementById('logout-btn').style.display='block';
-    // Pré-seleciona responsável no formulário
-    document.querySelectorAll('.rpill').forEach(function(el){
-      if(el.textContent.trim()===user){selResp(el,user)}
-    });
-    // Pré-seleciona no filtro de relatório personalizado
-    var repResp=document.getElementById('rep-per-resp');
-    if(repResp)repResp.value=user==='Admin'?'':user;
+    entrarSistema(user);
   } else {
     err.textContent='Senha incorreta. Tente novamente.';
     err.classList.add('show');
     document.getElementById('login-pass').value='';
   }
+}
+
+function entrarSistema(user){
+  document.getElementById('user-badge').textContent='👤 '+user;
+  document.getElementById('user-badge').style.display='block';
+  document.getElementById('logout-btn').style.display='block';
+  document.querySelectorAll('.rpill').forEach(function(el){
+    if(el.textContent.trim()===user){selResp(el,user)}
+  });
+  var repResp=document.getElementById('rep-per-resp');
+  if(repResp)repResp.value=user==='Admin'?'':user;
 }
 
 function doLogout(){
@@ -1094,4 +1222,88 @@ function checkSession(){
 // ── PERÍODO DO RELATÓRIO ──────────────────────────────────────
 var currentPeriod = 'mensal';
 
-func
+function setPeriod(p){
+  currentPeriod = p;
+  ['mensal','quinzenal','semanal','personalizado'].forEach(function(x){
+    document.getElementById('period-'+x).style.display = x===p ? 'block' : 'none';
+    document.querySelectorAll('.period-tab').forEach(function(el,i){
+      el.classList.toggle('active', el.getAttribute('onclick').includes("'"+x+"'") && x===p);
+    });
+  });
+  // Reaplica active corretamente
+  document.querySelectorAll('.period-tab').forEach(function(el){
+    var match = el.getAttribute('onclick').includes("'"+p+"'");
+    el.classList.toggle('active', match);
+  });
+}
+
+function getFilteredRecords(allRecs){
+  var p = currentPeriod;
+  var filtered = allRecs;
+
+  if(p === 'mensal'){
+    var m = parseInt(document.getElementById('rep-month').value);
+    var y = parseInt(document.getElementById('rep-year').value);
+    filtered = allRecs.filter(function(r){
+      var d=new Date(r.date);return d.getMonth()===m&&d.getFullYear()===y;
+    });
+
+  } else if(p === 'quinzenal'){
+    var mq = parseInt(document.getElementById('rep-month-q').value);
+    var yq = parseInt(document.getElementById('rep-year-q').value);
+    var qn = parseInt(document.getElementById('rep-quinzena').value);
+    filtered = allRecs.filter(function(r){
+      var d=new Date(r.date);
+      if(d.getMonth()!==mq||d.getFullYear()!==yq)return false;
+      var day=d.getDate();
+      return qn===1 ? day<=15 : day>=16;
+    });
+
+  } else if(p === 'semanal'){
+    var ini = document.getElementById('rep-sem-ini').value;
+    var fim = document.getElementById('rep-sem-fim').value;
+    if(!ini||!fim){alert('Selecione as datas de início e fim.');return null}
+    filtered = allRecs.filter(function(r){return r.date>=ini&&r.date<=fim});
+
+  } else if(p === 'personalizado'){
+    var pini = document.getElementById('rep-per-ini').value;
+    var pfim = document.getElementById('rep-per-fim').value;
+    var presp= document.getElementById('rep-per-resp').value;
+    if(!pini||!pfim){alert('Selecione as datas de início e fim.');return null}
+    filtered = allRecs.filter(function(r){
+      var inRange = r.date>=pini && r.date<=pfim;
+      var matchResp = !presp || r.resp===presp;
+      return inRange && matchResp;
+    });
+  }
+  return filtered;
+}
+
+function getPeriodLabel(){
+  var p = currentPeriod;
+  var MESES_L=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  if(p==='mensal'){
+    var m=parseInt(document.getElementById('rep-month').value);
+    var y=parseInt(document.getElementById('rep-year').value);
+    return MESES_L[m]+'/'+y;
+  } else if(p==='quinzenal'){
+    var mq=parseInt(document.getElementById('rep-month-q').value);
+    var yq=parseInt(document.getElementById('rep-year-q').value);
+    var qn=parseInt(document.getElementById('rep-quinzena').value);
+    return (qn===1?'1ª':'2ª')+' quinzena '+MESES_L[mq]+'/'+yq;
+  } else if(p==='semanal'){
+    var ini=document.getElementById('rep-sem-ini').value;
+    var fim=document.getElementById('rep-sem-fim').value;
+    return ini+' a '+fim;
+  } else {
+    var pini=document.getElementById('rep-per-ini').value;
+    var pfim=document.getElementById('rep-per-fim').value;
+    var presp=document.getElementById('rep-per-resp').value;
+    return (presp?presp+' — ':'')+pini+' a '+pfim;
+  }
+}
+
+init();
+</script>
+</body>
+</html>
