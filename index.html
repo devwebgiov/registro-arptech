@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8"/>
@@ -23,9 +22,9 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
 /* LOGIN */
 .login-screen{position:fixed;inset:0;background:radial-gradient(ellipse at 20% 20%, #1D9E75 0%, #0a2e2a 45%, #060f0d 100%);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px}
 .login-box{background:#fff;border-radius:20px;padding:32px 28px;width:100%;max-width:380px;box-shadow:0 20px 60px rgba(0,0,0,0.4)}
-.login-logo-area{display:flex;justify-content:center;margin-bottom:20px}
-.login-logo-area img{max-height:72px;max-width:200px;object-fit:contain;display:none}
-.login-logo-area img.show{display:block}
+.login-logo-area{display:flex;justify-content:center;align-items:center;margin-bottom:20px;min-height:80px}
+.login-logo-area img{max-height:120px;max-width:260px;width:100%;object-fit:contain;display:none}
+.login-logo-area img.show{display:block;margin:0 auto}
 .login-logo-default{display:flex;align-items:center;gap:10px}
 .login-logo-default svg{width:44px;height:44px}
 .lld-words{display:flex;flex-direction:column}
@@ -64,8 +63,8 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
 .logo-img-wrap svg{width:100%;height:100%}
 .logo-img-wrap.has-img img{display:block}
 .logo-img-wrap.has-img svg{display:none}
-.logo-line1,.logo-line2{color:var(–header-logo-text);font-size:17px;font-weight:700;letter-spacing:2px;line-height:1}
-.logo-sub-text{color:rgba(29,158,117,0.55);font-size:10px;letter-spacing:1px;margin-top:2px}
+.logo-line1,.logo-line2{color:#ffffff !important;font-size:17px;font-weight:700;letter-spacing:2px;line-height:1}
+.logo-sub-text{color:rgba(255,255,255,0.6) !important;font-size:10px;letter-spacing:1px;margin-top:2px}
 .header-divider{width:1px;height:32px;background:rgba(255,255,255,0.1);flex-shrink:0}
 .header-title{color:rgba(255,255,255,0.4);font-size:12px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .header-right{display:flex;align-items:center;gap:6px;flex-shrink:0}
@@ -717,7 +716,8 @@ function init(){
         }
         // Reseta cor do cabeçalho se for a azul antiga
         if(cfgTmp.hc==='#0a2540'){cfgTmp.hc='#0a2e2a'}
-        if(cfgTmp.lc==='#ffffff'){cfgTmp.lc='#1D9E75'}
+        // Força texto logo branco sempre
+        cfgTmp.lc='#ffffff';
         localStorage.setItem('arp_dev_cfg',JSON.stringify(cfgTmp));
       }
     }
@@ -1389,7 +1389,7 @@ function admPreview(){
   document.documentElement.style.setProperty('--gr',mc);
   document.documentElement.style.setProperty('--gr-d',shade(mc,-40));
   document.documentElement.style.setProperty('--gr-l',shade(mc,80));
-  document.documentElement.style.setProperty('--header-logo-text',lc);
+  // logo text cor fixa via CSS (!important)
   document.documentElement.style.setProperty('--tab-active',tc);
   document.body.style.fontSize=fs+'px';
   var l1=document.getElementById('adm-l1').value,l2=document.getElementById('adm-l2').value,sub=document.getElementById('adm-sub').value,ht=document.getElementById('adm-ht').value;
@@ -1488,7 +1488,7 @@ function loadSettings(){
     var cfg=JSON.parse(localStorage.getItem('arp_dev_cfg')||'null');if(!cfg)return;
     if(cfg.hc)document.documentElement.style.setProperty('--header-bg',cfg.hc);
     if(cfg.mc){document.documentElement.style.setProperty('--gr',cfg.mc);document.documentElement.style.setProperty('--gr-d',shade(cfg.mc,-40));document.documentElement.style.setProperty('--gr-l',shade(cfg.mc,80))}
-    if(cfg.lc)document.documentElement.style.setProperty('--header-logo-text',cfg.lc);
+    // logo text cor fixa via CSS (!important) - não sobrescreve
     if(cfg.tc)document.documentElement.style.setProperty('--tab-active',cfg.tc);
     if(cfg.l1){document.getElementById('logo-line1').textContent=cfg.l1;document.getElementById('lld-l1').textContent=cfg.l1}
     if(cfg.l2){document.getElementById('logo-line2').textContent=cfg.l2;document.getElementById('lld-l2').textContent=cfg.l2}
