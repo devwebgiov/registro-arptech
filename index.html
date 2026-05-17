@@ -69,10 +69,10 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
 .header-divider{width:1px;height:32px;background:rgba(255,255,255,0.15);flex-shrink:0}
 .header-title{color:rgba(255,255,255,0.5);font-size:12px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .header-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
-.user-badge{background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.9);padding:5px 11px;border-radius:16px;font-size:12px;font-weight:600;white-space:nowrap}
-.header-btn{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.7);padding:6px 11px;border-radius:7px;font-size:11px;cursor:pointer;font-family:var(–font);white-space:nowrap;transition:all .15s;font-weight:600}
-.header-btn:hover{background:rgba(255,255,255,0.2);color:#fff}
-.header-btn.admin-btn{background:rgba(255,193,7,0.2);border-color:rgba(255,193,7,0.4);color:#ffd54f}
+.user-badge{background:rgba(255,255,255,0.18);border:1px solid rgba(255,255,255,0.3);color:#fff;padding:5px 11px;border-radius:16px;font-size:12px;font-weight:600;white-space:nowrap}
+.header-btn{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:#fff;padding:6px 11px;border-radius:7px;font-size:11px;cursor:pointer;font-family:var(–font);white-space:nowrap;transition:all .15s;font-weight:600}
+.header-btn:hover{background:rgba(255,255,255,0.25)}
+.header-btn.admin-btn{background:#FCD34D;border-color:#F59E0B;color:#78350F}
 
 /* TABS */
 .tabs{background:var(–card);border-bottom:1px solid var(–bd);display:flex;overflow-x:auto;flex-shrink:0;-webkit-overflow-scrolling:touch}
@@ -700,17 +700,26 @@ function getGs(){return document.getElementById('gs-url').value.trim()}
 
 // ── INIT ─────────────────────────────────────────────────────
 function init(){
-  // Migração: limpa backgrounds antigos salvos no localStorage que estão causando problemas
+  // Migração: limpa backgrounds antigos que estão causando problemas visuais
   try{
-    var oldBg=localStorage.getItem('arp_dev_bg');
-    if(oldBg){localStorage.removeItem('arp_dev_bg')}
-    // Se o cfg tiver bgUrl vazio mas estiver salvo, ignora
+    localStorage.removeItem('arp_dev_bg');
     var cfgRaw=localStorage.getItem('arp_dev_cfg');
     if(cfgRaw){
       var cfgTmp=JSON.parse(cfgRaw);
-      if(cfgTmp&&cfgTmp.bgUrl===''){delete cfgTmp.bgUrl;localStorage.setItem('arp_dev_cfg',JSON.stringify(cfgTmp))}
+      if(cfgTmp){
+        // Remove bgUrl vazio ou inexistente
+        if(!cfgTmp.bgUrl||cfgTmp.bgUrl===''||cfgTmp.bgUrl==='undefined'){
+          delete cfgTmp.bgUrl;
+        }
+        localStorage.setItem('arp_dev_cfg',JSON.stringify(cfgTmp));
+      }
     }
   }catch(e){}
+  // Força fundo limpo no início
+  document.body.style.backgroundImage='none';
+  document.body.style.background='var(--bg)';
+  var appEl=document.getElementById('app');
+  if(appEl)appEl.style.background='';
 
   var d=new Date();
   document.getElementById('f-date').value=d.toISOString().split('T')[0];
@@ -1512,18 +1521,19 @@ function applyLoginLogo(url){
 }
 
 function applyBg(src,op){
-  if(!src){
+  if(!src||src.trim()===''){
     document.body.style.backgroundImage='none';
-    document.getElementById('app').style.background='';
+    document.body.style.background='var(--bg)';
+    var appEl=document.getElementById('app');
+    if(appEl)appEl.style.background='';
     return;
   }
   document.body.style.backgroundImage='url('+src+')';
   document.body.style.backgroundSize='cover';
   document.body.style.backgroundPosition='center';
   document.body.style.backgroundAttachment='fixed';
-  // op é a opacidade da sobreposição BRANCA (0 = vê imagem 100%, 100 = vê só branco)
-  // Conforme padrão: op=90 significa 90% sólido (quase nada da imagem)
-  var alpha = Math.max(0.85, op/100); // mínimo de 85% para garantir legibilidade
+  // Garante mínimo de 92% de opacidade para nunca ficar transparente demais
+  var alpha = Math.max(0.92, Math.min(1, (op||90)/100));
   document.getElementById('app').style.background='rgba(240,244,248,'+alpha+')';
 }
 
