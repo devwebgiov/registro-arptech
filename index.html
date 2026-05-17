@@ -700,6 +700,18 @@ function getGs(){return document.getElementById('gs-url').value.trim()}
 
 // ── INIT ─────────────────────────────────────────────────────
 function init(){
+  // Migração: limpa backgrounds antigos salvos no localStorage que estão causando problemas
+  try{
+    var oldBg=localStorage.getItem('arp_dev_bg');
+    if(oldBg){localStorage.removeItem('arp_dev_bg')}
+    // Se o cfg tiver bgUrl vazio mas estiver salvo, ignora
+    var cfgRaw=localStorage.getItem('arp_dev_cfg');
+    if(cfgRaw){
+      var cfgTmp=JSON.parse(cfgRaw);
+      if(cfgTmp&&cfgTmp.bgUrl===''){delete cfgTmp.bgUrl;localStorage.setItem('arp_dev_cfg',JSON.stringify(cfgTmp))}
+    }
+  }catch(e){}
+
   var d=new Date();
   document.getElementById('f-date').value=d.toISOString().split('T')[0];
   var p=function(n){return String(n).padStart(2,'0')};
@@ -1372,7 +1384,7 @@ function admPreview(){
   document.getElementById('logo-line1').textContent=l1;document.getElementById('logo-line2').textContent=l2;
   document.getElementById('logo-sub').textContent=sub;document.getElementById('header-title').textContent=ht;
   document.getElementById('lld-l1').textContent=l1;document.getElementById('lld-l2').textContent=l2;document.getElementById('lld-sub').textContent=sub;
-  document.getElementById('admin-btn').style.display=document.getElementById('adm-show-btn').checked?'block':'none';
+  // Admin button sempre visível para admin (não toca aqui)
   try{var bg=localStorage.getItem('arp_dev_bg');if(bg)applyBg(bg,parseInt(op))}catch(e){}
 }
 
@@ -1404,7 +1416,7 @@ function admSave(){
     lc:document.getElementById('adm-lc').value,tc:document.getElementById('adm-tc').value,
     l1:document.getElementById('adm-l1').value,l2:document.getElementById('adm-l2').value,
     sub:document.getElementById('adm-sub').value,ht:document.getElementById('adm-ht').value,
-    showBtn:document.getElementById('adm-show-btn').checked,
+    showBtn:true,
     bgOp:document.getElementById('adm-bg-op').value,fs:document.getElementById('adm-fs').value,
     logoUrl:document.getElementById('adm-logo-url').value.trim(),
     bgUrl:document.getElementById('adm-bg-url').value.trim(),
@@ -1414,6 +1426,13 @@ function admSave(){
   saveConfigSheets(cfg);
   admPreview();applyLoginLogo(cfg.loginLogoUrl||'');
   document.getElementById('admin-overlay').classList.remove('open');
+  // Garante que botões permaneçam visíveis após fechar
+  if(isAdmin){
+    document.getElementById('admin-btn').style.display='block';
+    document.getElementById('user-badge').style.display='block';
+    document.getElementById('chpwd-btn').style.display='block';
+    document.getElementById('logout-btn').style.display='block';
+  }
   showBanner('✓ Configurações salvas e sincronizadas!');
 }
 function admReset(){if(!confirm('Restaurar padrão?'))return;try{localStorage.removeItem('arp_dev_cfg');localStorage.removeItem('arp_dev_logo');localStorage.removeItem('arp_dev_bg')}catch(e){}location.reload()}
@@ -1458,14 +1477,13 @@ function loadSettings(){
     if(cfg.sub){document.getElementById('logo-sub').textContent=cfg.sub;document.getElementById('lld-sub').textContent=cfg.sub}
     if(cfg.ht)document.getElementById('header-title').textContent=cfg.ht;
     if(cfg.fs)document.body.style.fontSize=cfg.fs+'px';
-    if(cfg.showBtn===false&&isAdmin){
-      // Mesmo com showBtn:false, deixa o admin acessar via botão se quiser
-      // Esta config só deve esconder após login admin manual
-    }
+    // showBtn ignorado - admin sempre tem botão
     if(cfg.logoUrl){document.getElementById('logo-img').src=cfg.logoUrl;document.getElementById('logo-wrap').classList.add('has-img')}
     else{var logo=localStorage.getItem('arp_dev_logo');if(logo){document.getElementById('logo-img').src=logo;document.getElementById('logo-wrap').classList.add('has-img')}}
-    if(cfg.bgUrl)applyBg(cfg.bgUrl,parseInt(cfg.bgOp||90));
-    else{var bg=localStorage.getItem('arp_dev_bg');if(bg)applyBg(bg,parseInt(cfg.bgOp||90))}
+    // Só aplica fundo se tiver URL EXPLÍCITA configurada
+    if(cfg.bgUrl && cfg.bgUrl.trim()!==''){
+      applyBg(cfg.bgUrl,parseInt(cfg.bgOp||90));
+    }
     applyLoginLogo(cfg.loginLogoUrl||'');
   }catch(e){}
 }
