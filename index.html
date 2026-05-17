@@ -233,9 +233,13 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
 .radio-group{display:grid;grid-template-columns:1fr 1fr}
 .btn-submit{padding:15px;font-size:16px}
 .admin-panel{padding:18px;max-height:94vh}
-.header{padding:11px 14px;gap:9px}
+.header{padding:11px 12px;gap:8px;flex-wrap:wrap}
 .logo-line1,.logo-line2{font-size:15px}
 .color-grid{grid-template-columns:1fr}
+.header-divider,.header-title{display:none}
+.header-right{gap:5px;flex-wrap:wrap;justify-content:flex-end}
+.header-btn{padding:6px 9px;font-size:11px}
+.user-badge{padding:4px 9px;font-size:11px}
 }
 @media(max-width:380px){
 .stats-row{grid-template-columns:1fr}
@@ -444,7 +448,7 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
   <button class="btn-secondary" style="font-size:12px;padding:7px 13px" onclick="testConnection()">Testar conexão</button>
 </div>
 
-<div class="admin-section">
+<div class="admin-section" style="display:none">
   <div class="admin-section-title">Visibilidade</div>
   <div class="switch-row">
     <span>Mostrar botão "Admin" no cabeçalho</span>
@@ -800,17 +804,17 @@ function entrarSistema(user){
   document.getElementById('logout-btn').style.display='block';
   document.getElementById('chpwd-btn').style.display='block';
   if(isAdmin){
-    // Verifica se admin escolheu ocultar o botão
-    var cfg=null;try{cfg=JSON.parse(localStorage.getItem('arp_dev_cfg')||'null')}catch(e){}
-    if(!cfg||cfg.showBtn!==false){
-      document.getElementById('admin-btn').style.display='block';
-    }
+    // Admin sempre tem o botão visível ao logar
+    var adminBtn=document.getElementById('admin-btn');
+    adminBtn.style.display='block';
+    adminBtn.style.visibility='visible';
     setupAdminTabs();
     syncFromSheets(function(){renderList();renderStats()});
     loadConfigSheets();
     checkAutoReport();
     renderHistory();
   } else {
+    document.getElementById('admin-btn').style.display='none';
     setupTechTabs(user);
     syncFromSheets(function(){renderList();renderStats()});
     renderTechHistory();
@@ -1454,7 +1458,10 @@ function loadSettings(){
     if(cfg.sub){document.getElementById('logo-sub').textContent=cfg.sub;document.getElementById('lld-sub').textContent=cfg.sub}
     if(cfg.ht)document.getElementById('header-title').textContent=cfg.ht;
     if(cfg.fs)document.body.style.fontSize=cfg.fs+'px';
-    if(cfg.showBtn===false&&isAdmin)document.getElementById('admin-btn').style.display='none';
+    if(cfg.showBtn===false&&isAdmin){
+      // Mesmo com showBtn:false, deixa o admin acessar via botão se quiser
+      // Esta config só deve esconder após login admin manual
+    }
     if(cfg.logoUrl){document.getElementById('logo-img').src=cfg.logoUrl;document.getElementById('logo-wrap').classList.add('has-img')}
     else{var logo=localStorage.getItem('arp_dev_logo');if(logo){document.getElementById('logo-img').src=logo;document.getElementById('logo-wrap').classList.add('has-img')}}
     if(cfg.bgUrl)applyBg(cfg.bgUrl,parseInt(cfg.bgOp||90));
@@ -1487,11 +1494,19 @@ function applyLoginLogo(url){
 }
 
 function applyBg(src,op){
+  if(!src){
+    document.body.style.backgroundImage='none';
+    document.getElementById('app').style.background='';
+    return;
+  }
   document.body.style.backgroundImage='url('+src+')';
   document.body.style.backgroundSize='cover';
   document.body.style.backgroundPosition='center';
   document.body.style.backgroundAttachment='fixed';
-  document.getElementById('app').style.background='rgba(240,244,248,'+(op/100)+')';
+  // op é a opacidade da sobreposição BRANCA (0 = vê imagem 100%, 100 = vê só branco)
+  // Conforme padrão: op=90 significa 90% sólido (quase nada da imagem)
+  var alpha = Math.max(0.85, op/100); // mínimo de 85% para garantir legibilidade
+  document.getElementById('app').style.background='rgba(240,244,248,'+alpha+')';
 }
 
 function shade(hex,pct){
