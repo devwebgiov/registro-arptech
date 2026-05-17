@@ -17,7 +17,8 @@
   --header-bg:#0a2540;--header-logo-text:#ffffff;--tab-active:#1D9E75;
 }
 body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16px}
-#app{min-height:100vh;display:flex;flex-direction:column}
+#app{min-height:100vh;display:flex;flex-direction:column;background:transparent}
+.header{background:var(--header-bg);padding:12px 18px;display:flex;align-items:center;gap:12px;flex-shrink:0;min-height:56px}
 
 /* LOGIN */
 .login-screen{position:fixed;inset:0;background:linear-gradient(135deg,#0a2540 0%,#0f3d2e 100%);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px}
@@ -57,7 +58,6 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
 .btn-chpwd-cancel{background:var(–bg2);color:var(–tx2);border:1.5px solid var(–bd)!important}
 
 /* HEADER */
-.header{background:var(–header-bg);padding:12px 18px;display:flex;align-items:center;gap:12px;flex-shrink:0}
 .logo-area{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
 .logo-img-wrap{width:40px;height:40px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
 .logo-img-wrap img{width:100%;height:100%;object-fit:contain;display:none}
@@ -1393,8 +1393,14 @@ function admPreview(){
   document.getElementById('logo-line1').textContent=l1;document.getElementById('logo-line2').textContent=l2;
   document.getElementById('logo-sub').textContent=sub;document.getElementById('header-title').textContent=ht;
   document.getElementById('lld-l1').textContent=l1;document.getElementById('lld-l2').textContent=l2;document.getElementById('lld-sub').textContent=sub;
-  // Admin button sempre visível para admin (não toca aqui)
-  try{var bg=localStorage.getItem('arp_dev_bg');if(bg)applyBg(bg,parseInt(op))}catch(e){}
+  // Aplica imagem de fundo da URL se preenchida
+  var bgUrl=document.getElementById('adm-bg-url').value.trim();
+  if(bgUrl){applyBg(bgUrl,parseInt(op))}
+  else{
+    // Sem URL — fundo limpo
+    document.body.style.backgroundImage='none';
+    document.getElementById('app').style.background='';
+  }
 }
 
 function admSalvarSenhas(){
@@ -1530,18 +1536,21 @@ function applyLoginLogo(url){
 function applyBg(src,op){
   if(!src||src.trim()===''){
     document.body.style.backgroundImage='none';
-    document.body.style.background='var(--bg)';
-    var appEl=document.getElementById('app');
-    if(appEl)appEl.style.background='';
+    document.body.style.background='';
+    document.getElementById('app').style.background='';
     return;
   }
+  var opNum=parseInt(op)||90;
+  // Aplica imagem no body
   document.body.style.backgroundImage='url('+src+')';
   document.body.style.backgroundSize='cover';
   document.body.style.backgroundPosition='center';
   document.body.style.backgroundAttachment='fixed';
-  // Garante mínimo de 92% de opacidade para nunca ficar transparente demais
-  var alpha = Math.max(0.92, Math.min(1, (op||90)/100));
-  document.getElementById('app').style.background='rgba(240,244,248,'+alpha+')';
+  document.body.style.backgroundRepeat='no-repeat';
+  // app fica com overlay branco semi-transparente por cima
+  // op=0 → imagem totalmente visível; op=100 → tudo branco
+  var alpha=(100-opNum)/100; // inverte: op alto = menos imagem visível
+  document.getElementById('app').style.background='rgba(238,241,246,'+Math.max(0.7,1-alpha)+')';
 }
 
 function shade(hex,pct){
