@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8"/>
@@ -29,149 +30,149 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
 .lld-words{display:flex;flex-direction:column}
 .lld-l1,.lld-l2{font-size:19px;font-weight:700;letter-spacing:2px;color:#0a2540;line-height:1}
 .lld-sub{font-size:10px;letter-spacing:1px;color:#94a3b8;margin-top:2px}
-.login-title{font-size:16px;font-weight:700;color:var(--tx);text-align:center;margin-bottom:4px}
-.login-sub-txt{font-size:13px;color:var(--tx3);text-align:center;margin-bottom:20px}
+.login-title{font-size:16px;font-weight:700;color:var(–tx);text-align:center;margin-bottom:4px}
+.login-sub-txt{font-size:13px;color:var(–tx3);text-align:center;margin-bottom:20px}
 .login-err{background:#FEE2E2;color:#991B1B;border-radius:8px;padding:10px 14px;font-size:13px;margin-bottom:12px;display:none;text-align:center}
 .login-warn{background:#FEF3C7;color:#92400e;border:1px solid #FCD34D;border-radius:8px;padding:10px 14px;font-size:13px;margin-bottom:12px;display:none;line-height:1.5}
 .login-field{margin-bottom:12px}
-.login-field label{display:block;font-size:13px;font-weight:600;color:var(--tx2);margin-bottom:5px}
-.login-field select,.login-field input{width:100%;padding:12px 14px;font-size:15px;border:1.5px solid var(--bd);border-radius:var(--rad);background:var(--bg2);color:var(--tx);font-family:var(--font);outline:none;-webkit-appearance:none}
-.login-field select:focus,.login-field input:focus{border-color:var(--gr)}
-.login-btn{width:100%;padding:13px;background:var(--gr);color:#fff;border:none;border-radius:var(--rad);font-size:15px;font-weight:700;cursor:pointer;font-family:var(--font);box-shadow:0 4px 12px rgba(29,158,117,0.3)}
+.login-field label{display:block;font-size:13px;font-weight:600;color:var(–tx2);margin-bottom:5px}
+.login-field select,.login-field input{width:100%;padding:12px 14px;font-size:15px;border:1.5px solid var(–bd);border-radius:var(–rad);background:var(–bg2);color:var(–tx);font-family:var(–font);outline:none;-webkit-appearance:none}
+.login-field select:focus,.login-field input:focus{border-color:var(–gr)}
+.login-btn{width:100%;padding:13px;background:var(–gr);color:#fff;border:none;border-radius:var(–rad);font-size:15px;font-weight:700;cursor:pointer;font-family:var(–font);box-shadow:0 4px 12px rgba(29,158,117,0.3)}
 .login-btn:hover{opacity:.9}
 
 /* CHANGE PASSWORD MODAL */
 .chpwd-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:8000;display:none;align-items:center;justify-content:center;padding:20px}
 .chpwd-overlay.open{display:flex}
-.chpwd-box{background:#fff;border-radius:var(--radl);padding:24px;width:100%;max-width:380px}
-.chpwd-title{font-size:16px;font-weight:700;color:var(--tx);margin-bottom:16px}
+.chpwd-box{background:#fff;border-radius:var(–radl);padding:24px;width:100%;max-width:380px}
+.chpwd-title{font-size:16px;font-weight:700;color:var(–tx);margin-bottom:16px}
 .chpwd-field{margin-bottom:12px}
-.chpwd-field label{display:block;font-size:13px;font-weight:600;color:var(--tx2);margin-bottom:5px}
-.chpwd-field input{width:100%;padding:11px 13px;font-size:14px;border:1.5px solid var(--bd);border-radius:8px;background:var(--bg2);color:var(--tx);font-family:var(--font);outline:none}
-.chpwd-field input:focus{border-color:var(--gr)}
+.chpwd-field label{display:block;font-size:13px;font-weight:600;color:var(–tx2);margin-bottom:5px}
+.chpwd-field input{width:100%;padding:11px 13px;font-size:14px;border:1.5px solid var(–bd);border-radius:8px;background:var(–bg2);color:var(–tx);font-family:var(–font);outline:none}
+.chpwd-field input:focus{border-color:var(–gr)}
 .chpwd-err{background:#FEE2E2;color:#991B1B;border-radius:6px;padding:8px 12px;font-size:13px;margin-bottom:10px;display:none}
 .chpwd-btns{display:flex;gap:8px;margin-top:4px}
-.chpwd-btns button{flex:1;padding:11px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font);border:none}
-.btn-chpwd-ok{background:var(--gr);color:#fff}
-.btn-chpwd-cancel{background:var(--bg2);color:var(--tx2);border:1.5px solid var(--bd)!important}
+.chpwd-btns button{flex:1;padding:11px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:var(–font);border:none}
+.btn-chpwd-ok{background:var(–gr);color:#fff}
+.btn-chpwd-cancel{background:var(–bg2);color:var(–tx2);border:1.5px solid var(–bd)!important}
 
 /* HEADER */
-.header{background:var(--header-bg);padding:12px 18px;display:flex;align-items:center;gap:12px;flex-shrink:0}
+.header{background:var(–header-bg);padding:12px 18px;display:flex;align-items:center;gap:12px;flex-shrink:0}
 .logo-area{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
 .logo-img-wrap{width:40px;height:40px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
 .logo-img-wrap img{width:100%;height:100%;object-fit:contain;display:none}
 .logo-img-wrap svg{width:100%;height:100%}
 .logo-img-wrap.has-img img{display:block}
 .logo-img-wrap.has-img svg{display:none}
-.logo-line1,.logo-line2{color:var(--header-logo-text);font-size:17px;font-weight:700;letter-spacing:2px;line-height:1}
+.logo-line1,.logo-line2{color:var(–header-logo-text);font-size:17px;font-weight:700;letter-spacing:2px;line-height:1}
 .logo-sub-text{color:rgba(255,255,255,0.45);font-size:10px;letter-spacing:1px;margin-top:2px}
 .header-divider{width:1px;height:32px;background:rgba(255,255,255,0.15);flex-shrink:0}
 .header-title{color:rgba(255,255,255,0.5);font-size:12px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .header-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
 .user-badge{background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.9);padding:5px 11px;border-radius:16px;font-size:12px;font-weight:600;white-space:nowrap}
-.header-btn{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.7);padding:6px 11px;border-radius:7px;font-size:11px;cursor:pointer;font-family:var(--font);white-space:nowrap;transition:all .15s;font-weight:600}
+.header-btn{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.7);padding:6px 11px;border-radius:7px;font-size:11px;cursor:pointer;font-family:var(–font);white-space:nowrap;transition:all .15s;font-weight:600}
 .header-btn:hover{background:rgba(255,255,255,0.2);color:#fff}
 .header-btn.admin-btn{background:rgba(255,193,7,0.2);border-color:rgba(255,193,7,0.4);color:#ffd54f}
 
 /* TABS */
-.tabs{background:var(--card);border-bottom:1px solid var(--bd);display:flex;overflow-x:auto;flex-shrink:0;-webkit-overflow-scrolling:touch}
+.tabs{background:var(–card);border-bottom:1px solid var(–bd);display:flex;overflow-x:auto;flex-shrink:0;-webkit-overflow-scrolling:touch}
 .tabs::-webkit-scrollbar{display:none}
-.tab{padding:13px 16px;font-size:14px;font-weight:500;color:var(--tx3);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .15s;flex-shrink:0}
-.tab.active{color:var(--tab-active);border-bottom-color:var(--tab-active);font-weight:700}
+.tab{padding:13px 16px;font-size:14px;font-weight:500;color:var(–tx3);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .15s;flex-shrink:0}
+.tab.active{color:var(–tab-active);border-bottom-color:var(–tab-active);font-weight:700}
 
 /* CONTENT */
 .content{padding:15px;max-width:880px;margin:0 auto;width:100%;flex:1}
-.card{background:var(--card);border:1px solid var(--bd);border-radius:var(--radl);padding:17px;margin-bottom:13px;box-shadow:var(--shadow)}
-.card-title{font-size:11px;font-weight:700;color:var(--tx3);margin-bottom:13px;text-transform:uppercase;letter-spacing:.8px}
+.card{background:var(–card);border:1px solid var(–bd);border-radius:var(–radl);padding:17px;margin-bottom:13px;box-shadow:var(–shadow)}
+.card-title{font-size:11px;font-weight:700;color:var(–tx3);margin-bottom:13px;text-transform:uppercase;letter-spacing:.8px}
 
 /* FORM */
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
 .form-row.full{grid-template-columns:1fr;margin-bottom:0}
-.field label{display:block;font-size:13px;color:var(--tx2);margin-bottom:5px;font-weight:600}
-.field input,.field select,.field textarea{width:100%;padding:11px 13px;font-size:15px;border:1.5px solid var(--bd);border-radius:var(--rad);background:var(--bg2);color:var(--tx);font-family:var(--font);outline:none;transition:border-color .15s;-webkit-appearance:none}
-.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--gr);background:#fff}
+.field label{display:block;font-size:13px;color:var(–tx2);margin-bottom:5px;font-weight:600}
+.field input,.field select,.field textarea{width:100%;padding:11px 13px;font-size:15px;border:1.5px solid var(–bd);border-radius:var(–rad);background:var(–bg2);color:var(–tx);font-family:var(–font);outline:none;transition:border-color .15s;-webkit-appearance:none}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(–gr);background:#fff}
 .field textarea{resize:vertical;min-height:96px;line-height:1.5}
-.char-count{font-size:12px;color:var(--tx3);text-align:right;margin-top:3px}
+.char-count{font-size:12px;color:var(–tx3);text-align:right;margin-top:3px}
 .char-count.warn{color:#d97706}
 .char-count.danger{color:#dc2626}
 
 /* PILLS */
 .radio-group{display:flex;flex-wrap:wrap;gap:8px}
-.rpill{display:flex;align-items:center;gap:7px;padding:9px 15px;border:1.5px solid var(--bd);border-radius:22px;cursor:pointer;font-size:14px;font-weight:500;transition:all .12s;color:var(--tx2);background:var(--bg2);user-select:none}
-.rpill.sel{border-color:var(--gr);background:var(--gr-l);color:var(--gr-d);font-weight:700}
+.rpill{display:flex;align-items:center;gap:7px;padding:9px 15px;border:1.5px solid var(–bd);border-radius:22px;cursor:pointer;font-size:14px;font-weight:500;transition:all .12s;color:var(–tx2);background:var(–bg2);user-select:none}
+.rpill.sel{border-color:var(–gr);background:var(–gr-l);color:var(–gr-d);font-weight:700}
 .rdot{width:9px;height:9px;border-radius:50%;border:2px solid currentColor;flex-shrink:0}
-.rpill.sel .rdot{background:var(--gr);border-color:var(--gr)}
+.rpill.sel .rdot{background:var(–gr);border-color:var(–gr)}
 
 /* AUTOCOMPLETE */
 .autocomplete-wrap{position:relative}
-.ac-input{width:100%;padding:11px 13px;font-size:15px;border:1.5px solid var(--bd);border-radius:var(--rad);background:var(--bg2);color:var(--tx);font-family:var(--font);outline:none;transition:border-color .15s;-webkit-appearance:none}
-.ac-input:focus{border-color:var(--gr);background:#fff}
-.ac-dropdown{position:absolute;top:calc(100% + 3px);left:0;right:0;background:#fff;border:1.5px solid var(--gr);border-radius:var(--rad);z-index:200;max-height:220px;overflow-y:auto;display:none;box-shadow:0 8px 24px rgba(0,0,0,0.12)}
+.ac-input{width:100%;padding:11px 13px;font-size:15px;border:1.5px solid var(–bd);border-radius:var(–rad);background:var(–bg2);color:var(–tx);font-family:var(–font);outline:none;transition:border-color .15s;-webkit-appearance:none}
+.ac-input:focus{border-color:var(–gr);background:#fff}
+.ac-dropdown{position:absolute;top:calc(100% + 3px);left:0;right:0;background:#fff;border:1.5px solid var(–gr);border-radius:var(–rad);z-index:200;max-height:220px;overflow-y:auto;display:none;box-shadow:0 8px 24px rgba(0,0,0,0.12)}
 .ac-dropdown.open{display:block}
-.ac-item{padding:11px 15px;font-size:14px;cursor:pointer;color:var(--tx);border-bottom:1px solid #f1f5f9}
+.ac-item{padding:11px 15px;font-size:14px;cursor:pointer;color:var(–tx);border-bottom:1px solid #f1f5f9}
 .ac-item:last-child{border-bottom:none}
-.ac-item:hover,.ac-item.focused{background:var(--gr-l);color:var(--gr-d)}
-.ac-group{padding:7px 13px 3px;font-size:11px;font-weight:700;color:var(--tx3);letter-spacing:.8px;text-transform:uppercase;background:#f8fafc;border-bottom:1px solid #f1f5f9}
+.ac-item:hover,.ac-item.focused{background:var(–gr-l);color:var(–gr-d)}
+.ac-group{padding:7px 13px 3px;font-size:11px;font-weight:700;color:var(–tx3);letter-spacing:.8px;text-transform:uppercase;background:#f8fafc;border-bottom:1px solid #f1f5f9}
 
 /* BUTTONS */
-.btn-submit{width:100%;padding:14px;background:var(--gr);color:#fff;border:none;border-radius:var(--rad);font-size:16px;font-weight:700;cursor:pointer;font-family:var(--font);transition:all .15s;box-shadow:0 4px 14px rgba(29,158,117,0.28)}
+.btn-submit{width:100%;padding:14px;background:var(–gr);color:#fff;border:none;border-radius:var(–rad);font-size:16px;font-weight:700;cursor:pointer;font-family:var(–font);transition:all .15s;box-shadow:0 4px 14px rgba(29,158,117,0.28)}
 .btn-submit:hover{opacity:.92}
 .btn-submit:active{transform:scale(0.99)}
-.btn-secondary{padding:10px 16px;background:transparent;color:var(--gr);border:1.5px solid var(--gr);border-radius:var(--rad);font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all .15s}
-.btn-secondary:hover{background:var(--gr-l)}
+.btn-secondary{padding:10px 16px;background:transparent;color:var(–gr);border:1.5px solid var(–gr);border-radius:var(–rad);font-size:14px;font-weight:600;cursor:pointer;font-family:var(–font);transition:all .15s}
+.btn-secondary:hover{background:var(–gr-l)}
 .btn-row{display:flex;gap:9px;flex-wrap:wrap}
-.success-msg{background:#E1F5EE;color:var(--gr-d);border:1.5px solid var(--gr);border-radius:var(--rad);padding:13px 15px;font-size:14px;margin-bottom:13px;display:none;font-weight:600}
+.success-msg{background:#E1F5EE;color:var(–gr-d);border:1.5px solid var(–gr);border-radius:var(–rad);padding:13px 15px;font-size:14px;margin-bottom:13px;display:none;font-weight:600}
 .success-msg.show{display:block}
-.info-box{background:#EFF6FF;color:#1e40af;border:1px solid #93c5fd;border-radius:var(--rad);padding:12px 14px;font-size:13px;margin-bottom:13px;line-height:1.7}
+.info-box{background:#EFF6FF;color:#1e40af;border:1px solid #93c5fd;border-radius:var(–rad);padding:12px 14px;font-size:13px;margin-bottom:13px;line-height:1.7}
 .sync-bar{font-size:11px;color:rgba(255,255,255,0.7);white-space:nowrap;flex-shrink:0}
 
 /* RECORDS */
 .records-list{display:flex;flex-direction:column;gap:11px}
-.record-item{background:var(--card);border:1px solid var(--bd);border-radius:var(--radl);padding:14px;box-shadow:var(--shadow)}
+.record-item{background:var(–card);border:1px solid var(–bd);border-radius:var(–radl);padding:14px;box-shadow:var(–shadow)}
 .record-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:7px;gap:8px}
-.record-name{font-size:15px;font-weight:700;color:var(--tx)}
-.record-date{font-size:12px;color:var(--tx3);white-space:nowrap}
-.record-desc{font-size:14px;color:var(--tx2);line-height:1.5;margin-bottom:9px}
+.record-name{font-size:15px;font-weight:700;color:var(–tx)}
+.record-date{font-size:12px;color:var(–tx3);white-space:nowrap}
+.record-desc{font-size:14px;color:var(–tx2);line-height:1.5;margin-bottom:9px}
 .record-tags{display:flex;flex-wrap:wrap;gap:5px}
-.tag{font-size:12px;padding:3px 9px;border-radius:12px;background:var(--gr-l);color:var(--gr-d);font-weight:500}
+.tag{font-size:12px;padding:3px 9px;border-radius:12px;background:var(–gr-l);color:var(–gr-d);font-weight:500}
 .tag.blue{background:#DBEAFE;color:#1e40af}
 .tag.orange{background:#FEF3C7;color:#92400e}
-.empty-state{text-align:center;padding:36px 20px;color:var(--tx3);font-size:14px}
+.empty-state{text-align:center;padding:36px 20px;color:var(–tx3);font-size:14px}
 .record-del{background:none;border:none;color:#dc2626;font-size:15px;cursor:pointer;padding:3px 6px;border-radius:5px;display:none;flex-shrink:0}
 .record-del:hover{background:#FEE2E2}
 .show-del .record-del{display:flex}
 
 /* STATS */
 .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-bottom:14px}
-.stat-card{background:var(--card);border:1px solid var(--bd);border-radius:var(--radl);padding:14px;text-align:center;box-shadow:var(--shadow)}
-.stat-num{font-size:26px;font-weight:700;color:var(--gr);line-height:1}
-.stat-label{font-size:12px;color:var(--tx2);margin-top:3px;font-weight:500}
+.stat-card{background:var(–card);border:1px solid var(–bd);border-radius:var(–radl);padding:14px;text-align:center;box-shadow:var(–shadow)}
+.stat-num{font-size:26px;font-weight:700;color:var(–gr);line-height:1}
+.stat-label{font-size:12px;color:var(–tx2);margin-top:3px;font-weight:500}
 
 /* REPORT */
-.report-section{background:var(--card);border:1px solid var(--bd);border-radius:var(--radl);padding:17px;margin-bottom:13px;box-shadow:var(--shadow)}
-.gs-config{background:var(--bg2);border-radius:var(--rad);padding:13px;margin-bottom:11px}
-.gs-config label{display:block;font-size:13px;font-weight:700;color:var(--tx2);margin-bottom:5px}
-.gs-config input{width:100%;padding:9px 11px;font-size:13px;border:1.5px solid var(--bd);border-radius:8px;background:#fff;color:var(--tx);font-family:'DM Mono',monospace;outline:none}
-.gs-config input:focus{border-color:var(--gr)}
-.next-badge{display:inline-block;background:var(--gr-l);color:var(--gr-d);border:1px solid var(--gr);border-radius:12px;font-size:12px;padding:2px 9px;margin-left:7px;font-weight:700}
+.report-section{background:var(–card);border:1px solid var(–bd);border-radius:var(–radl);padding:17px;margin-bottom:13px;box-shadow:var(–shadow)}
+.gs-config{background:var(–bg2);border-radius:var(–rad);padding:13px;margin-bottom:11px}
+.gs-config label{display:block;font-size:13px;font-weight:700;color:var(–tx2);margin-bottom:5px}
+.gs-config input{width:100%;padding:9px 11px;font-size:13px;border:1.5px solid var(–bd);border-radius:8px;background:#fff;color:var(–tx);font-family:‘DM Mono’,monospace;outline:none}
+.gs-config input:focus{border-color:var(–gr)}
+.next-badge{display:inline-block;background:var(–gr-l);color:var(–gr-d);border:1px solid var(–gr);border-radius:12px;font-size:12px;padding:2px 9px;margin-left:7px;font-weight:700}
 .period-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:13px}
-.period-tab{padding:7px 13px;border:1.5px solid var(--bd);border-radius:18px;font-size:13px;font-weight:500;cursor:pointer;color:var(--tx2);background:var(--bg2);transition:all .12s}
-.period-tab.active{border-color:var(--gr);background:var(--gr-l);color:var(--gr-d);font-weight:700}
+.period-tab{padding:7px 13px;border:1.5px solid var(–bd);border-radius:18px;font-size:13px;font-weight:500;cursor:pointer;color:var(–tx2);background:var(–bg2);transition:all .12s}
+.period-tab.active{border-color:var(–gr);background:var(–gr-l);color:var(–gr-d);font-weight:700}
 
 /* MODALS */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:2000;display:none;align-items:center;justify-content:center;padding:18px}
 .modal-overlay.open{display:flex}
-.modal-box{background:#fff;border-radius:var(--radl);padding:22px;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,0.2);animation:fadeIn .2s ease}
+.modal-box{background:#fff;border-radius:var(–radl);padding:22px;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,0.2);animation:fadeIn .2s ease}
 @keyframes fadeIn{from{opacity:0;transform:scale(0.95)}to{opacity:1;transform:scale(1)}}
 .modal-icon{font-size:34px;text-align:center;margin-bottom:11px}
-.modal-title{font-size:16px;font-weight:700;color:var(--tx);text-align:center;margin-bottom:5px}
-.modal-sub{font-size:13px;color:var(--tx2);text-align:center;margin-bottom:18px;line-height:1.5}
-.modal-detail{background:var(--bg2);border-radius:8px;padding:11px;margin-bottom:16px;font-size:13px;color:var(--tx2);line-height:1.6}
-.modal-detail strong{color:var(--tx);display:block;margin-bottom:2px}
+.modal-title{font-size:16px;font-weight:700;color:var(–tx);text-align:center;margin-bottom:5px}
+.modal-sub{font-size:13px;color:var(–tx2);text-align:center;margin-bottom:18px;line-height:1.5}
+.modal-detail{background:var(–bg2);border-radius:8px;padding:11px;margin-bottom:16px;font-size:13px;color:var(–tx2);line-height:1.6}
+.modal-detail strong{color:var(–tx);display:block;margin-bottom:2px}
 .modal-btns{display:flex;gap:9px}
-.modal-btns button{flex:1;padding:12px;border-radius:var(--rad);font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font);border:none}
-.btn-confirm{background:var(--gr);color:#fff;box-shadow:0 4px 12px rgba(29,158,117,0.25)}
-.btn-cancel-modal{background:var(--bg2);color:var(--tx2);border:1.5px solid var(--bd)!important}
+.modal-btns button{flex:1;padding:12px;border-radius:var(–rad);font-size:14px;font-weight:700;cursor:pointer;font-family:var(–font);border:none}
+.btn-confirm{background:var(–gr);color:#fff;box-shadow:0 4px 12px rgba(29,158,117,0.25)}
+.btn-cancel-modal{background:var(–bg2);color:var(–tx2);border:1.5px solid var(–bd)!important}
 
 /* ADMIN PANEL */
 .admin-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:3000;display:none;align-items:flex-end;justify-content:center}
@@ -179,74 +180,76 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
 .admin-panel{background:#fff;border-radius:20px 20px 0 0;width:100%;max-width:600px;max-height:92vh;overflow-y:auto;padding:22px;animation:slideUp .25s ease}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 .admin-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
-.admin-title{font-size:17px;font-weight:700;color:var(--tx)}
-.admin-close{background:var(--bg2);border:none;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;color:var(--tx2)}
-.admin-section{margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--bd)}
+.admin-title{font-size:17px;font-weight:700;color:var(–tx)}
+.admin-close{background:var(–bg2);border:none;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;color:var(–tx2)}
+.admin-section{margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(–bd)}
 .admin-section:last-of-type{border-bottom:none}
-.admin-section-title{font-size:12px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:13px}
+.admin-section-title{font-size:12px;font-weight:700;color:var(–tx3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:13px}
 .admin-field{margin-bottom:11px}
-.admin-field label{display:block;font-size:13px;font-weight:600;color:var(--tx2);margin-bottom:5px}
-.admin-field input[type=text],.admin-field input[type=number],.admin-field input[type=password],.admin-field input[type=range],.admin-field select{width:100%;padding:9px 11px;font-size:14px;border:1.5px solid var(--bd);border-radius:8px;background:var(--bg2);color:var(--tx);font-family:var(--font);outline:none}
-.admin-field input:focus,.admin-field select:focus{border-color:var(--gr)}
-.admin-field input[type=file]{width:100%;font-size:13px;color:var(--tx2)}
+.admin-field label{display:block;font-size:13px;font-weight:600;color:var(–tx2);margin-bottom:5px}
+.admin-field input[type=text],.admin-field input[type=number],.admin-field input[type=password],.admin-field input[type=range],.admin-field select{width:100%;padding:9px 11px;font-size:14px;border:1.5px solid var(–bd);border-radius:8px;background:var(–bg2);color:var(–tx);font-family:var(–font);outline:none}
+.admin-field input:focus,.admin-field select:focus{border-color:var(–gr)}
+.admin-field input[type=file]{width:100%;font-size:13px;color:var(–tx2)}
 .admin-field input[type=range]{padding:4px 0;border:none;background:none;cursor:pointer}
 .color-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.color-item label{display:block;font-size:12px;font-weight:600;color:var(--tx2);margin-bottom:4px}
+.color-item label{display:block;font-size:12px;font-weight:600;color:var(–tx2);margin-bottom:4px}
 .color-pick{display:flex;align-items:center;gap:8px}
-.color-pick input[type=color]{width:40px;height:36px;padding:2px;border:1.5px solid var(--bd);border-radius:7px;cursor:pointer;background:none;flex-shrink:0}
-.color-pick code{font-size:12px;color:var(--tx3);font-family:'DM Mono',monospace}
-.img-preview{max-width:100px;max-height:50px;object-fit:contain;border:1px solid var(--bd);border-radius:6px;margin-top:6px;display:none}
+.color-pick input[type=color]{width:40px;height:36px;padding:2px;border:1.5px solid var(–bd);border-radius:7px;cursor:pointer;background:none;flex-shrink:0}
+.color-pick code{font-size:12px;color:var(–tx3);font-family:‘DM Mono’,monospace}
+.img-preview{max-width:100px;max-height:50px;object-fit:contain;border:1px solid var(–bd);border-radius:6px;margin-top:6px;display:none}
 .img-preview.show{display:block}
 .switch-row{display:flex;align-items:center;justify-content:space-between;padding:4px 0}
-.switch-row span{font-size:14px;font-weight:500;color:var(--tx2)}
+.switch-row span{font-size:14px;font-weight:500;color:var(–tx2)}
 .toggle{position:relative;width:44px;height:24px;flex-shrink:0}
 .toggle input{opacity:0;width:0;height:0}
 .tog-slider{position:absolute;inset:0;background:#cbd5e1;border-radius:24px;cursor:pointer;transition:.2s}
-.tog-slider:before{content:'';position:absolute;width:18px;height:18px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,0.2)}
-.toggle input:checked+.tog-slider{background:var(--gr)}
+.tog-slider:before{content:’’;position:absolute;width:18px;height:18px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,0.2)}
+.toggle input:checked+.tog-slider{background:var(–gr)}
 .toggle input:checked+.tog-slider:before{transform:translateX(20px)}
-.btn-admin-save{width:100%;padding:13px;background:var(--gr);color:#fff;border:none;border-radius:var(--rad);font-size:15px;font-weight:700;cursor:pointer;font-family:var(--font);box-shadow:0 4px 12px rgba(29,158,117,0.22);margin-top:4px}
+.btn-admin-save{width:100%;padding:13px;background:var(–gr);color:#fff;border:none;border-radius:var(–rad);font-size:15px;font-weight:700;cursor:pointer;font-family:var(–font);box-shadow:0 4px 12px rgba(29,158,117,0.22);margin-top:4px}
 
 /* INLINE REPORT VIEWER */
-.report-viewer{background:var(--card);border:1px solid var(--bd);border-radius:var(--radl);padding:16px;margin-top:13px}
-.report-viewer-title{font-size:14px;font-weight:700;color:var(--tx);margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
+.report-viewer{background:var(–card);border:1px solid var(–bd);border-radius:var(–radl);padding:16px;margin-top:13px}
+.report-viewer-title{font-size:14px;font-weight:700;color:var(–tx);margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
 .report-table{width:100%;border-collapse:collapse;font-size:13px}
-.report-table th{background:var(--gr);color:#fff;padding:8px 10px;text-align:left;font-weight:600}
-.report-table td{padding:8px 10px;border-bottom:1px solid #f1f5f9;color:var(--tx2);vertical-align:top;line-height:1.4}
+.report-table th{background:var(–gr);color:#fff;padding:8px 10px;text-align:left;font-weight:600}
+.report-table td{padding:8px 10px;border-bottom:1px solid #f1f5f9;color:var(–tx2);vertical-align:top;line-height:1.4}
 .report-table tr:nth-child(even) td{background:#f8fffe}
 .report-table tr:last-child td{border-bottom:none}
 
 /* SEARCH */
-.search-bar{background:var(--card);border:1px solid var(--bd);border-radius:var(--radl);padding:13px 15px;margin-bottom:13px;box-shadow:var(--shadow)}
-.search-bar input{width:100%;border:none;background:none;font-size:15px;color:var(--tx);font-family:var(--font);outline:none}
+.search-bar{background:var(–card);border:1px solid var(–bd);border-radius:var(–radl);padding:13px 15px;margin-bottom:13px;box-shadow:var(–shadow)}
+.search-bar input{width:100%;border:none;background:none;font-size:15px;color:var(–tx);font-family:var(–font);outline:none}
 
 /* RESPONSIVE */
 @media(max-width:600px){
-  .content{padding:11px}
-  .card{padding:15px;margin-bottom:11px}
-  .form-row{grid-template-columns:1fr}
-  .stats-row{grid-template-columns:1fr 1fr}
-  .stat-card:last-child{grid-column:span 2}
-  .tab{padding:12px 13px;font-size:13px}
-  .rpill{padding:10px 13px;font-size:14px;flex:1;justify-content:center}
-  .radio-group{display:grid;grid-template-columns:1fr 1fr}
-  .btn-submit{padding:15px;font-size:16px}
-  .admin-panel{padding:18px;max-height:94vh}
-  .header{padding:11px 14px;gap:9px}
-  .logo-line1,.logo-line2{font-size:15px}
-  .color-grid{grid-template-columns:1fr}
+.content{padding:11px}
+.card{padding:15px;margin-bottom:11px}
+.form-row{grid-template-columns:1fr}
+.stats-row{grid-template-columns:1fr 1fr}
+.stat-card:last-child{grid-column:span 2}
+.tab{padding:12px 13px;font-size:13px}
+.rpill{padding:10px 13px;font-size:14px;flex:1;justify-content:center}
+.radio-group{display:grid;grid-template-columns:1fr 1fr}
+.btn-submit{padding:15px;font-size:16px}
+.admin-panel{padding:18px;max-height:94vh}
+.header{padding:11px 14px;gap:9px}
+.logo-line1,.logo-line2{font-size:15px}
+.color-grid{grid-template-columns:1fr}
 }
 @media(max-width:380px){
-  .stats-row{grid-template-columns:1fr}
-  .stat-card:last-child{grid-column:auto}
-  .radio-group{grid-template-columns:1fr}
-  .header-title{display:none}
+.stats-row{grid-template-columns:1fr}
+.stat-card:last-child{grid-column:auto}
+.radio-group{grid-template-columns:1fr}
+.header-title{display:none}
 }
 </style>
+
 </head>
 <body>
 
 <!-- LOGIN -->
+
 <div class="login-screen" id="login-screen">
   <div class="login-box">
     <div class="login-logo-area">
@@ -285,10 +288,14 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
       <input type="password" id="login-pass" placeholder="Digite sua senha..." onkeydown="if(event.key==='Enter')doLogin()"/>
     </div>
     <button class="login-btn" onclick="doLogin()">Entrar</button>
+    <div style="text-align:center;margin-top:14px">
+      <a href="#" onclick="esqueciSenha();return false" style="font-size:13px;color:var(--gr);text-decoration:none;font-weight:600">Esqueci minha senha</a>
+    </div>
   </div>
 </div>
 
 <!-- CHANGE PASSWORD MODAL -->
+
 <div class="chpwd-overlay" id="chpwd-overlay">
   <div class="chpwd-box">
     <div class="chpwd-title">🔐 Alterar Senha</div>
@@ -300,6 +307,13 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
     <div class="chpwd-field">
       <label>Nova senha</label>
       <input type="password" id="chpwd-new" placeholder="Nova senha..."/>
+      <div style="font-size:11px;color:var(--tx3);margin-top:6px;line-height:1.5">
+        Mínimo 8 caracteres com:<br>
+        • 1 letra maiúscula (A-Z)<br>
+        • 1 letra minúscula (a-z)<br>
+        • 1 número (0-9)<br>
+        • 1 caractere especial (! @ # $ % & *)
+      </div>
     </div>
     <div class="chpwd-field">
       <label>Confirmar nova senha</label>
@@ -313,6 +327,7 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
 </div>
 
 <!-- CONFIRM MODAL -->
+
 <div class="modal-overlay" id="confirm-modal">
   <div class="modal-box">
     <div class="modal-icon">📋</div>
@@ -327,6 +342,7 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
 </div>
 
 <!-- SUCCESS MODAL -->
+
 <div class="modal-overlay" id="success-modal">
   <div class="modal-box">
     <div class="modal-icon">✅</div>
@@ -339,6 +355,7 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
 </div>
 
 <!-- ADMIN PANEL -->
+
 <div class="admin-overlay" id="admin-overlay" onclick="closeAdmin(event)">
   <div class="admin-panel" id="admin-panel">
     <div class="admin-header">
@@ -346,100 +363,104 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
       <button class="admin-close" onclick="closeAdmin(true)">×</button>
     </div>
 
-    <div class="admin-section">
-      <div class="admin-section-title">Logo e Identidade Visual</div>
-      <div class="admin-field">
-        <label>URL do logo (cabeçalho) <span style="background:#E1F5EE;color:#085041;font-size:10px;padding:1px 6px;border-radius:8px">SINCRONIZA</span></label>
-        <input type="text" id="adm-logo-url" placeholder="https://raw.githubusercontent.com/..." oninput="admLogoUrl()"/>
-        <img id="adm-logo-preview" class="img-preview" src="" alt=""/>
-      </div>
-      <div class="admin-field">
-        <label>URL do logo (tela de login) <span style="background:#E1F5EE;color:#085041;font-size:10px;padding:1px 6px;border-radius:8px">SINCRONIZA</span></label>
-        <input type="text" id="adm-login-logo-url" placeholder="https://raw.githubusercontent.com/..." oninput="admLoginLogoUrl()"/>
-        <img id="adm-login-logo-preview" class="img-preview" src="" alt=""/>
-      </div>
-      <div class="admin-field">
-        <label>— ou — Upload do logo (somente neste dispositivo)</label>
-        <input type="file" id="adm-logo-file" accept="image/*" onchange="admLogoUpload(this)"/>
-      </div>
-      <div class="admin-field"><label>Linha 1 do nome (ex: ARP)</label><input type="text" id="adm-l1" value="ARP" oninput="admPreview()"/></div>
-      <div class="admin-field"><label>Linha 2 do nome (ex: TECH)</label><input type="text" id="adm-l2" value="TECH" oninput="admPreview()"/></div>
-      <div class="admin-field"><label>Subtítulo (ex: AMAZÔNIA)</label><input type="text" id="adm-sub" value="AMAZÔNIA" oninput="admPreview()"/></div>
-      <div class="admin-field"><label>Título do cabeçalho</label><input type="text" id="adm-ht" value="Registro de Atendimento" oninput="admPreview()"/></div>
-    </div>
+```
+<div class="admin-section">
+  <div class="admin-section-title">Logo e Identidade Visual</div>
+  <div class="admin-field">
+    <label>URL do logo (cabeçalho) <span style="background:#E1F5EE;color:#085041;font-size:10px;padding:1px 6px;border-radius:8px">SINCRONIZA</span></label>
+    <input type="text" id="adm-logo-url" placeholder="https://raw.githubusercontent.com/..." oninput="admLogoUrl()"/>
+    <img id="adm-logo-preview" class="img-preview" src="" alt=""/>
+  </div>
+  <div class="admin-field">
+    <label>URL do logo (tela de login) <span style="background:#E1F5EE;color:#085041;font-size:10px;padding:1px 6px;border-radius:8px">SINCRONIZA</span></label>
+    <input type="text" id="adm-login-logo-url" placeholder="https://raw.githubusercontent.com/..." oninput="admLoginLogoUrl()"/>
+    <img id="adm-login-logo-preview" class="img-preview" src="" alt=""/>
+  </div>
+  <div class="admin-field">
+    <label>— ou — Upload do logo (somente neste dispositivo)</label>
+    <input type="file" id="adm-logo-file" accept="image/*" onchange="admLogoUpload(this)"/>
+  </div>
+  <div class="admin-field"><label>Linha 1 do nome (ex: ARP)</label><input type="text" id="adm-l1" value="ARP" oninput="admPreview()"/></div>
+  <div class="admin-field"><label>Linha 2 do nome (ex: TECH)</label><input type="text" id="adm-l2" value="TECH" oninput="admPreview()"/></div>
+  <div class="admin-field"><label>Subtítulo (ex: AMAZÔNIA)</label><input type="text" id="adm-sub" value="AMAZÔNIA" oninput="admPreview()"/></div>
+  <div class="admin-field"><label>Título do cabeçalho</label><input type="text" id="adm-ht" value="Registro de Atendimento" oninput="admPreview()"/></div>
+</div>
 
-    <div class="admin-section">
-      <div class="admin-section-title">Cores</div>
-      <div class="color-grid">
-        <div class="color-item"><label>Cabeçalho</label><div class="color-pick"><input type="color" id="adm-hc" value="#0a2540" oninput="admPreview()"/><code id="adm-hc-v">#0a2540</code></div></div>
-        <div class="color-item"><label>Cor principal</label><div class="color-pick"><input type="color" id="adm-mc" value="#1D9E75" oninput="admPreview()"/><code id="adm-mc-v">#1D9E75</code></div></div>
-        <div class="color-item"><label>Texto do logo</label><div class="color-pick"><input type="color" id="adm-lc" value="#ffffff" oninput="admPreview()"/><code id="adm-lc-v">#ffffff</code></div></div>
-        <div class="color-item"><label>Abas ativas</label><div class="color-pick"><input type="color" id="adm-tc" value="#1D9E75" oninput="admPreview()"/><code id="adm-tc-v">#1D9E75</code></div></div>
-      </div>
-    </div>
+<div class="admin-section">
+  <div class="admin-section-title">Cores</div>
+  <div class="color-grid">
+    <div class="color-item"><label>Cabeçalho</label><div class="color-pick"><input type="color" id="adm-hc" value="#0a2540" oninput="admPreview()"/><code id="adm-hc-v">#0a2540</code></div></div>
+    <div class="color-item"><label>Cor principal</label><div class="color-pick"><input type="color" id="adm-mc" value="#1D9E75" oninput="admPreview()"/><code id="adm-mc-v">#1D9E75</code></div></div>
+    <div class="color-item"><label>Texto do logo</label><div class="color-pick"><input type="color" id="adm-lc" value="#ffffff" oninput="admPreview()"/><code id="adm-lc-v">#ffffff</code></div></div>
+    <div class="color-item"><label>Abas ativas</label><div class="color-pick"><input type="color" id="adm-tc" value="#1D9E75" oninput="admPreview()"/><code id="adm-tc-v">#1D9E75</code></div></div>
+  </div>
+</div>
 
-    <div class="admin-section">
-      <div class="admin-section-title">Tipografia</div>
-      <div class="admin-field">
-        <label>Tamanho da fonte: <span id="adm-fs-val">16px</span></label>
-        <input type="range" id="adm-fs" min="14" max="22" value="16" step="1" oninput="admPreview()"/>
-      </div>
-      <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:4px">
-        <button class="btn-secondary" style="font-size:12px;padding:5px 11px" onclick="setAdmFont(14)">Pequena</button>
-        <button class="btn-secondary" style="font-size:12px;padding:5px 11px" onclick="setAdmFont(16)">Normal</button>
-        <button class="btn-secondary" style="font-size:12px;padding:5px 11px" onclick="setAdmFont(18)">Grande</button>
-        <button class="btn-secondary" style="font-size:12px;padding:5px 11px" onclick="setAdmFont(20)">Extra</button>
-      </div>
-    </div>
+<div class="admin-section">
+  <div class="admin-section-title">Tipografia</div>
+  <div class="admin-field">
+    <label>Tamanho da fonte: <span id="adm-fs-val">16px</span></label>
+    <input type="range" id="adm-fs" min="14" max="22" value="16" step="1" oninput="admPreview()"/>
+  </div>
+  <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:4px">
+    <button class="btn-secondary" style="font-size:12px;padding:5px 11px" onclick="setAdmFont(14)">Pequena</button>
+    <button class="btn-secondary" style="font-size:12px;padding:5px 11px" onclick="setAdmFont(16)">Normal</button>
+    <button class="btn-secondary" style="font-size:12px;padding:5px 11px" onclick="setAdmFont(18)">Grande</button>
+    <button class="btn-secondary" style="font-size:12px;padding:5px 11px" onclick="setAdmFont(20)">Extra</button>
+  </div>
+</div>
 
-    <div class="admin-section">
-      <div class="admin-section-title">Imagem de Fundo</div>
-      <div class="admin-field">
-        <label>URL da imagem de fundo <span style="background:#E1F5EE;color:#085041;font-size:10px;padding:1px 6px;border-radius:8px">SINCRONIZA</span></label>
-        <input type="text" id="adm-bg-url" placeholder="https://..." oninput="admBgUrl()"/>
-      </div>
-      <div class="admin-field">
-        <label>— ou — Upload (somente neste dispositivo)</label>
-        <input type="file" id="adm-bg-file" accept="image/*" onchange="admBgUpload(this)"/>
-      </div>
-      <div class="admin-field">
-        <label>Opacidade da sobreposição: <span id="adm-bg-op-val">90%</span></label>
-        <input type="range" id="adm-bg-op" min="0" max="100" value="90" oninput="admPreview()"/>
-      </div>
-      <button class="btn-secondary" style="font-size:12px;padding:6px 12px" onclick="admRemoveBg()">Remover fundo</button>
-    </div>
+<div class="admin-section">
+  <div class="admin-section-title">Imagem de Fundo</div>
+  <div class="admin-field">
+    <label>URL da imagem de fundo <span style="background:#E1F5EE;color:#085041;font-size:10px;padding:1px 6px;border-radius:8px">SINCRONIZA</span></label>
+    <input type="text" id="adm-bg-url" placeholder="https://..." oninput="admBgUrl()"/>
+  </div>
+  <div class="admin-field">
+    <label>— ou — Upload (somente neste dispositivo)</label>
+    <input type="file" id="adm-bg-file" accept="image/*" onchange="admBgUpload(this)"/>
+  </div>
+  <div class="admin-field">
+    <label>Opacidade da sobreposição: <span id="adm-bg-op-val">90%</span></label>
+    <input type="range" id="adm-bg-op" min="0" max="100" value="90" oninput="admPreview()"/>
+  </div>
+  <button class="btn-secondary" style="font-size:12px;padding:6px 12px" onclick="admRemoveBg()">Remover fundo</button>
+</div>
 
-    <div class="admin-section">
-      <div class="admin-section-title">Gerenciar Senhas</div>
-      <div style="font-size:12px;color:var(--tx3);margin-bottom:10px">Deixe em branco para manter a senha atual.</div>
-      <div id="adm-senhas-fields"></div>
-      <button class="btn-secondary" style="font-size:12px;padding:7px 13px;margin-top:6px" onclick="admSalvarSenhas()">Salvar senhas</button>
-      <div id="adm-senhas-msg" style="font-size:12px;color:var(--gr-d);margin-top:6px;display:none"></div>
-    </div>
+<div class="admin-section">
+  <div class="admin-section-title">Gerenciar Senhas dos Usuários</div>
+  <div style="font-size:12px;color:var(--tx3);margin-bottom:10px">Como Admin, você pode redefinir as senhas dos usuários sem precisar saber a senha atual. Deixe em branco para manter a senha atual.</div>
+  <div id="adm-senhas-fields"></div>
+  <button class="btn-secondary" style="font-size:12px;padding:7px 13px;margin-top:6px" onclick="admSalvarSenhas()">Salvar senhas</button>
+  <div id="adm-senhas-msg" style="font-size:12px;color:var(--gr-d);margin-top:6px;display:none"></div>
+</div>
 
-    <div class="admin-section">
-      <div class="admin-section-title">Configuração do Sheets</div>
-      <div class="admin-field">
-        <label>URL do Apps Script Web App</label>
-        <input type="text" id="gs-url" placeholder="https://script.google.com/macros/s/XXXX/exec" oninput="saveGsUrl()"/>
-      </div>
-      <button class="btn-secondary" style="font-size:12px;padding:7px 13px" onclick="testConnection()">Testar conexão</button>
-    </div>
+<div class="admin-section">
+  <div class="admin-section-title">Configuração do Sheets</div>
+  <div class="admin-field">
+    <label>URL do Apps Script Web App</label>
+    <input type="text" id="gs-url" placeholder="https://script.google.com/macros/s/XXXX/exec" oninput="saveGsUrl()"/>
+  </div>
+  <button class="btn-secondary" style="font-size:12px;padding:7px 13px" onclick="testConnection()">Testar conexão</button>
+</div>
 
-    <div class="admin-section">
-      <div class="admin-section-title">Visibilidade</div>
-      <div class="switch-row">
-        <span>Mostrar botão "Admin" no cabeçalho</span>
-        <label class="toggle"><input type="checkbox" id="adm-show-btn" checked onchange="admPreview()"/><span class="tog-slider"></span></label>
-      </div>
-    </div>
+<div class="admin-section">
+  <div class="admin-section-title">Visibilidade</div>
+  <div class="switch-row">
+    <span>Mostrar botão "Admin" no cabeçalho</span>
+    <label class="toggle"><input type="checkbox" id="adm-show-btn" checked onchange="admPreview()"/><span class="tog-slider"></span></label>
+  </div>
+</div>
 
-    <button class="btn-admin-save" onclick="admSave()">✓ Salvar configurações</button>
-    <div style="margin-top:9px"><button class="btn-secondary" style="width:100%;font-size:13px" onclick="admReset()">Restaurar padrão</button></div>
+<button class="btn-admin-save" onclick="admSave()">✓ Salvar configurações</button>
+<div style="margin-top:9px"><button class="btn-secondary" style="width:100%;font-size:13px" onclick="admReset()">Restaurar padrão</button></div>
+```
+
   </div>
 </div>
 
 <!-- APP -->
+
 <div id="app">
   <div class="header" id="main-header">
     <div class="logo-area">
@@ -471,177 +492,179 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
   <div class="content">
     <div id="success-banner" class="success-msg">✓ Operação realizada com sucesso!</div>
 
-    <!-- TAB: NOVO REGISTRO -->
-    <div id="tab-form" style="display:none">
-      <div class="card">
-        <div class="card-title">Responsável</div>
-        <div class="radio-group" id="resp-group"></div>
-        <div id="other-name-wrap" style="display:none;margin-top:10px" class="field">
-          <label>Nome</label>
-          <input type="text" id="other-name" placeholder="Digite o nome..."/>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-title">Data e Horário</div>
-        <div class="form-row">
-          <div class="field"><label>Data</label><input type="date" id="f-date"/></div>
-          <div class="field"><label>Hora do atendimento</label><input type="time" id="f-start"/></div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-title">Local do Atendimento</div>
-        <div class="field">
-          <label>Digite para buscar setor ou escola</label>
-          <div class="autocomplete-wrap">
-            <input class="ac-input" id="ac-input" type="text" placeholder="Ex: DTI, Rosa de Sarom, Administrativo..." autocomplete="off" oninput="acFilter()" onfocus="acFilter()" onkeydown="acKey(event)"/>
-            <div class="ac-dropdown" id="ac-drop"></div>
-          </div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-title">Descrição da Atividade</div>
-        <div class="field form-row full">
-          <textarea id="f-desc" maxlength="280" placeholder="Descreva a atividade desenvolvida..." oninput="updCount()"></textarea>
-          <div class="char-count" id="cc">0 / 280</div>
-        </div>
-      </div>
-      <button class="btn-submit" onclick="submitForm()">Salvar Registro</button>
+```
+<!-- TAB: NOVO REGISTRO -->
+<div id="tab-form" style="display:none">
+  <div class="card">
+    <div class="card-title">Responsável</div>
+    <div class="radio-group" id="resp-group"></div>
+    <div id="other-name-wrap" style="display:none;margin-top:10px" class="field">
+      <label>Nome</label>
+      <input type="text" id="other-name" placeholder="Digite o nome..."/>
     </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Data e Horário</div>
+    <div class="form-row">
+      <div class="field"><label>Data</label><input type="date" id="f-date"/></div>
+      <div class="field"><label>Hora do atendimento</label><input type="time" id="f-start"/></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Local do Atendimento</div>
+    <div class="field">
+      <label>Digite para buscar unidade ou local</label>
+      <div class="autocomplete-wrap">
+        <input class="ac-input" id="ac-input" type="text" placeholder="Ex: DTI, Rosa de Sarom, Administrativo..." autocomplete="off" oninput="acFilter()" onfocus="acFilter()" onkeydown="acKey(event)"/>
+        <div class="ac-dropdown" id="ac-drop"></div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Descrição da Atividade</div>
+    <div class="field form-row full">
+      <textarea id="f-desc" maxlength="280" placeholder="Descreva a atividade desenvolvida..." oninput="updCount()"></textarea>
+      <div class="char-count" id="cc">0 / 280</div>
+    </div>
+  </div>
+  <button class="btn-submit" onclick="submitForm()">Salvar Registro</button>
+</div>
 
-    <!-- TAB: REGISTROS -->
-    <div id="tab-list" style="display:none">
-      <div class="search-bar"><input type="text" id="search-q" placeholder="🔍  Buscar por responsável, local ou descrição..." oninput="renderList()"/></div>
-      <div id="rec-list" class="records-list"></div>
-    </div>
+<!-- TAB: REGISTROS -->
+<div id="tab-list" style="display:none">
+  <div class="search-bar"><input type="text" id="search-q" placeholder="🔍  Buscar por responsável, local ou descrição..." oninput="renderList()"/></div>
+  <div id="rec-list" class="records-list"></div>
+</div>
 
-    <!-- TAB: RESUMO -->
-    <div id="tab-stats" style="display:none">
-      <!-- ADMIN: filtro por responsável -->
-      <div id="stats-filter" style="display:none;margin-bottom:13px">
-        <div class="card" style="padding:12px 15px">
-          <div class="field" style="margin:0">
-            <label style="margin-bottom:6px">Filtrar por responsável</label>
-            <select id="stats-resp-filter" onchange="renderStats()">
-              <option value="">Todos</option>
-              <option value="Ayrton">Ayrton</option>
-              <option value="Giovanna">Giovanna</option>
-              <option value="Neudson">Neudson</option>
-              <option value="Rodrigo">Rodrigo</option>
-            </select>
-          </div>
-        </div>
+<!-- TAB: RESUMO -->
+<div id="tab-stats" style="display:none">
+  <!-- ADMIN: filtro por responsável -->
+  <div id="stats-filter" style="display:none;margin-bottom:13px">
+    <div class="card" style="padding:12px 15px">
+      <div class="field" style="margin:0">
+        <label style="margin-bottom:6px">Filtrar por responsável</label>
+        <select id="stats-resp-filter" onchange="renderStats()">
+          <option value="">Todos</option>
+          <option value="Ayrton">Ayrton</option>
+          <option value="Giovanna">Giovanna</option>
+          <option value="Neudson">Neudson</option>
+          <option value="Rodrigo">Rodrigo</option>
+        </select>
       </div>
-      <div class="stats-row">
-        <div class="stat-card"><div class="stat-num" id="st-tot">0</div><div class="stat-label">Total</div></div>
-        <div class="stat-card"><div class="stat-num" id="st-tod">0</div><div class="stat-label">Hoje</div></div>
-        <div class="stat-card"><div class="stat-num" id="st-wk">0</div><div class="stat-label">Esta semana</div></div>
-      </div>
-      <div class="card"><div class="card-title">Por responsável</div><div id="st-resp"></div></div>
-      <div class="card"><div class="card-title">Por local</div><div id="st-loc"></div></div>
     </div>
+  </div>
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-num" id="st-tot">0</div><div class="stat-label">Total</div></div>
+    <div class="stat-card"><div class="stat-num" id="st-tod">0</div><div class="stat-label">Hoje</div></div>
+    <div class="stat-card"><div class="stat-num" id="st-wk">0</div><div class="stat-label">Esta semana</div></div>
+  </div>
+  <div class="card"><div class="card-title">Por responsável</div><div id="st-resp"></div></div>
+  <div class="card"><div class="card-title">Por local</div><div id="st-loc"></div></div>
+</div>
 
-    <!-- TAB: SHEETS (admin only) -->
-    <div id="tab-sheets" style="display:none">
-      <div class="info-box">
-        <strong>Integração com Google Sheets</strong><br>
-        Configure a URL do Apps Script na aba Admin. Relatórios gerados automaticamente no dia 23 (ou último dia útil anterior).<br><br>
-        <strong>Próximo relatório:</strong><span class="next-badge" id="next-report-date">—</span>
-      </div>
-      <div class="report-section">
-        <div class="card-title">Gerar relatório por período</div>
-        <div class="period-tabs">
-          <div class="period-tab active" onclick="setPeriod('mensal')">Mensal</div>
-          <div class="period-tab" onclick="setPeriod('quinzenal')">Quinzenal</div>
-          <div class="period-tab" onclick="setPeriod('semanal')">Semanal</div>
-          <div class="period-tab" onclick="setPeriod('personalizado')">Personalizado</div>
-        </div>
-        <div id="period-mensal">
-          <div class="form-row" style="margin-bottom:13px">
-            <div class="field"><label>Mês</label><select id="rep-month"><option value="0">Janeiro</option><option value="1">Fevereiro</option><option value="2">Março</option><option value="3">Abril</option><option value="4">Maio</option><option value="5">Junho</option><option value="6">Julho</option><option value="7">Agosto</option><option value="8">Setembro</option><option value="9">Outubro</option><option value="10">Novembro</option><option value="11">Dezembro</option></select></div>
-            <div class="field"><label>Ano</label><input type="number" id="rep-year" value="2025" min="2024" max="2035"/></div>
-          </div>
-        </div>
-        <div id="period-quinzenal" style="display:none">
-          <div class="form-row" style="margin-bottom:13px">
-            <div class="field"><label>Mês</label><select id="rep-month-q"><option value="0">Janeiro</option><option value="1">Fevereiro</option><option value="2">Março</option><option value="3">Abril</option><option value="4">Maio</option><option value="5">Junho</option><option value="6">Julho</option><option value="7">Agosto</option><option value="8">Setembro</option><option value="9">Outubro</option><option value="10">Novembro</option><option value="11">Dezembro</option></select></div>
-            <div class="field"><label>Ano</label><input type="number" id="rep-year-q" value="2025" min="2024" max="2035"/></div>
-          </div>
-          <div class="field" style="margin-bottom:13px"><label>Quinzena</label><select id="rep-quinzena"><option value="1">1ª quinzena (1 ao 15)</option><option value="2">2ª quinzena (16 ao último)</option></select></div>
-        </div>
-        <div id="period-semanal" style="display:none">
-          <div class="form-row" style="margin-bottom:13px">
-            <div class="field"><label>Data início</label><input type="date" id="rep-sem-ini"/></div>
-            <div class="field"><label>Data fim</label><input type="date" id="rep-sem-fim"/></div>
-          </div>
-        </div>
-        <div id="period-personalizado" style="display:none">
-          <div class="form-row" style="margin-bottom:8px">
-            <div class="field"><label>Data início</label><input type="date" id="rep-per-ini"/></div>
-            <div class="field"><label>Data fim</label><input type="date" id="rep-per-fim"/></div>
-          </div>
-          <div class="field" style="margin-bottom:13px"><label>Responsável (vazio = todos)</label>
-            <select id="rep-per-resp"><option value="">Todos</option><option value="Ayrton">Ayrton</option><option value="Giovanna">Giovanna</option><option value="Neudson">Neudson</option><option value="Rodrigo">Rodrigo</option></select>
-          </div>
-        </div>
-        <div class="btn-row">
-          <button class="btn-secondary" onclick="exportCSV()">Exportar CSV</button>
-          <button class="btn-secondary" onclick="sendToSheets()">Enviar ao Sheets</button>
-        </div>
-        <div id="export-msg" style="margin-top:10px;font-size:13px;color:var(--tx2)"></div>
-      </div>
-      <div class="report-section">
-        <div class="card-title">Histórico de envios</div>
-        <div id="send-history" style="font-size:13px;color:var(--tx2)">Nenhum envio registrado.</div>
+<!-- TAB: SHEETS (admin only) -->
+<div id="tab-sheets" style="display:none">
+  <div class="info-box">
+    <strong>Integração com Google Sheets</strong><br>
+    Configure a URL do Apps Script na aba Admin. Relatórios gerados automaticamente no dia 23 (ou último dia útil anterior).<br><br>
+    <strong>Próximo relatório:</strong><span class="next-badge" id="next-report-date">—</span>
+  </div>
+  <div class="report-section">
+    <div class="card-title">Gerar relatório por período</div>
+    <div class="period-tabs">
+      <div class="period-tab active" onclick="setPeriod('mensal')">Mensal</div>
+      <div class="period-tab" onclick="setPeriod('quinzenal')">Quinzenal</div>
+      <div class="period-tab" onclick="setPeriod('semanal')">Semanal</div>
+      <div class="period-tab" onclick="setPeriod('personalizado')">Personalizado</div>
+    </div>
+    <div id="period-mensal">
+      <div class="form-row" style="margin-bottom:13px">
+        <div class="field"><label>Mês</label><select id="rep-month"><option value="0">Janeiro</option><option value="1">Fevereiro</option><option value="2">Março</option><option value="3">Abril</option><option value="4">Maio</option><option value="5">Junho</option><option value="6">Julho</option><option value="7">Agosto</option><option value="8">Setembro</option><option value="9">Outubro</option><option value="10">Novembro</option><option value="11">Dezembro</option></select></div>
+        <div class="field"><label>Ano</label><input type="number" id="rep-year" value="2025" min="2024" max="2035"/></div>
       </div>
     </div>
+    <div id="period-quinzenal" style="display:none">
+      <div class="form-row" style="margin-bottom:13px">
+        <div class="field"><label>Mês</label><select id="rep-month-q"><option value="0">Janeiro</option><option value="1">Fevereiro</option><option value="2">Março</option><option value="3">Abril</option><option value="4">Maio</option><option value="5">Junho</option><option value="6">Julho</option><option value="7">Agosto</option><option value="8">Setembro</option><option value="9">Outubro</option><option value="10">Novembro</option><option value="11">Dezembro</option></select></div>
+        <div class="field"><label>Ano</label><input type="number" id="rep-year-q" value="2025" min="2024" max="2035"/></div>
+      </div>
+      <div class="field" style="margin-bottom:13px"><label>Quinzena</label><select id="rep-quinzena"><option value="1">1ª quinzena (1 ao 15)</option><option value="2">2ª quinzena (16 ao último)</option></select></div>
+    </div>
+    <div id="period-semanal" style="display:none">
+      <div class="form-row" style="margin-bottom:13px">
+        <div class="field"><label>Data início</label><input type="date" id="rep-sem-ini"/></div>
+        <div class="field"><label>Data fim</label><input type="date" id="rep-sem-fim"/></div>
+      </div>
+    </div>
+    <div id="period-personalizado" style="display:none">
+      <div class="form-row" style="margin-bottom:8px">
+        <div class="field"><label>Data início</label><input type="date" id="rep-per-ini"/></div>
+        <div class="field"><label>Data fim</label><input type="date" id="rep-per-fim"/></div>
+      </div>
+      <div class="field" style="margin-bottom:13px"><label>Responsável (vazio = todos)</label>
+        <select id="rep-per-resp"><option value="">Todos</option><option value="Ayrton">Ayrton</option><option value="Giovanna">Giovanna</option><option value="Neudson">Neudson</option><option value="Rodrigo">Rodrigo</option></select>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn-secondary" onclick="exportCSV()">Exportar CSV</button>
+      <button class="btn-secondary" onclick="sendToSheets()">Enviar ao Sheets</button>
+    </div>
+    <div id="export-msg" style="margin-top:10px;font-size:13px;color:var(--tx2)"></div>
+  </div>
+  <div class="report-section">
+    <div class="card-title">Histórico de envios</div>
+    <div id="send-history" style="font-size:13px;color:var(--tx2)">Nenhum envio registrado.</div>
+  </div>
+</div>
 
-    <!-- TAB: RELATÓRIO TÉCNICO (visualização local) -->
-    <div id="tab-report-tech" style="display:none">
-      <div class="report-section">
-        <div class="card-title">Visualizar registros por período</div>
-        <div class="period-tabs">
-          <div class="period-tab active" onclick="setTechPeriod('semanal')">Semanal</div>
-          <div class="period-tab" onclick="setTechPeriod('quinzenal')">Quinzenal</div>
-          <div class="period-tab" onclick="setTechPeriod('mensal')">Mensal</div>
-          <div class="period-tab" onclick="setTechPeriod('personalizado')">Personalizado</div>
-        </div>
-        <div id="tech-period-semanal">
-          <div class="form-row" style="margin-bottom:13px">
-            <div class="field"><label>Data início</label><input type="date" id="tech-sem-ini"/></div>
-            <div class="field"><label>Data fim</label><input type="date" id="tech-sem-fim"/></div>
-          </div>
-        </div>
-        <div id="tech-period-quinzenal" style="display:none">
-          <div class="form-row" style="margin-bottom:13px">
-            <div class="field"><label>Mês</label><select id="tech-month-q"><option value="0">Janeiro</option><option value="1">Fevereiro</option><option value="2">Março</option><option value="3">Abril</option><option value="4">Maio</option><option value="5">Junho</option><option value="6">Julho</option><option value="7">Agosto</option><option value="8">Setembro</option><option value="9">Outubro</option><option value="10">Novembro</option><option value="11">Dezembro</option></select></div>
-            <div class="field"><label>Ano</label><input type="number" id="tech-year-q" value="2025" min="2024" max="2035"/></div>
-          </div>
-          <div class="field" style="margin-bottom:13px"><label>Quinzena</label><select id="tech-quinzena"><option value="1">1ª quinzena (1 ao 15)</option><option value="2">2ª quinzena (16 ao último)</option></select></div>
-        </div>
-        <div id="tech-period-mensal" style="display:none">
-          <div class="form-row" style="margin-bottom:13px">
-            <div class="field"><label>Mês</label><select id="tech-month"><option value="0">Janeiro</option><option value="1">Fevereiro</option><option value="2">Março</option><option value="3">Abril</option><option value="4">Maio</option><option value="5">Junho</option><option value="6">Julho</option><option value="7">Agosto</option><option value="8">Setembro</option><option value="9">Outubro</option><option value="10">Novembro</option><option value="11">Dezembro</option></select></div>
-            <div class="field"><label>Ano</label><input type="number" id="tech-year" value="2025" min="2024" max="2035"/></div>
-          </div>
-        </div>
-        <div id="tech-period-personalizado" style="display:none">
-          <div class="form-row" style="margin-bottom:13px">
-            <div class="field"><label>Data início</label><input type="date" id="tech-per-ini"/></div>
-            <div class="field"><label>Data fim</label><input type="date" id="tech-per-fim"/></div>
-          </div>
-        </div>
-        <button class="btn-secondary" onclick="visualizarRelatorioTecnico()">Visualizar</button>
-      </div>
-      <div id="tech-report-result"></div>
-      <!-- Histórico de visualizações -->
-      <div class="report-section" style="margin-top:13px">
-        <div class="card-title" style="display:flex;justify-content:space-between;align-items:center">
-          <span>Histórico de relatórios visualizados</span>
-          <button onclick="limparHistoricoTecnico()" style="background:none;border:none;color:#dc2626;font-size:12px;cursor:pointer;font-family:var(--font);font-weight:600">Apagar histórico</button>
-        </div>
-        <div id="tech-history" style="font-size:13px;color:var(--tx2)">Nenhum relatório visualizado ainda.</div>
+<!-- TAB: RELATÓRIO TÉCNICO (visualização local) -->
+<div id="tab-report-tech" style="display:none">
+  <div class="report-section">
+    <div class="card-title">Visualizar registros por período</div>
+    <div class="period-tabs">
+      <div class="period-tab active" onclick="setTechPeriod('semanal')">Semanal</div>
+      <div class="period-tab" onclick="setTechPeriod('quinzenal')">Quinzenal</div>
+      <div class="period-tab" onclick="setTechPeriod('mensal')">Mensal</div>
+      <div class="period-tab" onclick="setTechPeriod('personalizado')">Personalizado</div>
+    </div>
+    <div id="tech-period-semanal">
+      <div class="form-row" style="margin-bottom:13px">
+        <div class="field"><label>Data início</label><input type="date" id="tech-sem-ini"/></div>
+        <div class="field"><label>Data fim</label><input type="date" id="tech-sem-fim"/></div>
       </div>
     </div>
+    <div id="tech-period-quinzenal" style="display:none">
+      <div class="form-row" style="margin-bottom:13px">
+        <div class="field"><label>Mês</label><select id="tech-month-q"><option value="0">Janeiro</option><option value="1">Fevereiro</option><option value="2">Março</option><option value="3">Abril</option><option value="4">Maio</option><option value="5">Junho</option><option value="6">Julho</option><option value="7">Agosto</option><option value="8">Setembro</option><option value="9">Outubro</option><option value="10">Novembro</option><option value="11">Dezembro</option></select></div>
+        <div class="field"><label>Ano</label><input type="number" id="tech-year-q" value="2025" min="2024" max="2035"/></div>
+      </div>
+      <div class="field" style="margin-bottom:13px"><label>Quinzena</label><select id="tech-quinzena"><option value="1">1ª quinzena (1 ao 15)</option><option value="2">2ª quinzena (16 ao último)</option></select></div>
+    </div>
+    <div id="tech-period-mensal" style="display:none">
+      <div class="form-row" style="margin-bottom:13px">
+        <div class="field"><label>Mês</label><select id="tech-month"><option value="0">Janeiro</option><option value="1">Fevereiro</option><option value="2">Março</option><option value="3">Abril</option><option value="4">Maio</option><option value="5">Junho</option><option value="6">Julho</option><option value="7">Agosto</option><option value="8">Setembro</option><option value="9">Outubro</option><option value="10">Novembro</option><option value="11">Dezembro</option></select></div>
+        <div class="field"><label>Ano</label><input type="number" id="tech-year" value="2025" min="2024" max="2035"/></div>
+      </div>
+    </div>
+    <div id="tech-period-personalizado" style="display:none">
+      <div class="form-row" style="margin-bottom:13px">
+        <div class="field"><label>Data início</label><input type="date" id="tech-per-ini"/></div>
+        <div class="field"><label>Data fim</label><input type="date" id="tech-per-fim"/></div>
+      </div>
+    </div>
+    <button class="btn-secondary" onclick="visualizarRelatorioTecnico()">Visualizar</button>
+  </div>
+  <div id="tech-report-result"></div>
+  <!-- Histórico de visualizações -->
+  <div class="report-section" style="margin-top:13px">
+    <div class="card-title" style="display:flex;justify-content:space-between;align-items:center">
+      <span>Histórico de relatórios visualizados</span>
+      <button onclick="limparHistoricoTecnico()" style="background:none;border:none;color:#dc2626;font-size:12px;cursor:pointer;font-family:var(--font);font-weight:600">Apagar histórico</button>
+    </div>
+    <div id="tech-history" style="font-size:13px;color:var(--tx2)">Nenhum relatório visualizado ainda.</div>
+  </div>
+</div>
+```
 
   </div><!-- /content -->
 </div><!-- /app -->
@@ -727,10 +750,39 @@ function doLogin(){
   if(SENHAS[user]&&pass===SENHAS[user]){
     var usandoPadrao=SENHAS_PADRAO[user]&&pass===SENHAS_PADRAO[user];
     currentUser=user;isAdmin=(user==='Admin');
+
+    // Verifica expiração de senha padrão (3 dias) - somente para técnicos
+    if(usandoPadrao && !isAdmin){
+      var key='arp_senha_padrao_'+user;
+      var primeiro=null;
+      try{primeiro=localStorage.getItem(key)}catch(e){}
+      if(!primeiro){
+        // Primeiro acesso com senha padrão - registra a data
+        try{localStorage.setItem(key,Date.now().toString())}catch(e){}
+      } else {
+        // Verifica se já passaram 3 dias
+        var dias=(Date.now()-parseInt(primeiro))/(1000*60*60*24);
+        if(dias>=3){
+          err.innerHTML='⚠️ <strong>Senha padrão expirada!</strong><br>Sua senha padrão expirou após 3 dias. Entre em contato com o Administrador para redefinir.';
+          err.style.display='block';
+          document.getElementById('login-pass').value='';
+          return;
+        }
+      }
+    }
+
     try{sessionStorage.setItem('arp_user',user)}catch(e){}
-    if(usandoPadrao){
+    if(usandoPadrao && !isAdmin){
+      var diasRestantes=3;
+      try{
+        var primeiroAcesso=localStorage.getItem('arp_senha_padrao_'+user);
+        if(primeiroAcesso){
+          diasRestantes=Math.max(0, 3-Math.floor((Date.now()-parseInt(primeiroAcesso))/(1000*60*60*24)));
+        }
+      }catch(e){}
+      warn.innerHTML='⚠️ Você está usando a <strong>senha padrão</strong>. Ela expira em <strong>'+diasRestantes+' dia(s)</strong>. Altere sua senha em <strong>🔐 Senha</strong> no cabeçalho para uma de sua preferência.';
       warn.style.display='block';
-      setTimeout(function(){entrarSistema(user)},3000);
+      setTimeout(function(){entrarSistema(user)},4000);
     } else {
       entrarSistema(user);
     }
@@ -960,7 +1012,8 @@ function deleteRecord(id){
 // ── STATS ─────────────────────────────────────────────────────
 function renderStats(){
   var filterResp=isAdmin?(document.getElementById('stats-resp-filter').value||''):'';
-  var base=isAdmin?records:records.filter(function(r){return r.resp===currentUser});
+  // Técnicos veem todos os atendimentos no resumo agora
+  var base=records;
   if(filterResp)base=base.filter(function(r){return r.resp===filterResp});
   var today=new Date().toISOString().split('T')[0];
   var wa=new Date(Date.now()-7*86400000).toISOString().split('T')[0];
@@ -1212,14 +1265,30 @@ function confirmarChpwd(){
   err.style.display='none';
   if(!cur||!nw||!cf){err.textContent='Preencha todos os campos.';err.style.display='block';return}
   if(cur!==SENHAS[currentUser]){err.textContent='Senha atual incorreta.';err.style.display='block';return}
-  if(nw.length<6){err.textContent='A nova senha deve ter pelo menos 6 caracteres.';err.style.display='block';return}
+  var validacao=validarSenhaForte(nw);
+  if(validacao){err.innerHTML=validacao;err.style.display='block';return}
   if(nw!==cf){err.textContent='As senhas não coincidem.';err.style.display='block';return}
   SENHAS[currentUser]=nw;
   try{localStorage.setItem('arp_senhas',JSON.stringify(SENHAS))}catch(e){}
+  // Remove flag de senha padrão expirada
+  try{localStorage.removeItem('arp_senha_padrao_'+currentUser)}catch(e){}
   var gs=getGs();
   if(gs){fetch(gs,{method:'POST',body:JSON.stringify({action:'saveSenhas',senhas:SENHAS})}).catch(function(){})}
   closeChpwd();
   showBanner('✓ Senha alterada com sucesso!');
+}
+
+function validarSenhaForte(senha){
+  if(senha.length<8)return 'A senha deve ter pelo menos <strong>8 caracteres</strong>.';
+  if(!/[A-Z]/.test(senha))return 'A senha deve conter pelo menos <strong>1 letra maiúscula</strong>.';
+  if(!/[a-z]/.test(senha))return 'A senha deve conter pelo menos <strong>1 letra minúscula</strong>.';
+  if(!/[0-9]/.test(senha))return 'A senha deve conter pelo menos <strong>1 número</strong>.';
+  if(!/[!@#$%&*]/.test(senha))return 'A senha deve conter pelo menos <strong>1 caractere especial</strong> (! @ # $ % & *).';
+  return null;
+}
+
+function esqueciSenha(){
+  alert('Para redefinir sua senha, entre em contato com o Administrador do sistema.\n\nO Administrador pode alterar sua senha através do Painel Admin.');
 }
 
 function showBanner(msg){
@@ -1228,7 +1297,15 @@ function showBanner(msg){
 }
 
 // ── ADMIN PANEL ───────────────────────────────────────────────
-function openAdmin(){document.getElementById('admin-overlay').classList.add('open');loadAdminFields()}
+function openAdmin(){
+  try {
+    document.getElementById('admin-overlay').classList.add('open');
+    loadAdminFields();
+  } catch(e) {
+    console.error('Erro ao abrir Admin:', e);
+    alert('Erro ao abrir o painel Admin: ' + e.message);
+  }
+}
 function closeAdmin(force){
   if(force===true||(force&&force.target===document.getElementById('admin-overlay'))){
     document.getElementById('admin-overlay').classList.remove('open');
@@ -1299,7 +1376,13 @@ function admSalvarSenhas(){
   var alteradas=0;
   Object.keys(SENHAS_PADRAO).forEach(function(user){
     var inp=document.getElementById('adm-senha-'+user);
-    if(inp&&inp.value.trim()){SENHAS[user]=inp.value.trim();inp.value='';alteradas++}
+    if(inp&&inp.value.trim()){
+      SENHAS[user]=inp.value.trim();
+      inp.value='';
+      alteradas++;
+      // Limpa o flag de senha padrão expirada
+      try{localStorage.removeItem('arp_senha_padrao_'+user)}catch(e){}
+    }
   });
   if(alteradas>0){
     try{localStorage.setItem('arp_senhas',JSON.stringify(SENHAS))}catch(e){}
@@ -1421,5 +1504,6 @@ function shade(hex,pct){
 
 init();
 </script>
+
 </body>
 </html>
