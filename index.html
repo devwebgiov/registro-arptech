@@ -756,6 +756,13 @@ function init(){
   var nr=getNextReportDate();
   document.getElementById('next-report-date').textContent=nr.toLocaleDateString('pt-BR',{day:'numeric',month:'long',year:'numeric'});
   carregarSenhas();
+  // Logo padrão da tela de login
+  var _defaultLogo='https://tisemed406-a11y.github.io/registro-arptech/Sem%20t%C3%ADtulo-1.png';
+  try{
+    var _cfg=JSON.parse(localStorage.getItem('arp_dev_cfg')||'null');
+    applyLoginLogo((_cfg&&_cfg.loginLogoUrl)||_defaultLogo);
+    if(_cfg&&!_cfg.loginLogoUrl){_cfg.loginLogoUrl=_defaultLogo;localStorage.setItem('arp_dev_cfg',JSON.stringify(_cfg))}
+  }catch(e){applyLoginLogo(_defaultLogo)}
   loadSettings();
   checkSession();
   document.addEventListener('click',function(e){if(!e.target.closest('.autocomplete-wrap'))closeAc()});
@@ -1544,8 +1551,22 @@ function saveConfigSheets(cfg){
 function applyLoginLogo(url){
   var img=document.getElementById('login-logo-img');
   var def=document.getElementById('login-logo-default');
-  if(url){img.src=url;img.classList.add('show');def.style.display='none'}
-  else{img.classList.remove('show');def.style.display='flex'}
+  if(!url){img.classList.remove('show');def.style.display='flex';img.style.display='none';return}
+  // Tenta carregar a imagem diretamente
+  img.onload=function(){img.classList.add('show');img.style.display='block';def.style.display='none'};
+  img.onerror=function(){
+    // Fallback: tenta via fetch+blob para bypass de CORS
+    fetch(url,{mode:'cors',cache:'force-cache'})
+      .then(function(r){return r.blob()})
+      .then(function(blob){
+        var blobUrl=URL.createObjectURL(blob);
+        img.onload=function(){img.classList.add('show');img.style.display='block';def.style.display='none'};
+        img.onerror=function(){img.style.display='none';def.style.display='flex'};
+        img.src=blobUrl;
+      })
+      .catch(function(){img.style.display='none';def.style.display='flex'});
+  };
+  img.src=url;
 }
 
 function applyBg(src,op){
