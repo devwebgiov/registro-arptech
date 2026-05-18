@@ -1053,7 +1053,17 @@ function init(){
   var fmt=function(dt){return dt.toISOString().split('T')[0]};
   ['rep-sem-ini','tech-sem-ini','rep-per-ini','tech-per-ini'].forEach(function(id){var el=document.getElementById(id);if(el)el.value=fmt(semIni)});
   ['rep-sem-fim','tech-sem-fim','rep-per-fim','tech-per-fim'].forEach(function(id){var el=document.getElementById(id);if(el)el.value=fmt(semFim)});
-  try{var u=localStorage.getItem('arp_gs');if(u)document.getElementById('gs-url').value=u}catch(e){}
+  try{
+    var u=localStorage.getItem('arp_gs');
+    if(u){
+      document.getElementById('gs-url').value=u;
+    } else {
+      // URL padrão hardcoded — todos os dispositivos usam automaticamente
+      var defaultGs='https://script.google.com/macros/s/AKfycbxF0pK_w-l1Nvsi6ln4QGzyLPlIpLMOcBrGn2qN0ShVmxla0BDzbfHdVeHG2OXpUH4D/exec';
+      document.getElementById('gs-url').value=defaultGs;
+      try{localStorage.setItem('arp_gs',defaultGs)}catch(e){}
+    }
+  }catch(e){}
   var nr=getNextReportDate();
   document.getElementById('next-report-date').textContent=nr.toLocaleDateString('pt-BR',{day:'numeric',month:'long',year:'numeric'});
   carregarSenhas();
