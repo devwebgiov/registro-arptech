@@ -754,11 +754,11 @@ var SENHAS={};
 // Usuários dinâmicos: {nome, perfil:'SEMED'|'ARPTECH', locais:['todos'|'setor'|'urbana'|'rural'|'externo']}
 var USUARIOS_EXTRA={}; // usuários cadastrados pelo admin além dos padrão
 var USUARIOS_PADRAO={
-  'Ayrton':  {perfil:'SEMED',  locais:['todos']},
-  'Giovanna':{perfil:'SEMED',  locais:['todos']},
-  'Neudson': {perfil:'SEMED',  locais:['todos']},
-  'Rodrigo': {perfil:'SEMED',  locais:['todos']},
-  'Admin':   {perfil:'ADMIN',  locais:['todos']}
+  'Ayrton':  {perfil:'SEMED',   locais:['todos']},
+  'Giovanna':{perfil:'SEMED',   locais:['todos']},
+  'Neudson': {perfil:'ARPTECH', locais:['externo']},
+  'Rodrigo': {perfil:'ARPTECH', locais:['externo']},
+  'Admin':   {perfil:'ADMIN',   locais:['todos']}
 };
 
 // Locais extras cadastrados pelo admin: {setor:[], urbana:[], rural:[], externo:[]}
@@ -786,7 +786,13 @@ function salvarLocaisExtra(){
 
 function getTodosUsuarios(){
   var todos=JSON.parse(JSON.stringify(USUARIOS_PADRAO));
-  Object.keys(USUARIOS_EXTRA).forEach(function(n){todos[n]=USUARIOS_EXTRA[n]});
+  Object.keys(USUARIOS_EXTRA).forEach(function(n){
+    if(USUARIOS_EXTRA[n]&&USUARIOS_EXTRA[n].deletado){
+      delete todos[n]; // Remove usuários deletados
+    } else {
+      todos[n]=USUARIOS_EXTRA[n];
+    }
+  });
   return todos;
 }
 
@@ -820,21 +826,48 @@ function popularLoginSelect(){
 function getGruposComExtras(locaisPermitidos){
   var temTodos=locaisPermitidos.indexOf('todos')>=0;
   var resultado=[];
+
+  // Se só tem 'externo', não mostra setores/escolas — só externos
+  if(!temTodos && locaisPermitidos.length===1 && locaisPermitidos[0]==='externo'){
+    if(LOCAIS_EXTRA.externo && LOCAIS_EXTRA.externo.length){
+      resultado.push(['Externos',LOCAIS_EXTRA.externo.slice(),'externo']);
+    }
+    return resultado;
+  }
+
   GRUPOS.forEach(function(g){
     var tipo=g[2];
-    if(!temTodos&&locaisPermitidos.indexOf(tipo)<0)return;
+    if(!temTodos && locaisPermitidos.indexOf(tipo)<0) return;
     var itens=g[1].slice();
+    // Remove locais deletados pelo admin
+    var deletados=LOCAIS_DELETADOS[tipo]||[];
+    itens=itens.filter(function(it){return deletados.indexOf(it)<0});
     // Adiciona extras do mesmo tipo
     if(LOCAIS_EXTRA[tipo]&&LOCAIS_EXTRA[tipo].length){
       itens=itens.concat(LOCAIS_EXTRA[tipo]);
     }
-    resultado.push([g[0],itens,tipo]);
+    if(itens.length) resultado.push([g[0],itens,tipo]);
   });
-  // Externos sempre aparecem se permitido
-  if((temTodos||locaisPermitidos.indexOf('externo')>=0)&&LOCAIS_EXTRA.externo&&LOCAIS_EXTRA.externo.length){
-    resultado.push(['Externos',LOCAIS_EXTRA.externo,'externo']);
+
+  // Externos
+  if(temTodos||locaisPermitidos.indexOf('externo')>=0){
+    if(LOCAIS_EXTRA.externo&&LOCAIS_EXTRA.externo.length){
+      resultado.push(['Externos',LOCAIS_EXTRA.externo.slice(),'externo']);
+    }
   }
   return resultado;
+}
+
+// Locais deletados pelo admin (dos padrão)
+var LOCAIS_DELETADOS={setor:[],urbana:[],rural:[],externo:[]};
+
+function carregarLocaisDeletados(){
+  try{var d=localStorage.getItem('arp_locais_del');if(d)LOCAIS_DELETADOS=JSON.parse(d)}catch(e){}
+}
+function salvarLocaisDeletados(){
+  try{localStorage.setItem('arp_locais_del',JSON.stringify(LOCAIS_DELETADOS))}catch(e){}
+  var gs=getGs();
+  if(gs){fetch(gs,{method:'POST',body:JSON.stringify({action:'saveLocaisDel',locais:LOCAIS_DELETADOS})}).catch(function(){})}
 }
 
 // ── ADMIN: GERENCIAR USUÁRIOS ─────────────────────────────────
@@ -881,28 +914,47 @@ function admAdicionarUsuario(){
 }
 
 function admDeletarUsuario(nome){
-  if(USUARIOS_PADRAO[nome]&&nome!=='Admin'){
-    // Não deleta os padrão (exceto pelo perfil)
-    if(!confirm('Atenção: "'+nome+'" é um usuário padrão. Deletar vai apagar apenas os dados extras. Continuar?'))return;
-  }
-  if(!confirm('Deletar o usuário "'+nome+'"? Esta ação não pode ser desfeita.'))return;
-  delete USUARIOS_EXTRA[nome];
+  if(nome==='Admin'){alert('O usuário Admin não pode ser deletado.');return}
+  if(!confirm('Deletar o usuário "'+nome+'"?\n\nEle não conseguirá mais fazer login.'))return;
+  // Remove completamente — tanto de USUARIOS_EXTRA quanto marca como deletado nos padrão
+  USUARIOS_EXTRA[nome]={perfil:'DELETADO',locais:[],deletado:true};
   delete SENHAS[nome];
+  // Remove também dos padrão se existir lá
+  if(USUARIOS_PADRAO[nome]){
+    // Sobrescreve nos EXTRA para bloquear acesso
+    USUARIOS_EXTRA[nome]={perfil:'DELETADO',locais:[],deletado:true};
+  }
   salvarUsuarios();
-  try{localStorage.setItem('arp_senhas',JSON.stringify(SENHAS));localStorage.removeItem('arp_senha_padrao_'+nome)}catch(e){}
+  try{
+    localStorage.setItem('arp_senhas',JSON.stringify(SENHAS));
+    localStorage.removeItem('arp_senha_padrao_'+nome);
+  }catch(e){}
   var gs=getGs();
   if(gs){fetch(gs,{method:'POST',body:JSON.stringify({action:'saveSenhas',senhas:SENHAS})}).catch(function(){})}
   admRenderUsers();
   popularLoginSelect();
+  showBanner('✓ Usuário "'+nome+'" removido com sucesso!');
 }
 
 function admAlterarPerfilUsuario(nome,perfil){
-  if(USUARIOS_EXTRA[nome]){USUARIOS_EXTRA[nome].perfil=perfil;salvarUsuarios()}
-  else if(USUARIOS_PADRAO[nome]){
-    // Cria entrada extra para override
-    USUARIOS_EXTRA[nome]={perfil:perfil,locais:USUARIOS_PADRAO[nome].locais};
-    salvarUsuarios();
+  var locaisAtuais=getLocaisPermitidos(nome);
+  // Se mudar para ARPTECH e locais for 'todos', restringe para externo
+  var novosLocais=locaisAtuais;
+  if(perfil==='ARPTECH'&&(locaisAtuais.indexOf('todos')>=0||locaisAtuais.indexOf('setor')>=0||locaisAtuais.indexOf('urbana')>=0||locaisAtuais.indexOf('rural')>=0)){
+    novosLocais=['externo'];
   }
+  // Se mudar para SEMED e locais for só externo, libera todos
+  if(perfil==='SEMED'&&locaisAtuais.length===1&&locaisAtuais[0]==='externo'){
+    novosLocais=['todos'];
+  }
+  if(USUARIOS_EXTRA[nome]){
+    USUARIOS_EXTRA[nome].perfil=perfil;
+    USUARIOS_EXTRA[nome].locais=novosLocais;
+  } else {
+    USUARIOS_EXTRA[nome]={perfil:perfil,locais:novosLocais};
+  }
+  salvarUsuarios();
+  admRenderUsers();
 }
 
 function admAlterarLocaisUsuario(nome,locais){
@@ -956,30 +1008,78 @@ function admRenderLocais(){
   var base=[];
   GRUPOS.forEach(function(g){if(g[2]===tipo)base=g[1]});
   var extras=LOCAIS_EXTRA[tipo]||[];
+  var deletados=LOCAIS_DELETADOS[tipo]||[];
   var html='';
 
-  // Cadastrados pelo Admin aparecem primeiro (editáveis)
+  // Cadastrados pelo Admin (editáveis)
   if(extras.length){
     html+='<div style="font-size:10px;font-weight:700;color:#0d6b4f;margin-bottom:8px;text-transform:uppercase;letter-spacing:.8px">✏️ Cadastrados pelo Admin</div>';
     html+=extras.map(function(loc,i){
       return '<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 12px;background:#fff;border:2px solid #b8d4cc;border-radius:12px;margin-bottom:7px">'+
         '<span style="font-size:14px;color:#0f1f1c;font-weight:500">'+loc+'</span>'+
-        '<button onclick="admDeletarLocal(\''+tipo+'\','+i+')" style="background:#FEE2E2;color:#dc2626;border:none;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font);white-space:nowrap">🗑 Excluir</button>'+
+        '<button onclick="admDeletarLocalExtra(\''+tipo+'\','+i+')" style="background:#FEE2E2;color:#dc2626;border:none;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font)">🗑 Excluir</button>'+
       '</div>';
     }).join('');
-    html+='<div style="height:1px;background:#e2e8e0;margin:10px 0"></div>';
-  } else {
-    html+='<div style="font-size:12px;color:#7a9e96;padding:8px 0 10px;font-style:italic">Nenhum local cadastrado pelo Admin nesta categoria ainda.</div>';
+    if(base.length) html+='<div style="height:1px;background:#e2e8e0;margin:10px 0"></div>';
   }
 
-  // Padrão (não editáveis)
+  // Padrão do sistema (podem ser excluídos)
   if(base.length){
-    html+='<div style="font-size:10px;font-weight:700;color:#7a9e96;margin-bottom:6px;text-transform:uppercase;letter-spacing:.8px">Padrão do sistema</div>';
-    html+=base.map(function(loc){
-      return '<div style="padding:7px 10px;border-bottom:1px solid #edf2f0;font-size:13px;color:#7a9e96">'+loc+'</div>';
-    }).join('');
+    var ativos=base.filter(function(l){return deletados.indexOf(l)<0});
+    var removidos=base.filter(function(l){return deletados.indexOf(l)>=0});
+
+    if(ativos.length){
+      html+='<div style="font-size:10px;font-weight:700;color:#7a9e96;margin-bottom:6px;text-transform:uppercase;letter-spacing:.8px">Padrão do sistema</div>';
+      html+=ativos.map(function(loc){
+        return '<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 10px;border-bottom:1px solid #edf2f0">'+
+          '<span style="font-size:13px;color:#2d4a44">'+loc+'</span>'+
+          '<button onclick="admExcluirLocalPadrao(\''+tipo+'\',\''+loc.replace(/'/g,"\\'")+'\')" style="background:none;border:none;color:#dc2626;font-size:12px;font-weight:600;cursor:pointer;padding:2px 8px;border-radius:6px" title="Remover">🗑</button>'+
+        '</div>';
+      }).join('');
+    }
+
+    if(removidos.length){
+      html+='<div style="font-size:10px;font-weight:700;color:#dc2626;margin:10px 0 6px;text-transform:uppercase;letter-spacing:.8px">Removidos (clique para restaurar)</div>';
+      html+=removidos.map(function(loc){
+        return '<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 10px;border-bottom:1px solid #edf2f0;opacity:0.5">'+
+          '<span style="font-size:13px;color:#7a9e96;text-decoration:line-through">'+loc+'</span>'+
+          '<button onclick="admRestaurarLocalPadrao(\''+tipo+'\',\''+loc.replace(/'/g,"\\'")+'\')" style="background:#d4f0e5;color:#0d6b4f;border:none;font-size:12px;font-weight:600;cursor:pointer;padding:3px 8px;border-radius:6px">↩ Restaurar</button>'+
+        '</div>';
+      }).join('');
+    }
+  }
+
+  if(!base.length&&!extras.length){
+    html='<div style="font-size:13px;color:#7a9e96;padding:10px;text-align:center">Nenhum local nesta categoria.</div>';
   }
   el.innerHTML=html;
+}
+
+function admDeletarLocalExtra(tipo,idx){
+  if(!confirm('Remover este local?'))return;
+  var nome=LOCAIS_EXTRA[tipo][idx];
+  LOCAIS_EXTRA[tipo].splice(idx,1);
+  delete LOCAL_TYPE[nome];
+  salvarLocaisExtra();
+  admRenderLocais();
+  showBanner('✓ Local removido!');
+}
+
+function admExcluirLocalPadrao(tipo,nome){
+  if(!confirm('Remover "'+nome+'" da lista?\nEle ficará como "Removido" e pode ser restaurado depois.'))return;
+  if(!LOCAIS_DELETADOS[tipo])LOCAIS_DELETADOS[tipo]=[];
+  if(LOCAIS_DELETADOS[tipo].indexOf(nome)<0)LOCAIS_DELETADOS[tipo].push(nome);
+  salvarLocaisDeletados();
+  admRenderLocais();
+  showBanner('✓ "'+nome+'" removido da lista!');
+}
+
+function admRestaurarLocalPadrao(tipo,nome){
+  if(!LOCAIS_DELETADOS[tipo])return;
+  LOCAIS_DELETADOS[tipo]=LOCAIS_DELETADOS[tipo].filter(function(l){return l!==nome});
+  salvarLocaisDeletados();
+  admRenderLocais();
+  showBanner('✓ "'+nome+'" restaurado!');
 }
 
 function admAdicionarLocal(){
@@ -1001,14 +1101,6 @@ function admAdicionarLocal(){
   admRenderLocais();
 }
 
-function admDeletarLocal(tipo,idx){
-  if(!confirm('Remover este local?'))return;
-  var nome=LOCAIS_EXTRA[tipo][idx];
-  LOCAIS_EXTRA[tipo].splice(idx,1);
-  delete LOCAL_TYPE[nome];
-  salvarLocaisExtra();
-  admRenderLocais();
-}
 
 function save(){try{localStorage.setItem('arp_rec',JSON.stringify(records))}catch(e){}}
 function saveGsUrl(){try{localStorage.setItem('arp_gs',document.getElementById('gs-url').value)}catch(e){}}
@@ -1069,6 +1161,7 @@ function init(){
   carregarSenhas();
   carregarUsuarios();
   carregarLocaisExtra();
+  carregarLocaisDeletados();
   // Carrega config do Sheets IMEDIATAMENTE ao abrir — antes do login
   var _gs='https://script.google.com/macros/s/AKfycbxF0pK_w-l1Nvsi6ln4QGzyLPlIpLMOcBrGn2qN0ShVmxla0BDzbfHdVeHG2OXpUH4D/exec';
   fetch(_gs,{method:'POST',body:JSON.stringify({action:'loadConfig'})})
@@ -1158,6 +1251,9 @@ function doLogin(){
   err.style.display='none';warn.style.display='none';
   if(!user){err.textContent='Selecione o responsável.';err.style.display='block';return}
   if(!pass){err.textContent='Digite a senha.';err.style.display='block';return}
+  // Verifica se usuário foi deletado
+  var _uDel=USUARIOS_EXTRA[user];
+  if(_uDel&&_uDel.deletado){err.textContent='Usuário inativo. Contate o Administrador.';err.style.display='block';return}
   if(SENHAS[user]&&pass===SENHAS[user]){
     var usandoPadrao=!isAdmin&&SENHAS_PADRAO[user]&&pass===SENHAS_PADRAO[user];
     currentUser=user;isAdmin=(user==='Admin');
