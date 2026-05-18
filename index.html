@@ -1069,11 +1069,53 @@ function init(){
   carregarSenhas();
   carregarUsuarios();
   carregarLocaisExtra();
-  // Popula LOCAL_TYPE com locais extras
-  Object.keys(LOCAIS_EXTRA).forEach(function(tipo){
-    (LOCAIS_EXTRA[tipo]||[]).forEach(function(loc){LOCAL_TYPE[loc]=tipo});
-  });
-  popularLoginSelect();
+  // Carrega config do Sheets IMEDIATAMENTE ao abrir — antes do login
+  var _gs='https://script.google.com/macros/s/AKfycbxF0pK_w-l1Nvsi6ln4QGzyLPlIpLMOcBrGn2qN0ShVmxla0BDzbfHdVeHG2OXpUH4D/exec';
+  fetch(_gs,{method:'POST',body:JSON.stringify({action:'loadConfig'})})
+    .then(function(r){return r.json()})
+    .then(function(data){
+      if(data.config){
+        try{
+          var cfg=typeof data.config==='string'?JSON.parse(data.config):data.config;
+          if(cfg&&cfg.hc&&cfg.hc.startsWith('#')){
+            localStorage.setItem('arp_dev_cfg',JSON.stringify(cfg));
+            loadSettings();
+          }
+        }catch(e){}
+      }
+    }).catch(function(){});
+  // Carrega senhas do Sheets imediatamente
+  fetch(_gs,{method:'POST',body:JSON.stringify({action:'getSenhas'})})
+    .then(function(r){return r.json()})
+    .then(function(d){
+      if(d.senhas){
+        var s=typeof d.senhas==='string'?JSON.parse(d.senhas):d.senhas;
+        SENHAS=s;try{localStorage.setItem('arp_senhas',JSON.stringify(SENHAS))}catch(e){}
+        popularLoginSelect();
+      }
+    }).catch(function(){});
+  // Carrega usuários extras do Sheets imediatamente
+  fetch(_gs,{method:'POST',body:JSON.stringify({action:'getUsuarios'})})
+    .then(function(r){return r.json()})
+    .then(function(d){
+      if(d.usuarios){
+        var u=typeof d.usuarios==='string'?JSON.parse(d.usuarios):d.usuarios;
+        USUARIOS_EXTRA=u;try{localStorage.setItem('arp_usuarios_extra',JSON.stringify(USUARIOS_EXTRA))}catch(e){}
+        popularLoginSelect();
+      }
+    }).catch(function(){});
+  // Carrega locais extras do Sheets imediatamente
+  fetch(_gs,{method:'POST',body:JSON.stringify({action:'getLocais'})})
+    .then(function(r){return r.json()})
+    .then(function(d){
+      if(d.locais){
+        var l=typeof d.locais==='string'?JSON.parse(d.locais):d.locais;
+        LOCAIS_EXTRA=l;try{localStorage.setItem('arp_locais_extra',JSON.stringify(LOCAIS_EXTRA))}catch(e){}
+        Object.keys(LOCAIS_EXTRA).forEach(function(tipo){
+          (LOCAIS_EXTRA[tipo]||[]).forEach(function(loc){LOCAL_TYPE[loc]=tipo});
+        });
+      }
+    }).catch(function(){});
   // Logo padrão da tela de login
   var _defaultLogo='https://tisemed406-a11y.github.io/registro-arptech/Sem%20t%C3%ADtulo-1.png';
   try{
@@ -1931,7 +1973,10 @@ function loadConfigSheets(){
 
 function saveConfigSheets(cfg){
   var gs=getGs();if(!gs)return;
-  try{fetch(gs,{method:'POST',mode:'no-cors',body:JSON.stringify({action:'saveConfig',config:cfg})})}catch(e){}
+  fetch(gs,{method:'POST',body:JSON.stringify({action:'saveConfig',config:JSON.stringify(cfg)})})
+    .then(function(r){return r.json()})
+    .then(function(d){console.log('Config salva no Sheets:',d)})
+    .catch(function(e){console.error('Erro ao salvar config:',e)});
 }
 
 function applyLoginLogo(url){
