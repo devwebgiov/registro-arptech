@@ -328,6 +328,25 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
   </div>
 </div>
 
+<!-- MODAL EDITAR LOCAIS USUÁRIO -->
+<div class="chpwd-overlay" id="edit-locais-overlay">
+  <div class="chpwd-box" style="max-width:420px">
+    <div class="chpwd-title">✏️ Editar Locais — <span id="edit-locais-nome"></span></div>
+    <div style="font-size:13px;color:#7a9e96;margin-bottom:14px">Selecione quais locais este usuário pode visualizar.</div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:18px" id="edit-locais-checks">
+      <label style="display:flex;align-items:center;gap:10px;font-size:15px;cursor:pointer;padding:10px;background:#f4f8f6;border:2px solid #b8d4cc;border-radius:12px"><input type="checkbox" id="elc-todos" value="todos" onchange="editLocaisToggle(this)" style="width:18px;height:18px;accent-color:#1D9E75"/> <strong>Todos os locais</strong></label>
+      <label style="display:flex;align-items:center;gap:10px;font-size:15px;cursor:pointer;padding:10px;background:#f4f8f6;border:2px solid #b8d4cc;border-radius:12px"><input type="checkbox" id="elc-setor" value="setor" onchange="editLocaisToggle(this)" style="width:18px;height:18px;accent-color:#1D9E75"/> Setores</label>
+      <label style="display:flex;align-items:center;gap:10px;font-size:15px;cursor:pointer;padding:10px;background:#f4f8f6;border:2px solid #b8d4cc;border-radius:12px"><input type="checkbox" id="elc-urbana" value="urbana" onchange="editLocaisToggle(this)" style="width:18px;height:18px;accent-color:#1D9E75"/> Escolas Urbanas</label>
+      <label style="display:flex;align-items:center;gap:10px;font-size:15px;cursor:pointer;padding:10px;background:#f4f8f6;border:2px solid #b8d4cc;border-radius:12px"><input type="checkbox" id="elc-rural" value="rural" onchange="editLocaisToggle(this)" style="width:18px;height:18px;accent-color:#1D9E75"/> Escolas Rurais</label>
+      <label style="display:flex;align-items:center;gap:10px;font-size:15px;cursor:pointer;padding:10px;background:#f4f8f6;border:2px solid #b8d4cc;border-radius:12px"><input type="checkbox" id="elc-externo" value="externo" onchange="editLocaisToggle(this)" style="width:18px;height:18px;accent-color:#1D9E75"/> Externos</label>
+    </div>
+    <div class="chpwd-btns">
+      <button class="btn-chpwd-cancel" onclick="closeEditLocais()">Cancelar</button>
+      <button class="btn-chpwd-ok" onclick="salvarEditLocais()">✓ Salvar</button>
+    </div>
+  </div>
+</div>
+
 <!-- CONFIRM MODAL -->
 <div class="modal-overlay" id="confirm-modal">
   <div class="modal-box">
@@ -636,7 +655,7 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
           <div class="field" style="margin-bottom:14px">
             <label>Locais permitidos</label>
             <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:6px" id="adm-new-user-locais">
-              <label style="display:flex;align-items:center;gap:6px;font-size:14px;cursor:pointer;font-weight:500"><input type="checkbox" value="todos" checked onchange="admLocaisToggle(this)"/> Todos</label>
+              <label style="display:flex;align-items:center;gap:6px;font-size:14px;cursor:pointer;font-weight:500"><input type="checkbox" id="adm-loc-todos" value="todos" onchange="admLocaisToggle(this)"/> Todos</label>
               <label style="display:flex;align-items:center;gap:6px;font-size:14px;cursor:pointer;font-weight:500"><input type="checkbox" value="setor"/> Setores</label>
               <label style="display:flex;align-items:center;gap:6px;font-size:14px;cursor:pointer;font-weight:500"><input type="checkbox" value="urbana"/> Esc. Urbanas</label>
               <label style="display:flex;align-items:center;gap:6px;font-size:14px;cursor:pointer;font-weight:500"><input type="checkbox" value="rural"/> Esc. Rurais</label>
@@ -785,12 +804,13 @@ function salvarLocaisExtra(){
 }
 
 function getTodosUsuarios(){
+  // Começa com padrão, EXTRA sobrescreve
   var todos=JSON.parse(JSON.stringify(USUARIOS_PADRAO));
   Object.keys(USUARIOS_EXTRA).forEach(function(n){
     if(USUARIOS_EXTRA[n]&&USUARIOS_EXTRA[n].deletado){
-      delete todos[n]; // Remove usuários deletados
-    } else {
-      todos[n]=USUARIOS_EXTRA[n];
+      delete todos[n]; // Remove deletados
+    } else if(USUARIOS_EXTRA[n]){
+      todos[n]=USUARIOS_EXTRA[n]; // Sobrescreve com dados do EXTRA
     }
   });
   return todos;
@@ -803,9 +823,14 @@ function getPerfilUsuario(nome){
 }
 
 function getLocaisPermitidos(nome){
-  var u=USUARIOS_EXTRA[nome]||USUARIOS_PADRAO[nome];
-  if(!u)return['todos'];
-  return u.locais||['todos'];
+  // EXTRA tem prioridade absoluta sobre PADRAO
+  if(USUARIOS_EXTRA[nome]&&!USUARIOS_EXTRA[nome].deletado){
+    return USUARIOS_EXTRA[nome].locais||['todos'];
+  }
+  if(USUARIOS_PADRAO[nome]){
+    return USUARIOS_PADRAO[nome].locais||['todos'];
+  }
+  return ['todos'];
 }
 
 function popularLoginSelect(){
@@ -873,12 +898,19 @@ function salvarLocaisDeletados(){
 // ── ADMIN: GERENCIAR USUÁRIOS ─────────────────────────────────
 function admLocaisToggle(cb){
   var wrap=document.getElementById('adm-new-user-locais');
-  var todos=wrap.querySelector('input[value="todos"]');
+  if(!wrap)return;
   if(cb.value==='todos'&&cb.checked){
-    wrap.querySelectorAll('input[type=checkbox]').forEach(function(el){if(el.value!=='todos')el.checked=false});
+    wrap.querySelectorAll('input[type=checkbox]').forEach(function(el){
+      if(el.value!=='todos')el.checked=false;
+    });
   } else if(cb.value!=='todos'&&cb.checked){
+    var todos=wrap.querySelector('input[value="todos"]');
     if(todos)todos.checked=false;
   }
+  // Se nenhum selecionado, volta para Todos
+  var algum=false;
+  wrap.querySelectorAll('input[type=checkbox]').forEach(function(el){if(el.checked)algum=true});
+  if(!algum){var t=wrap.querySelector('input[value="todos"]');if(t)t.checked=true;}
 }
 
 function admAdicionarUsuario(){
@@ -889,7 +921,9 @@ function admAdicionarUsuario(){
   msg.style.display='block';
 
   if(!nome){msg.style.color='#dc2626';msg.textContent='Informe o nome.';return}
-  if(getTodosUsuarios()[nome]){msg.style.color='#dc2626';msg.textContent='Usuário "'+nome+'" já existe.';return}
+  // Permite atualizar usuário já existente (padrão)
+  var jaExiste=getTodosUsuarios()[nome];
+  if(jaExiste&&!USUARIOS_PADRAO[nome]){msg.style.color='#dc2626';msg.textContent='Usuário "'+nome+'" já existe.';return}
   if(!senha||senha.length<6){msg.style.color='#dc2626';msg.textContent='Senha deve ter pelo menos 6 caracteres.';return}
 
   var locaisChecks=document.querySelectorAll('#adm-new-user-locais input:checked');
@@ -957,9 +991,53 @@ function admAlterarPerfilUsuario(nome,perfil){
   admRenderUsers();
 }
 
-function admAlterarLocaisUsuario(nome,locais){
-  if(USUARIOS_EXTRA[nome]){USUARIOS_EXTRA[nome].locais=locais;salvarUsuarios()}
-  else{USUARIOS_EXTRA[nome]={perfil:getPerfilUsuario(nome),locais:locais};salvarUsuarios()}
+var _editLocaisUser='';
+
+function admEditarLocais(nome){
+  _editLocaisUser=nome;
+  document.getElementById('edit-locais-nome').textContent=nome;
+  var locaisAtuais=getLocaisPermitidos(nome);
+  ['todos','setor','urbana','rural','externo'].forEach(function(v){
+    var el=document.getElementById('elc-'+v);
+    if(el)el.checked=locaisAtuais.indexOf(v)>=0;
+  });
+  document.getElementById('edit-locais-overlay').classList.add('open');
+}
+
+function editLocaisToggle(cb){
+  if(cb.value==='todos'&&cb.checked){
+    ['setor','urbana','rural','externo'].forEach(function(v){
+      var el=document.getElementById('elc-'+v);if(el)el.checked=false;
+    });
+  } else if(cb.value!=='todos'&&cb.checked){
+    var todos=document.getElementById('elc-todos');
+    if(todos)todos.checked=false;
+  }
+}
+
+function closeEditLocais(){
+  document.getElementById('edit-locais-overlay').classList.remove('open');
+  _editLocaisUser='';
+}
+
+function salvarEditLocais(){
+  if(!_editLocaisUser)return;
+  var locais=[];
+  ['todos','setor','urbana','rural','externo'].forEach(function(v){
+    var el=document.getElementById('elc-'+v);
+    if(el&&el.checked)locais.push(v);
+  });
+  if(!locais.length)locais=['todos'];
+  // Salva no EXTRA (sobrescreve PADRAO)
+  if(!USUARIOS_EXTRA[_editLocaisUser]){
+    USUARIOS_EXTRA[_editLocaisUser]={perfil:getPerfilUsuario(_editLocaisUser),locais:locais};
+  } else {
+    USUARIOS_EXTRA[_editLocaisUser].locais=locais;
+  }
+  salvarUsuarios();
+  closeEditLocais();
+  admRenderUsers();
+  showBanner('✓ Locais de "'+_editLocaisUser+'" atualizados!');
 }
 
 function admRenderUsers(){
