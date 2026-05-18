@@ -773,8 +773,8 @@ var SENHAS={};
 // Usuários dinâmicos: {nome, perfil:'SEMED'|'ARPTECH', locais:['todos'|'setor'|'urbana'|'rural'|'externo']}
 var USUARIOS_EXTRA={}; // usuários cadastrados pelo admin além dos padrão
 var USUARIOS_PADRAO={
-  'Ayrton':  {perfil:'SEMED',   locais:['todos']},
-  'Giovanna':{perfil:'SEMED',   locais:['todos']},
+  'Ayrton':  {perfil:'SEMED',   locais:['setor','urbana','rural']},
+  'Giovanna':{perfil:'SEMED',   locais:['setor','urbana','rural']},
   'Neudson': {perfil:'ARPTECH', locais:['externo']},
   'Rodrigo': {perfil:'ARPTECH', locais:['externo']},
   'Admin':   {perfil:'ADMIN',   locais:['todos']}
@@ -929,7 +929,10 @@ function admAdicionarUsuario(){
   var locaisChecks=document.querySelectorAll('#adm-new-user-locais input:checked');
   var locais=[];
   locaisChecks.forEach(function(el){locais.push(el.value)});
-  if(!locais.length)locais=['todos'];
+  if(!locais.length){
+    var perfilSel=document.getElementById('adm-new-user-perfil').value;
+    locais=perfilSel==='ARPTECH'?['externo']:['setor','urbana','rural'];
+  }
 
   USUARIOS_EXTRA[nome]={perfil:perfil,locais:locais};
   salvarUsuarios();
@@ -997,22 +1000,46 @@ function admEditarLocais(nome){
   _editLocaisUser=nome;
   document.getElementById('edit-locais-nome').textContent=nome;
   var locaisAtuais=getLocaisPermitidos(nome);
+  var perfil=getPerfilUsuario(nome);
   ['todos','setor','urbana','rural','externo'].forEach(function(v){
     var el=document.getElementById('elc-'+v);
-    if(el)el.checked=locaisAtuais.indexOf(v)>=0;
+    if(!el)return;
+    el.checked=locaisAtuais.indexOf(v)>=0;
+    el.disabled=false;
+    var label=el.closest('label');
+    if(!label)return;
+    label.style.display='flex';
+    label.style.opacity='1';
+    // Oculta "Todos" para nao-admin
+    if(v==='todos'&&perfil!=='ADMIN'){label.style.display='none';}
+    // ARPTECH nao pode ver setor/urbana/rural
+    if(perfil==='ARPTECH'&&(v==='setor'||v==='urbana'||v==='rural')){
+      el.disabled=true;el.checked=false;label.style.opacity='0.3';
+    }
+    // SEMED nao pode ver externo
+    if(perfil==='SEMED'&&v==='externo'){
+      el.disabled=true;el.checked=false;label.style.opacity='0.3';
+    }
   });
   document.getElementById('edit-locais-overlay').classList.add('open');
 }
 
 function editLocaisToggle(cb){
+  if(cb.disabled)return;
   if(cb.value==='todos'&&cb.checked){
     ['setor','urbana','rural','externo'].forEach(function(v){
-      var el=document.getElementById('elc-'+v);if(el)el.checked=false;
+      var el=document.getElementById('elc-'+v);if(el&&!el.disabled)el.checked=false;
     });
   } else if(cb.value!=='todos'&&cb.checked){
     var todos=document.getElementById('elc-todos');
-    if(todos)todos.checked=false;
+    if(todos&&!todos.disabled)todos.checked=false;
   }
+  // Impede desmarcar tudo
+  var algum=false;
+  ['todos','setor','urbana','rural','externo'].forEach(function(v){
+    var el=document.getElementById('elc-'+v);if(el&&el.checked&&!el.disabled)algum=true;
+  });
+  if(!algum)cb.checked=true;
 }
 
 function closeEditLocais(){
@@ -1025,10 +1052,12 @@ function salvarEditLocais(){
   var locais=[];
   ['todos','setor','urbana','rural','externo'].forEach(function(v){
     var el=document.getElementById('elc-'+v);
-    if(el&&el.checked)locais.push(v);
+    if(el&&el.checked&&!el.disabled)locais.push(v);
   });
-  if(!locais.length)locais=['todos'];
-  // Salva no EXTRA (sobrescreve PADRAO)
+  if(!locais.length){
+    var perfil=getPerfilUsuario(_editLocaisUser);
+    locais=perfil==='ARPTECH'?['externo']:['setor','urbana','rural'];
+  }
   if(!USUARIOS_EXTRA[_editLocaisUser]){
     USUARIOS_EXTRA[_editLocaisUser]={perfil:getPerfilUsuario(_editLocaisUser),locais:locais};
   } else {
