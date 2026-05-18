@@ -30,31 +30,31 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
 .lld-words{display:flex;flex-direction:column}
 .lld-l1,.lld-l2{font-size:19px;font-weight:700;letter-spacing:2px;color:#0a2e2a;line-height:1}
 .lld-sub{font-size:10px;letter-spacing:1px;color:#7a9e96;margin-top:2px}
-.login-title{font-size:16px;font-weight:700;color:var(–tx);text-align:center;margin-bottom:4px}
-.login-sub-txt{font-size:13px;color:var(–tx3);text-align:center;margin-bottom:20px}
+.login-title{font-size:16px;font-weight:700;color:var(--tx);text-align:center;margin-bottom:4px}
+.login-sub-txt{font-size:13px;color:var(--tx3);text-align:center;margin-bottom:20px}
 .login-err{background:#FEE2E2;color:#991B1B;border-radius:8px;padding:10px 14px;font-size:13px;margin-bottom:12px;display:none;text-align:center}
 .login-warn{background:#FEF3C7;color:#92400e;border:1px solid #FCD34D;border-radius:8px;padding:10px 14px;font-size:13px;margin-bottom:12px;display:none;line-height:1.5}
 .login-field{margin-bottom:12px}
 .login-field label{display:block;font-size:13px;font-weight:600;color:#2d4a44;margin-bottom:5px}
-.login-field select,.login-field input{width:100%;padding:12px 14px;font-size:15px;border:1.5px solid #d1ddd9;border-radius:var(–rad);background:#f4f8f6;color:#0f1f1c;font-family:var(–font);outline:none;-webkit-appearance:none;appearance:none}
+.login-field select,.login-field input{width:100%;padding:12px 14px;font-size:15px;border:1.5px solid #d1ddd9;border-radius:var(--rad);background:#f4f8f6;color:#0f1f1c;font-family:var(--font);outline:none;-webkit-appearance:none;appearance:none}
 .login-field select:focus,.login-field input:focus{border-color:#1D9E75;background:#fff}
-.login-btn{width:100%;padding:13px;background:#1D9E75;color:#fff;border:none;border-radius:var(–rad);font-size:15px;font-weight:700;cursor:pointer;font-family:var(–font);box-shadow:0 4px 14px rgba(29,158,117,0.4);margin-top:4px}
+.login-btn{width:100%;padding:13px;background:#1D9E75;color:#fff;border:none;border-radius:var(--rad);font-size:15px;font-weight:700;cursor:pointer;font-family:var(--font);box-shadow:0 4px 14px rgba(29,158,117,0.4);margin-top:4px}
 .login-btn:hover{background:#0d6b4f}
 
 /* CHANGE PASSWORD MODAL */
 .chpwd-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:8000;display:none;align-items:center;justify-content:center;padding:20px}
 .chpwd-overlay.open{display:flex}
-.chpwd-box{background:#fff;border-radius:var(–radl);padding:24px;width:100%;max-width:380px}
-.chpwd-title{font-size:16px;font-weight:700;color:var(–tx);margin-bottom:16px}
+.chpwd-box{background:#fff;border-radius:var(--radl);padding:24px;width:100%;max-width:380px}
+.chpwd-title{font-size:16px;font-weight:700;color:var(--tx);margin-bottom:16px}
 .chpwd-field{margin-bottom:12px}
-.chpwd-field label{display:block;font-size:13px;font-weight:600;color:var(–tx2);margin-bottom:5px}
-.chpwd-field input{width:100%;padding:11px 13px;font-size:14px;border:1.5px solid var(–bd);border-radius:8px;background:var(–bg2);color:var(–tx);font-family:var(–font);outline:none}
-.chpwd-field input:focus{border-color:var(–gr)}
+.chpwd-field label{display:block;font-size:13px;font-weight:600;color:var(--tx2);margin-bottom:5px}
+.chpwd-field input{width:100%;padding:11px 13px;font-size:14px;border:1.5px solid var(--bd);border-radius:8px;background:var(--bg2);color:var(--tx);font-family:var(--font);outline:none}
+.chpwd-field input:focus{border-color:var(--gr)}
 .chpwd-err{background:#FEE2E2;color:#991B1B;border-radius:6px;padding:8px 12px;font-size:13px;margin-bottom:10px;display:none}
 .chpwd-btns{display:flex;gap:8px;margin-top:4px}
-.chpwd-btns button{flex:1;padding:11px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:var(–font);border:none}
-.btn-chpwd-ok{background:var(–gr);color:#fff}
-.btn-chpwd-cancel{background:var(–bg2);color:var(–tx2);border:1.5px solid var(–bd)!important}
+.chpwd-btns button{flex:1;padding:11px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font);border:none}
+.btn-chpwd-ok{background:var(--gr);color:#fff}
+.btn-chpwd-cancel{background:var(--bg2);color:var(--tx2);border:1.5px solid var(--bd)!important}
 
 /* HEADER */
 .logo-area{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
@@ -69,7 +69,7 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
 .header-title{color:rgba(255,255,255,0.4);font-size:12px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .header-right{display:flex;align-items:center;gap:6px;flex-shrink:0}
 .user-badge{background:#1D9E75;border:none;color:#fff;padding:6px 12px;border-radius:16px;font-size:12px;font-weight:700;white-space:nowrap}
-.header-btn{background:#fff;border:none;color:#0a2e2a;padding:7px 12px;border-radius:8px;font-size:12px;cursor:pointer;font-family:var(–font);white-space:nowrap;transition:all .15s;font-weight:700}
+.header-btn{background:#fff;border:none;color:#0a2e2a;padding:7px 12px;border-radius:8px;font-size:12px;cursor:pointer;font-family:var(--font);white-space:nowrap;transition:all .15s;font-weight:700}
 .header-btn:hover{background:#d4f0e5;color:#0d6b4f}
 .header-btn.admin-btn{background:#FCD34D;color:#78350F;font-weight:700}
 .header-btn.admin-btn:hover{background:#F59E0B}
@@ -82,14 +82,14 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
 
 /* CONTENT */
 .content{padding:15px;max-width:880px;margin:0 auto;width:100%;flex:1}
-.card{background:#fff;border:2px solid #b8d4cc;border-radius:var(–radl);padding:17px;margin-bottom:14px;box-shadow:0 2px 8px rgba(10,46,42,0.08)}
+.card{background:#fff;border:2px solid #b8d4cc;border-radius:var(--radl);padding:17px;margin-bottom:14px;box-shadow:0 2px 8px rgba(10,46,42,0.08)}
 .card-title{font-size:11px;font-weight:700;color:#7a9e96;margin-bottom:13px;text-transform:uppercase;letter-spacing:.8px}
 
 /* FORM */
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
 .form-row.full{grid-template-columns:1fr;margin-bottom:0}
 .field label{display:block;font-size:13px;color:#2d4a44;margin-bottom:5px;font-weight:600}
-.field input,.field select,.field textarea{width:100%;padding:11px 13px;font-size:15px;border:2px solid #b8d4cc;border-radius:var(–rad);background:#f4f8f6;color:#0f1f1c;font-family:var(–font);outline:none;transition:border-color .15s;-webkit-appearance:none}
+.field input,.field select,.field textarea{width:100%;padding:11px 13px;font-size:15px;border:2px solid #b8d4cc;border-radius:var(--rad);background:#f4f8f6;color:#0f1f1c;font-family:var(--font);outline:none;transition:border-color .15s;-webkit-appearance:none}
 .field input:focus,.field select:focus,.field textarea:focus{border-color:#1D9E75;background:#fff}
 .field textarea{resize:vertical;min-height:96px;line-height:1.5}
 .char-count{font-size:12px;color:#7a9e96;text-align:right;margin-top:3px}
@@ -105,9 +105,9 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
 
 /* AUTOCOMPLETE */
 .autocomplete-wrap{position:relative}
-.ac-input{width:100%;padding:11px 13px;font-size:15px;border:2px solid #b8d4cc;border-radius:var(–rad);background:#f4f8f6;color:#0f1f1c;font-family:var(–font);outline:none;transition:border-color .15s;-webkit-appearance:none}
+.ac-input{width:100%;padding:11px 13px;font-size:15px;border:2px solid #b8d4cc;border-radius:var(--rad);background:#f4f8f6;color:#0f1f1c;font-family:var(--font);outline:none;transition:border-color .15s;-webkit-appearance:none}
 .ac-input:focus{border-color:#1D9E75;background:#fff}
-.ac-dropdown{position:absolute;top:calc(100% + 3px);left:0;right:0;background:#fff;border:2px solid #1D9E75;border-radius:var(–rad);z-index:200;max-height:220px;overflow-y:auto;display:none;box-shadow:0 8px 24px rgba(10,46,42,0.15)}
+.ac-dropdown{position:absolute;top:calc(100% + 3px);left:0;right:0;background:#fff;border:2px solid #1D9E75;border-radius:var(--rad);z-index:200;max-height:220px;overflow-y:auto;display:none;box-shadow:0 8px 24px rgba(10,46,42,0.15)}
 .ac-dropdown.open{display:block}
 .ac-item{padding:11px 15px;font-size:14px;cursor:pointer;color:#0f1f1c;border-bottom:1px solid #edf2f0}
 .ac-item:last-child{border-bottom:none}
@@ -115,64 +115,64 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
 .ac-group{padding:7px 13px 3px;font-size:11px;font-weight:700;color:#7a9e96;letter-spacing:.8px;text-transform:uppercase;background:#f4f8f6;border-bottom:1px solid #edf2f0}
 
 /* BUTTONS */
-.btn-submit{width:100%;padding:14px;background:#1D9E75;color:#fff;border:none;border-radius:var(–rad);font-size:16px;font-weight:700;cursor:pointer;font-family:var(–font);transition:all .15s;box-shadow:0 4px 14px rgba(29,158,117,0.35)}
+.btn-submit{width:100%;padding:14px;background:#1D9E75;color:#fff;border:none;border-radius:var(--rad);font-size:16px;font-weight:700;cursor:pointer;font-family:var(--font);transition:all .15s;box-shadow:0 4px 14px rgba(29,158,117,0.35)}
 .btn-submit:hover{background:#0d6b4f}
 .btn-submit:active{transform:scale(0.99)}
-.btn-secondary{padding:10px 16px;background:#fff;color:#1D9E75;border:1.5px solid #1D9E75;border-radius:var(–rad);font-size:14px;font-weight:600;cursor:pointer;font-family:var(–font);transition:all .15s}
+.btn-secondary{padding:10px 16px;background:#fff;color:#1D9E75;border:1.5px solid #1D9E75;border-radius:var(--rad);font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all .15s}
 .btn-secondary:hover{background:#d4f0e5}
 .btn-row{display:flex;gap:9px;flex-wrap:wrap}
-.success-msg{background:#d4f0e5;color:#0d6b4f;border:2px solid #1D9E75;border-radius:var(–rad);padding:13px 15px;font-size:14px;margin-bottom:13px;display:none;font-weight:600}
+.success-msg{background:#d4f0e5;color:#0d6b4f;border:2px solid #1D9E75;border-radius:var(--rad);padding:13px 15px;font-size:14px;margin-bottom:13px;display:none;font-weight:600}
 .success-msg.show{display:block}
-.info-box{background:#EFF6FF;color:#1e40af;border:1px solid #93c5fd;border-radius:var(–rad);padding:12px 14px;font-size:13px;margin-bottom:13px;line-height:1.7}
+.info-box{background:#EFF6FF;color:#1e40af;border:1px solid #93c5fd;border-radius:var(--rad);padding:12px 14px;font-size:13px;margin-bottom:13px;line-height:1.7}
 .sync-bar{font-size:11px;color:rgba(255,255,255,0.7);white-space:nowrap;flex-shrink:0}
 
 /* RECORDS */
 .records-list{display:flex;flex-direction:column;gap:11px}
-.record-item{background:#fff;border:2px solid #b8d4cc;border-radius:var(–radl);padding:14px;box-shadow:0 2px 6px rgba(10,46,42,0.07)}
+.record-item{background:#fff;border:2px solid #b8d4cc;border-radius:var(--radl);padding:14px;box-shadow:0 2px 6px rgba(10,46,42,0.07)}
 .record-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:7px;gap:8px}
 .record-name{font-size:15px;font-weight:700;color:#0f1f1c}
 .record-date{font-size:12px;color:#7a9e96;white-space:nowrap}
 .record-desc{font-size:14px;color:#2d4a44;line-height:1.5;margin-bottom:9px}
 .record-tags{display:flex;flex-wrap:wrap;gap:5px}
-.tag{font-size:12px;padding:3px 9px;border-radius:12px;background:var(–gr-l);color:var(–gr-d);font-weight:500}
+.tag{font-size:12px;padding:3px 9px;border-radius:12px;background:var(--gr-l);color:var(--gr-d);font-weight:500}
 .tag.blue{background:#DBEAFE;color:#1e40af}
 .tag.orange{background:#FEF3C7;color:#92400e}
-.empty-state{text-align:center;padding:36px 20px;color:var(–tx3);font-size:14px}
+.empty-state{text-align:center;padding:36px 20px;color:var(--tx3);font-size:14px}
 .record-del{background:none;border:none;color:#dc2626;font-size:15px;cursor:pointer;padding:3px 6px;border-radius:5px;display:none;flex-shrink:0}
 .record-del:hover{background:#FEE2E2}
 .show-del .record-del{display:flex}
 
 /* STATS */
 .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-bottom:14px}
-.stat-card{background:#fff;border:2px solid #b8d4cc;border-radius:var(–radl);padding:14px;text-align:center;box-shadow:0 2px 6px rgba(10,46,42,0.07)}
+.stat-card{background:#fff;border:2px solid #b8d4cc;border-radius:var(--radl);padding:14px;text-align:center;box-shadow:0 2px 6px rgba(10,46,42,0.07)}
 .stat-num{font-size:26px;font-weight:700;color:#1D9E75;line-height:1}
-.stat-label{font-size:12px;color:var(–tx2);margin-top:3px;font-weight:500}
+.stat-label{font-size:12px;color:var(--tx2);margin-top:3px;font-weight:500}
 
 /* REPORT */
-.report-section{background:#fff;border:2px solid #b8d4cc;border-radius:var(–radl);padding:17px;margin-bottom:13px;box-shadow:0 2px 6px rgba(10,46,42,0.07)}
-.gs-config{background:var(–bg2);border-radius:var(–rad);padding:13px;margin-bottom:11px}
-.gs-config label{display:block;font-size:13px;font-weight:700;color:var(–tx2);margin-bottom:5px}
-.gs-config input{width:100%;padding:9px 11px;font-size:13px;border:1.5px solid var(–bd);border-radius:8px;background:#fff;color:var(–tx);font-family:‘DM Mono’,monospace;outline:none}
-.gs-config input:focus{border-color:var(–gr)}
-.next-badge{display:inline-block;background:var(–gr-l);color:var(–gr-d);border:1px solid var(–gr);border-radius:12px;font-size:12px;padding:2px 9px;margin-left:7px;font-weight:700}
+.report-section{background:#fff;border:2px solid #b8d4cc;border-radius:var(--radl);padding:17px;margin-bottom:13px;box-shadow:0 2px 6px rgba(10,46,42,0.07)}
+.gs-config{background:var(--bg2);border-radius:var(--rad);padding:13px;margin-bottom:11px}
+.gs-config label{display:block;font-size:13px;font-weight:700;color:var(--tx2);margin-bottom:5px}
+.gs-config input{width:100%;padding:9px 11px;font-size:13px;border:1.5px solid var(--bd);border-radius:8px;background:#fff;color:var(--tx);font-family:'DM Mono',monospace;outline:none}
+.gs-config input:focus{border-color:var(--gr)}
+.next-badge{display:inline-block;background:var(--gr-l);color:var(--gr-d);border:1px solid var(--gr);border-radius:12px;font-size:12px;padding:2px 9px;margin-left:7px;font-weight:700}
 .period-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:13px}
-.period-tab{padding:7px 13px;border:1.5px solid var(–bd);border-radius:18px;font-size:13px;font-weight:500;cursor:pointer;color:var(–tx2);background:var(–bg2);transition:all .12s}
+.period-tab{padding:7px 13px;border:1.5px solid var(--bd);border-radius:18px;font-size:13px;font-weight:500;cursor:pointer;color:var(--tx2);background:var(--bg2);transition:all .12s}
 .period-tab.active{border-color:#1D9E75;background:#d4f0e5;color:#0d6b4f;font-weight:700}
 
 /* MODALS */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:2000;display:none;align-items:center;justify-content:center;padding:18px}
 .modal-overlay.open{display:flex}
-.modal-box{background:#fff;border-radius:var(–radl);padding:22px;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,0.2);animation:fadeIn .2s ease}
+.modal-box{background:#fff;border-radius:var(--radl);padding:22px;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,0.2);animation:fadeIn .2s ease}
 @keyframes fadeIn{from{opacity:0;transform:scale(0.95)}to{opacity:1;transform:scale(1)}}
 .modal-icon{font-size:34px;text-align:center;margin-bottom:11px}
-.modal-title{font-size:16px;font-weight:700;color:var(–tx);text-align:center;margin-bottom:5px}
-.modal-sub{font-size:13px;color:var(–tx2);text-align:center;margin-bottom:18px;line-height:1.5}
-.modal-detail{background:var(–bg2);border-radius:8px;padding:11px;margin-bottom:16px;font-size:13px;color:var(–tx2);line-height:1.6}
-.modal-detail strong{color:var(–tx);display:block;margin-bottom:2px}
+.modal-title{font-size:16px;font-weight:700;color:var(--tx);text-align:center;margin-bottom:5px}
+.modal-sub{font-size:13px;color:var(--tx2);text-align:center;margin-bottom:18px;line-height:1.5}
+.modal-detail{background:var(--bg2);border-radius:8px;padding:11px;margin-bottom:16px;font-size:13px;color:var(--tx2);line-height:1.6}
+.modal-detail strong{color:var(--tx);display:block;margin-bottom:2px}
 .modal-btns{display:flex;gap:9px}
-.modal-btns button{flex:1;padding:12px;border-radius:var(–rad);font-size:14px;font-weight:700;cursor:pointer;font-family:var(–font);border:none}
-.btn-confirm{background:var(–gr);color:#fff;box-shadow:0 4px 12px rgba(29,158,117,0.25)}
-.btn-cancel-modal{background:var(–bg2);color:var(–tx2);border:1.5px solid var(–bd)!important}
+.modal-btns button{flex:1;padding:12px;border-radius:var(--rad);font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font);border:none}
+.btn-confirm{background:var(--gr);color:#fff;box-shadow:0 4px 12px rgba(29,158,117,0.25)}
+.btn-cancel-modal{background:var(--bg2);color:var(--tx2);border:1.5px solid var(--bd)!important}
 
 /* ADMIN PANEL */
 .admin-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:3000;display:none;align-items:flex-end;justify-content:center}
@@ -180,80 +180,78 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
 .admin-panel{background:#fff;border-radius:20px 20px 0 0;width:100%;max-width:600px;max-height:92vh;overflow-y:auto;padding:22px;animation:slideUp .25s ease}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 .admin-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
-.admin-title{font-size:17px;font-weight:700;color:var(–tx)}
-.admin-close{background:var(–bg2);border:none;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;color:var(–tx2)}
-.admin-section{margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(–bd)}
+.admin-title{font-size:17px;font-weight:700;color:var(--tx)}
+.admin-close{background:var(--bg2);border:none;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;color:var(--tx2)}
+.admin-section{margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--bd)}
 .admin-section:last-of-type{border-bottom:none}
-.admin-section-title{font-size:12px;font-weight:700;color:var(–tx3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:13px}
+.admin-section-title{font-size:12px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:13px}
 .admin-field{margin-bottom:11px}
-.admin-field label{display:block;font-size:13px;font-weight:600;color:var(–tx2);margin-bottom:5px}
-.admin-field input[type=text],.admin-field input[type=number],.admin-field input[type=password],.admin-field input[type=range],.admin-field select{width:100%;padding:9px 11px;font-size:14px;border:1.5px solid var(–bd);border-radius:8px;background:var(–bg2);color:var(–tx);font-family:var(–font);outline:none}
-.admin-field input:focus,.admin-field select:focus{border-color:var(–gr)}
-.admin-field input[type=file]{width:100%;font-size:13px;color:var(–tx2)}
+.admin-field label{display:block;font-size:13px;font-weight:600;color:var(--tx2);margin-bottom:5px}
+.admin-field input[type=text],.admin-field input[type=number],.admin-field input[type=password],.admin-field input[type=range],.admin-field select{width:100%;padding:9px 11px;font-size:14px;border:1.5px solid var(--bd);border-radius:8px;background:var(--bg2);color:var(--tx);font-family:var(--font);outline:none}
+.admin-field input:focus,.admin-field select:focus{border-color:var(--gr)}
+.admin-field input[type=file]{width:100%;font-size:13px;color:var(--tx2)}
 .admin-field input[type=range]{padding:4px 0;border:none;background:none;cursor:pointer}
 .color-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.color-item label{display:block;font-size:12px;font-weight:600;color:var(–tx2);margin-bottom:4px}
+.color-item label{display:block;font-size:12px;font-weight:600;color:var(--tx2);margin-bottom:4px}
 .color-pick{display:flex;align-items:center;gap:8px}
-.color-pick input[type=color]{width:40px;height:36px;padding:2px;border:1.5px solid var(–bd);border-radius:7px;cursor:pointer;background:none;flex-shrink:0}
-.color-pick code{font-size:12px;color:var(–tx3);font-family:‘DM Mono’,monospace}
-.img-preview{max-width:100px;max-height:50px;object-fit:contain;border:1px solid var(–bd);border-radius:6px;margin-top:6px;display:none}
+.color-pick input[type=color]{width:40px;height:36px;padding:2px;border:1.5px solid var(--bd);border-radius:7px;cursor:pointer;background:none;flex-shrink:0}
+.color-pick code{font-size:12px;color:var(--tx3);font-family:'DM Mono',monospace}
+.img-preview{max-width:100px;max-height:50px;object-fit:contain;border:1px solid var(--bd);border-radius:6px;margin-top:6px;display:none}
 .img-preview.show{display:block}
 .switch-row{display:flex;align-items:center;justify-content:space-between;padding:4px 0}
-.switch-row span{font-size:14px;font-weight:500;color:var(–tx2)}
+.switch-row span{font-size:14px;font-weight:500;color:var(--tx2)}
 .toggle{position:relative;width:44px;height:24px;flex-shrink:0}
 .toggle input{opacity:0;width:0;height:0}
 .tog-slider{position:absolute;inset:0;background:#cbd5e1;border-radius:24px;cursor:pointer;transition:.2s}
-.tog-slider:before{content:’’;position:absolute;width:18px;height:18px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,0.2)}
-.toggle input:checked+.tog-slider{background:var(–gr)}
+.tog-slider:before{content:'';position:absolute;width:18px;height:18px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,0.2)}
+.toggle input:checked+.tog-slider{background:var(--gr)}
 .toggle input:checked+.tog-slider:before{transform:translateX(20px)}
-.btn-admin-save{width:100%;padding:13px;background:var(–gr);color:#fff;border:none;border-radius:var(–rad);font-size:15px;font-weight:700;cursor:pointer;font-family:var(–font);box-shadow:0 4px 12px rgba(29,158,117,0.22);margin-top:4px}
+.btn-admin-save{width:100%;padding:13px;background:var(--gr);color:#fff;border:none;border-radius:var(--rad);font-size:15px;font-weight:700;cursor:pointer;font-family:var(--font);box-shadow:0 4px 12px rgba(29,158,117,0.22);margin-top:4px}
 
 /* INLINE REPORT VIEWER */
-.report-viewer{background:var(–card);border:1px solid var(–bd);border-radius:var(–radl);padding:16px;margin-top:13px}
-.report-viewer-title{font-size:14px;font-weight:700;color:var(–tx);margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
+.report-viewer{background:var(--card);border:1px solid var(--bd);border-radius:var(--radl);padding:16px;margin-top:13px}
+.report-viewer-title{font-size:14px;font-weight:700;color:var(--tx);margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
 .report-table{width:100%;border-collapse:collapse;font-size:13px}
-.report-table th{background:var(–gr);color:#fff;padding:8px 10px;text-align:left;font-weight:600}
-.report-table td{padding:8px 10px;border-bottom:1px solid #f1f5f9;color:var(–tx2);vertical-align:top;line-height:1.4}
+.report-table th{background:var(--gr);color:#fff;padding:8px 10px;text-align:left;font-weight:600}
+.report-table td{padding:8px 10px;border-bottom:1px solid #f1f5f9;color:var(--tx2);vertical-align:top;line-height:1.4}
 .report-table tr:nth-child(even) td{background:#f8fffe}
 .report-table tr:last-child td{border-bottom:none}
 
 /* SEARCH */
-.search-bar{background:#fff;border:2px solid #b8d4cc;border-radius:var(–radl);padding:13px 15px;margin-bottom:13px;box-shadow:0 2px 6px rgba(10,46,42,0.07)}
-.search-bar input{width:100%;border:none;background:none;font-size:15px;color:var(–tx);font-family:var(–font);outline:none}
+.search-bar{background:#fff;border:2px solid #b8d4cc;border-radius:var(--radl);padding:13px 15px;margin-bottom:13px;box-shadow:0 2px 6px rgba(10,46,42,0.07)}
+.search-bar input{width:100%;border:none;background:none;font-size:15px;color:var(--tx);font-family:var(--font);outline:none}
 
 /* RESPONSIVE */
 @media(max-width:600px){
-.content{padding:11px}
-.card{padding:15px;margin-bottom:11px}
-.form-row{grid-template-columns:1fr}
-.stats-row{grid-template-columns:1fr 1fr}
-.stat-card:last-child{grid-column:span 2}
-.tab{padding:12px 13px;font-size:13px}
-.rpill{padding:10px 13px;font-size:14px;flex:1;justify-content:center}
-.radio-group{display:grid;grid-template-columns:1fr 1fr}
-.btn-submit{padding:15px;font-size:16px}
-.admin-panel{padding:18px;max-height:94vh}
-.header{padding:11px 12px;gap:8px;flex-wrap:wrap}
-.logo-line1,.logo-line2{font-size:15px}
-.color-grid{grid-template-columns:1fr}
-.header-divider,.header-title{display:none}
-.header-right{gap:5px;flex-wrap:wrap;justify-content:flex-end}
-.header-btn{padding:6px 9px;font-size:11px}
-.user-badge{padding:4px 9px;font-size:11px}
+  .content{padding:11px}
+  .card{padding:15px;margin-bottom:11px}
+  .form-row{grid-template-columns:1fr}
+  .stats-row{grid-template-columns:1fr 1fr}
+  .stat-card:last-child{grid-column:span 2}
+  .tab{padding:12px 13px;font-size:13px}
+  .rpill{padding:10px 13px;font-size:14px;flex:1;justify-content:center}
+  .radio-group{display:grid;grid-template-columns:1fr 1fr}
+  .btn-submit{padding:15px;font-size:16px}
+  .admin-panel{padding:18px;max-height:94vh}
+  .header{padding:11px 12px;gap:8px;flex-wrap:wrap}
+  .logo-line1,.logo-line2{font-size:15px}
+  .color-grid{grid-template-columns:1fr}
+  .header-divider,.header-title{display:none}
+  .header-right{gap:5px;flex-wrap:wrap;justify-content:flex-end}
+  .header-btn{padding:6px 9px;font-size:11px}
+  .user-badge{padding:4px 9px;font-size:11px}
 }
 @media(max-width:380px){
-.stats-row{grid-template-columns:1fr}
-.stat-card:last-child{grid-column:auto}
-.radio-group{grid-template-columns:1fr}
-.header-title{display:none}
+  .stats-row{grid-template-columns:1fr}
+  .stat-card:last-child{grid-column:auto}
+  .radio-group{grid-template-columns:1fr}
+  .header-title{display:none}
 }
 </style>
-
 </head>
 <body>
 
 <!-- LOGIN -->
-
 <div class="login-screen" id="login-screen">
   <div class="login-box">
     <div class="login-logo-area">
@@ -300,7 +298,6 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
 </div>
 
 <!-- CHANGE PASSWORD MODAL -->
-
 <div class="chpwd-overlay" id="chpwd-overlay">
   <div class="chpwd-box">
     <div class="chpwd-title">🔐 Alterar Senha</div>
@@ -332,7 +329,6 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
 </div>
 
 <!-- CONFIRM MODAL -->
-
 <div class="modal-overlay" id="confirm-modal">
   <div class="modal-box">
     <div class="modal-icon">📋</div>
@@ -347,7 +343,6 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
 </div>
 
 <!-- SUCCESS MODAL -->
-
 <div class="modal-overlay" id="success-modal">
   <div class="modal-box">
     <div class="modal-icon">✅</div>
@@ -360,7 +355,6 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
 </div>
 
 <!-- ADMIN PANEL -->
-
 <div class="admin-overlay" id="admin-overlay" onclick="closeAdmin(event)">
   <div class="admin-panel" id="admin-panel">
     <div class="admin-header">
@@ -368,145 +362,93 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
       <button class="admin-close" onclick="closeAdmin(true)">×</button>
     </div>
 
-```
-<div class="admin-section">
-  <div class="admin-section-title">Logo e Identidade Visual</div>
-  <div class="admin-field">
-    <label>URL do logo (cabeçalho) <span style="background:#E1F5EE;color:#085041;font-size:10px;padding:1px 6px;border-radius:8px">SINCRONIZA</span></label>
-    <input type="text" id="adm-logo-url" placeholder="https://raw.githubusercontent.com/..." oninput="admLogoUrl()"/>
-    <img id="adm-logo-preview" class="img-preview" src="" alt=""/>
-  </div>
-  <div class="admin-field">
-    <label>URL do logo (tela de login) <span style="background:#E1F5EE;color:#085041;font-size:10px;padding:1px 6px;border-radius:8px">SINCRONIZA</span></label>
-    <input type="text" id="adm-login-logo-url" placeholder="https://raw.githubusercontent.com/..." oninput="admLoginLogoUrl()"/>
-    <img id="adm-login-logo-preview" class="img-preview" src="" alt=""/>
-  </div>
-  <div class="admin-field">
-    <label>— ou — Upload do logo (somente neste dispositivo)</label>
-    <input type="file" id="adm-logo-file" accept="image/*" onchange="admLogoUpload(this)"/>
-  </div>
-  <div class="admin-field"><label>Linha 1 do nome (ex: ARP)</label><input type="text" id="adm-l1" value="ARP" oninput="admPreview()"/></div>
-  <div class="admin-field"><label>Linha 2 do nome (ex: TECH)</label><input type="text" id="adm-l2" value="TECH" oninput="admPreview()"/></div>
-  <div class="admin-field"><label>Subtítulo (ex: AMAZÔNIA)</label><input type="text" id="adm-sub" value="AMAZÔNIA" oninput="admPreview()"/></div>
-  <div class="admin-field"><label>Título do cabeçalho</label><input type="text" id="adm-ht" value="Registro de Atendimento" oninput="admPreview()"/></div>
-</div>
-
-<div class="admin-section">
-  <div class="admin-section-title">Cores</div>
-  <div class="color-grid">
-    <div class="color-item"><label>Cabeçalho</label><div class="color-pick"><input type="color" id="adm-hc" value="#0a2540" oninput="admPreview()"/><code id="adm-hc-v">#0a2540</code></div></div>
-    <div class="color-item"><label>Cor principal</label><div class="color-pick"><input type="color" id="adm-mc" value="#1D9E75" oninput="admPreview()"/><code id="adm-mc-v">#1D9E75</code></div></div>
-    <div class="color-item"><label>Texto do logo</label><div class="color-pick"><input type="color" id="adm-lc" value="#ffffff" oninput="admPreview()"/><code id="adm-lc-v">#ffffff</code></div></div>
-    <div class="color-item"><label>Abas ativas</label><div class="color-pick"><input type="color" id="adm-tc" value="#1D9E75" oninput="admPreview()"/><code id="adm-tc-v">#1D9E75</code></div></div>
-  </div>
-</div>
-
-<div class="admin-section">
-  <div class="admin-section-title">Tipografia</div>
-  <div class="admin-field">
-    <label>Tamanho da fonte: <span id="adm-fs-val">16px</span></label>
-    <input type="range" id="adm-fs" min="14" max="22" value="16" step="1" oninput="admPreview()"/>
-  </div>
-  <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:4px">
-    <button class="btn-secondary" style="font-size:12px;padding:5px 11px" onclick="setAdmFont(14)">Pequena</button>
-    <button class="btn-secondary" style="font-size:12px;padding:5px 11px" onclick="setAdmFont(16)">Normal</button>
-    <button class="btn-secondary" style="font-size:12px;padding:5px 11px" onclick="setAdmFont(18)">Grande</button>
-    <button class="btn-secondary" style="font-size:12px;padding:5px 11px" onclick="setAdmFont(20)">Extra</button>
-  </div>
-</div>
-
-<div class="admin-section">
-  <div class="admin-section-title">Imagem de Fundo</div>
-  <div class="admin-field">
-    <label>URL da imagem de fundo <span style="background:#E1F5EE;color:#085041;font-size:10px;padding:1px 6px;border-radius:8px">SINCRONIZA</span></label>
-    <input type="text" id="adm-bg-url" placeholder="https://..." oninput="admBgUrl()"/>
-  </div>
-  <div class="admin-field">
-    <label>— ou — Upload (somente neste dispositivo)</label>
-    <input type="file" id="adm-bg-file" accept="image/*" onchange="admBgUpload(this)"/>
-  </div>
-  <div class="admin-field">
-    <label>Opacidade da sobreposição: <span id="adm-bg-op-val">90%</span></label>
-    <input type="range" id="adm-bg-op" min="0" max="100" value="90" oninput="admPreview()"/>
-  </div>
-  <button class="btn-secondary" style="font-size:12px;padding:6px 12px" onclick="admRemoveBg()">Remover fundo</button>
-</div>
-
-<div class="admin-section">
-  <div class="admin-section-title">👥 Gerenciar Usuários</div>
-  <div style="font-size:12px;color:#7a9e96;margin-bottom:10px">Cadastre ou remova usuários. Perfil <strong>SEMED</strong> = atendimento escolar. Perfil <strong>ARPTECH</strong> = serviços da loja.</div>
-  <div id="adm-users-list" style="margin-bottom:10px"></div>
-  <div style="background:#f4f8f6;border:1.5px solid #b8d4cc;border-radius:12px;padding:13px">
-    <div style="font-size:12px;font-weight:700;color:#2d4a44;margin-bottom:10px">➕ Adicionar usuário</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
-      <div><label style="font-size:12px;font-weight:600;color:#2d4a44;display:block;margin-bottom:3px">Nome</label><input type="text" id="adm-new-user-name" placeholder="Ex: Carlos" style="width:100%;padding:8px 10px;font-size:13px;border:1.5px solid #b8d4cc;border-radius:8px;background:#fff;font-family:var(--font);outline:none"/></div>
-      <div><label style="font-size:12px;font-weight:600;color:#2d4a44;display:block;margin-bottom:3px">Perfil</label><select id="adm-new-user-perfil" style="width:100%;padding:8px 10px;font-size:13px;border:1.5px solid #b8d4cc;border-radius:8px;background:#fff;font-family:var(--font);outline:none;-webkit-appearance:none"><option value="SEMED">SEMED</option><option value="ARPTECH">ARPTECH</option></select></div>
+    <div class="admin-section">
+      <div class="admin-section-title">Logo e Identidade Visual</div>
+      <div class="admin-field">
+        <label>URL do logo (cabeçalho) <span style="background:#E1F5EE;color:#085041;font-size:10px;padding:1px 6px;border-radius:8px">SINCRONIZA</span></label>
+        <input type="text" id="adm-logo-url" placeholder="https://raw.githubusercontent.com/..." oninput="admLogoUrl()"/>
+        <img id="adm-logo-preview" class="img-preview" src="" alt=""/>
+      </div>
+      <div class="admin-field">
+        <label>URL do logo (tela de login) <span style="background:#E1F5EE;color:#085041;font-size:10px;padding:1px 6px;border-radius:8px">SINCRONIZA</span></label>
+        <input type="text" id="adm-login-logo-url" placeholder="https://raw.githubusercontent.com/..." oninput="admLoginLogoUrl()"/>
+        <img id="adm-login-logo-preview" class="img-preview" src="" alt=""/>
+      </div>
+      <div class="admin-field">
+        <label>— ou — Upload do logo (somente neste dispositivo)</label>
+        <input type="file" id="adm-logo-file" accept="image/*" onchange="admLogoUpload(this)"/>
+      </div>
+      <div class="admin-field"><label>Linha 1 do nome (ex: ARP)</label><input type="text" id="adm-l1" value="ARP" oninput="admPreview()"/></div>
+      <div class="admin-field"><label>Linha 2 do nome (ex: TECH)</label><input type="text" id="adm-l2" value="TECH" oninput="admPreview()"/></div>
+      <div class="admin-field"><label>Subtítulo (ex: AMAZÔNIA)</label><input type="text" id="adm-sub" value="AMAZÔNIA" oninput="admPreview()"/></div>
+      <div class="admin-field"><label>Título do cabeçalho</label><input type="text" id="adm-ht" value="Registro de Atendimento" oninput="admPreview()"/></div>
     </div>
-    <div style="margin-bottom:8px"><label style="font-size:12px;font-weight:600;color:#2d4a44;display:block;margin-bottom:3px">Senha inicial</label><input type="password" id="adm-new-user-senha" placeholder="Mínimo 8 caracteres" style="width:100%;padding:8px 10px;font-size:13px;border:1.5px solid #b8d4cc;border-radius:8px;background:#fff;font-family:var(--font);outline:none" autocomplete="new-password"/></div>
-    <div style="margin-bottom:10px"><label style="font-size:12px;font-weight:600;color:#2d4a44;display:block;margin-bottom:3px">Locais permitidos</label>
-      <div style="display:flex;flex-wrap:wrap;gap:6px" id="adm-new-user-locais">
-        <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer"><input type="checkbox" value="todos" checked onchange="admLocaisToggle(this)"/> Todos</label>
-        <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer"><input type="checkbox" value="setor"/> Setores</label>
-        <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer"><input type="checkbox" value="urbana"/> Escolas Urbanas</label>
-        <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer"><input type="checkbox" value="rural"/> Escolas Rurais</label>
-        <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer"><input type="checkbox" value="externo"/> Externos</label>
+
+    <div class="admin-section">
+      <div class="admin-section-title">Cores</div>
+      <div class="color-grid">
+        <div class="color-item"><label>Cabeçalho</label><div class="color-pick"><input type="color" id="adm-hc" value="#0a2540" oninput="admPreview()"/><code id="adm-hc-v">#0a2540</code></div></div>
+        <div class="color-item"><label>Cor principal</label><div class="color-pick"><input type="color" id="adm-mc" value="#1D9E75" oninput="admPreview()"/><code id="adm-mc-v">#1D9E75</code></div></div>
+        <div class="color-item"><label>Texto do logo</label><div class="color-pick"><input type="color" id="adm-lc" value="#ffffff" oninput="admPreview()"/><code id="adm-lc-v">#ffffff</code></div></div>
+        <div class="color-item"><label>Abas ativas</label><div class="color-pick"><input type="color" id="adm-tc" value="#1D9E75" oninput="admPreview()"/><code id="adm-tc-v">#1D9E75</code></div></div>
       </div>
     </div>
-    <button onclick="admAdicionarUsuario()" style="width:100%;padding:9px;background:#1D9E75;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font)">Adicionar Usuário</button>
-    <div id="adm-user-msg" style="font-size:12px;margin-top:6px;display:none"></div>
-  </div>
-</div>
 
-<div class="admin-section">
-  <div class="admin-section-title">📍 Gerenciar Locais de Atendimento</div>
-  <div style="font-size:12px;color:#7a9e96;margin-bottom:10px">Adicione ou remova locais. Ficam disponíveis na busca do formulário.</div>
-  <div class="period-tabs" style="margin-bottom:10px">
-    <div class="period-tab active" onclick="admSetLocalTab('setor')" id="lt-setor">Setores</div>
-    <div class="period-tab" onclick="admSetLocalTab('urbana')" id="lt-urbana">Urbanas</div>
-    <div class="period-tab" onclick="admSetLocalTab('rural')" id="lt-rural">Rurais</div>
-    <div class="period-tab" onclick="admSetLocalTab('externo')" id="lt-externo">Externos</div>
-  </div>
-  <div id="adm-locais-list" style="max-height:200px;overflow-y:auto;margin-bottom:10px;background:#f4f8f6;border:1.5px solid #b8d4cc;border-radius:10px;padding:8px"></div>
-  <div style="display:flex;gap:8px">
-    <input type="text" id="adm-new-local" placeholder="Nome do local..." style="flex:1;padding:9px 11px;font-size:13px;border:1.5px solid #b8d4cc;border-radius:8px;background:#fff;font-family:var(--font);outline:none" onkeydown="if(event.key==='Enter')admAdicionarLocal()"/>
-    <button onclick="admAdicionarLocal()" style="padding:9px 14px;background:#1D9E75;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font)">+ Adicionar</button>
-  </div>
-</div>
+    <div class="admin-section">
+      <div class="admin-section-title">Tipografia</div>
+      <div class="admin-field">
+        <label>Tamanho da fonte: <span id="adm-fs-val">16px</span></label>
+        <input type="range" id="adm-fs" min="14" max="22" value="16" step="1" oninput="admPreview()"/>
+      </div>
+      <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:4px">
+        <button class="btn-secondary" style="font-size:12px;padding:5px 11px" onclick="setAdmFont(14)">Pequena</button>
+        <button class="btn-secondary" style="font-size:12px;padding:5px 11px" onclick="setAdmFont(16)">Normal</button>
+        <button class="btn-secondary" style="font-size:12px;padding:5px 11px" onclick="setAdmFont(18)">Grande</button>
+        <button class="btn-secondary" style="font-size:12px;padding:5px 11px" onclick="setAdmFont(20)">Extra</button>
+      </div>
+    </div>
 
-<div class="admin-section">
-  <div class="admin-section-title">🔐 Gerenciar Senhas dos Usuários</div>
-  <div style="font-size:12px;color:#7a9e96;margin-bottom:10px">Redefina senhas sem precisar saber a senha atual.</div>
-  <div id="adm-senhas-fields"></div>
-  <button class="btn-secondary" style="font-size:12px;padding:7px 13px;margin-top:6px" onclick="admSalvarSenhas()">Salvar senhas</button>
-  <div id="adm-senhas-msg" style="font-size:12px;color:#0d6b4f;margin-top:6px;display:none"></div>
-</div>
+    <div class="admin-section">
+      <div class="admin-section-title">Imagem de Fundo</div>
+      <div class="admin-field">
+        <label>URL da imagem de fundo <span style="background:#E1F5EE;color:#085041;font-size:10px;padding:1px 6px;border-radius:8px">SINCRONIZA</span></label>
+        <input type="text" id="adm-bg-url" placeholder="https://..." oninput="admBgUrl()"/>
+      </div>
+      <div class="admin-field">
+        <label>— ou — Upload (somente neste dispositivo)</label>
+        <input type="file" id="adm-bg-file" accept="image/*" onchange="admBgUpload(this)"/>
+      </div>
+      <div class="admin-field">
+        <label>Opacidade da sobreposição: <span id="adm-bg-op-val">90%</span></label>
+        <input type="range" id="adm-bg-op" min="0" max="100" value="90" oninput="admPreview()"/>
+      </div>
+      <button class="btn-secondary" style="font-size:12px;padding:6px 12px" onclick="admRemoveBg()">Remover fundo</button>
+    </div>
 
-<div class="admin-section">
-  <div class="admin-section-title">Configuração do Sheets</div>
-  <div class="admin-field">
-    <label>URL do Apps Script Web App</label>
-    <input type="text" id="gs-url" placeholder="https://script.google.com/macros/s/XXXX/exec" oninput="saveGsUrl()"/>
-  </div>
-  <button class="btn-secondary" style="font-size:12px;padding:7px 13px" onclick="testConnection()">Testar conexão</button>
-</div>
 
-<div class="admin-section" style="display:none">
-  <div class="admin-section-title">Visibilidade</div>
-  <div class="switch-row">
-    <span>Mostrar botão "Admin" no cabeçalho</span>
-    <label class="toggle"><input type="checkbox" id="adm-show-btn" checked onchange="admPreview()"/><span class="tog-slider"></span></label>
-  </div>
-</div>
+    <div class="admin-section">
+      <div class="admin-section-title">Configuração do Sheets</div>
+      <div class="admin-field">
+        <label>URL do Apps Script Web App</label>
+        <input type="text" id="gs-url" placeholder="https://script.google.com/macros/s/XXXX/exec" oninput="saveGsUrl()"/>
+      </div>
+      <button class="btn-secondary" style="font-size:12px;padding:7px 13px" onclick="testConnection()">Testar conexão</button>
+    </div>
 
-<button class="btn-admin-save" onclick="admSave()">✓ Salvar configurações</button>
-<div style="margin-top:9px"><button class="btn-secondary" style="width:100%;font-size:13px" onclick="admReset()">Restaurar padrão</button></div>
-```
+    <div class="admin-section" style="display:none">
+      <div class="admin-section-title">Visibilidade</div>
+      <div class="switch-row">
+        <span>Mostrar botão "Admin" no cabeçalho</span>
+        <label class="toggle"><input type="checkbox" id="adm-show-btn" checked onchange="admPreview()"/><span class="tog-slider"></span></label>
+      </div>
+    </div>
 
+    <button class="btn-admin-save" onclick="admSave()">✓ Salvar configurações</button>
+    <div style="margin-top:9px"><button class="btn-secondary" style="width:100%;font-size:13px" onclick="admReset()">Restaurar padrão</button></div>
   </div>
 </div>
 
 <!-- APP -->
-
 <div id="app">
   <div class="header" id="main-header">
     <div class="logo-area">
@@ -531,15 +473,12 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
     <div class="header-divider"></div>
     <div class="header-title" id="header-title">Registro de Atendimento</div>
     <div class="header-right">
-
-```
-  <div class="user-badge" id="user-badge" style="display:none"></div>
-  <button class="header-btn" id="chpwd-btn" style="display:none" onclick="openChpwd()">🔐 Senha</button>
-  <button class="header-btn admin-btn" id="admin-btn" style="display:none" onclick="openAdmin()">⚙ Admin</button>
-  <button class="header-btn" id="logout-btn" style="display:none" onclick="doLogout()">Sair</button>
-</div>
-```
-
+      
+      <div class="user-badge" id="user-badge" style="display:none"></div>
+      <button class="header-btn" id="chpwd-btn" style="display:none" onclick="openChpwd()">🔐 Senha</button>
+      <button class="header-btn admin-btn" id="admin-btn" style="display:none" onclick="openAdmin()">⚙ Admin</button>
+      <button class="header-btn" id="logout-btn" style="display:none" onclick="doLogout()">Sair</button>
+    </div>
   </div>
 
   <div class="tabs" id="main-tabs"></div>
@@ -547,179 +486,244 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
   <div class="content">
     <div id="success-banner" class="success-msg">✓ Operação realizada com sucesso!</div>
 
-```
-<!-- TAB: NOVO REGISTRO -->
-<div id="tab-form" style="display:none">
-  <div class="card">
-    <div class="card-title">Responsável</div>
-    <div class="radio-group" id="resp-group"></div>
-    <div id="other-name-wrap" style="display:none;margin-top:10px" class="field">
-      <label>Nome</label>
-      <input type="text" id="other-name" placeholder="Digite o nome..."/>
-    </div>
-  </div>
-  <div class="card">
-    <div class="card-title">Data e Horário</div>
-    <div class="form-row">
-      <div class="field"><label>Data</label><input type="date" id="f-date"/></div>
-      <div class="field"><label>Hora do atendimento</label><input type="time" id="f-start"/></div>
-    </div>
-  </div>
-  <div class="card">
-    <div class="card-title">Local do Atendimento</div>
-    <div class="field">
-      <label>Digite para buscar unidade ou local</label>
-      <div class="autocomplete-wrap">
-        <input class="ac-input" id="ac-input" type="text" placeholder="Ex: DTI, Rosa de Sarom, Administrativo..." autocomplete="off" oninput="acFilter()" onfocus="acFilter()" onkeydown="acKey(event)"/>
-        <div class="ac-dropdown" id="ac-drop"></div>
+    <!-- TAB: NOVO REGISTRO -->
+    <div id="tab-form" style="display:none">
+      <div class="card">
+        <div class="card-title">Responsável</div>
+        <div class="radio-group" id="resp-group"></div>
+        <div id="other-name-wrap" style="display:none;margin-top:10px" class="field">
+          <label>Nome</label>
+          <input type="text" id="other-name" placeholder="Digite o nome..."/>
+        </div>
       </div>
+      <div class="card">
+        <div class="card-title">Data e Horário</div>
+        <div class="form-row">
+          <div class="field"><label>Data</label><input type="date" id="f-date"/></div>
+          <div class="field"><label>Hora do atendimento</label><input type="time" id="f-start"/></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Local do Atendimento</div>
+        <div class="field">
+          <label>Digite para buscar unidade ou local</label>
+          <div class="autocomplete-wrap">
+            <input class="ac-input" id="ac-input" type="text" placeholder="Ex: DTI, Rosa de Sarom, Administrativo..." autocomplete="off" oninput="acFilter()" onfocus="acFilter()" onkeydown="acKey(event)"/>
+            <div class="ac-dropdown" id="ac-drop"></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Descrição da Atividade</div>
+        <div class="field form-row full">
+          <textarea id="f-desc" maxlength="280" placeholder="Descreva a atividade desenvolvida..." oninput="updCount()"></textarea>
+          <div class="char-count" id="cc">0 / 280</div>
+        </div>
+      </div>
+      <button class="btn-submit" onclick="submitForm()">Salvar Registro</button>
     </div>
-  </div>
-  <div class="card">
-    <div class="card-title">Descrição da Atividade</div>
-    <div class="field form-row full">
-      <textarea id="f-desc" maxlength="280" placeholder="Descreva a atividade desenvolvida..." oninput="updCount()"></textarea>
-      <div class="char-count" id="cc">0 / 280</div>
-    </div>
-  </div>
-  <button class="btn-submit" onclick="submitForm()">Salvar Registro</button>
-</div>
 
-<!-- TAB: REGISTROS -->
-<div id="tab-list" style="display:none">
-  <div class="search-bar"><input type="text" id="search-q" placeholder="🔍  Buscar por responsável, local ou descrição..." oninput="renderList()"/></div>
-  <div id="rec-list" class="records-list"></div>
-</div>
+    <!-- TAB: REGISTROS -->
+    <div id="tab-list" style="display:none">
+      <div class="search-bar"><input type="text" id="search-q" placeholder="🔍  Buscar por responsável, local ou descrição..." oninput="renderList()"/></div>
+      <div id="rec-list" class="records-list"></div>
+    </div>
 
-<!-- TAB: RESUMO -->
-<div id="tab-stats" style="display:none">
-  <!-- ADMIN: filtro por responsável -->
-  <div id="stats-filter" style="display:none;margin-bottom:13px">
-    <div class="card" style="padding:12px 15px">
-      <div class="field" style="margin:0">
-        <label style="margin-bottom:6px">Filtrar por responsável</label>
-        <select id="stats-resp-filter" onchange="renderStats()">
-          <option value="">Todos</option>
-          <option value="Ayrton">Ayrton</option>
-          <option value="Giovanna">Giovanna</option>
-          <option value="Neudson">Neudson</option>
-          <option value="Rodrigo">Rodrigo</option>
-        </select>
+    <!-- TAB: RESUMO -->
+    <div id="tab-stats" style="display:none">
+      <!-- ADMIN: filtro por responsável -->
+      <div id="stats-filter" style="display:none;margin-bottom:13px">
+        <div class="card" style="padding:12px 15px">
+          <div class="field" style="margin:0">
+            <label style="margin-bottom:6px">Filtrar por responsável</label>
+            <select id="stats-resp-filter" onchange="renderStats()">
+              <option value="">Todos</option>
+              <option value="Ayrton">Ayrton</option>
+              <option value="Giovanna">Giovanna</option>
+              <option value="Neudson">Neudson</option>
+              <option value="Rodrigo">Rodrigo</option>
+            </select>
+          </div>
+        </div>
       </div>
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-num" id="st-tot">0</div><div class="stat-label">Total</div></div>
+        <div class="stat-card"><div class="stat-num" id="st-tod">0</div><div class="stat-label">Hoje</div></div>
+        <div class="stat-card"><div class="stat-num" id="st-wk">0</div><div class="stat-label">Esta semana</div></div>
+      </div>
+      <div class="card"><div class="card-title">Por responsável</div><div id="st-resp"></div></div>
+      <div class="card"><div class="card-title">Por local</div><div id="st-loc"></div></div>
     </div>
-  </div>
-  <div class="stats-row">
-    <div class="stat-card"><div class="stat-num" id="st-tot">0</div><div class="stat-label">Total</div></div>
-    <div class="stat-card"><div class="stat-num" id="st-tod">0</div><div class="stat-label">Hoje</div></div>
-    <div class="stat-card"><div class="stat-num" id="st-wk">0</div><div class="stat-label">Esta semana</div></div>
-  </div>
-  <div class="card"><div class="card-title">Por responsável</div><div id="st-resp"></div></div>
-  <div class="card"><div class="card-title">Por local</div><div id="st-loc"></div></div>
-</div>
 
-<!-- TAB: SHEETS (admin only) -->
-<div id="tab-sheets" style="display:none">
-  <div class="info-box">
-    <strong>Integração com Google Sheets</strong><br>
-    Configure a URL do Apps Script na aba Admin. Relatórios gerados automaticamente no dia 23 (ou último dia útil anterior).<br><br>
-    <strong>Próximo relatório:</strong><span class="next-badge" id="next-report-date">—</span>
-  </div>
-  <div class="report-section">
-    <div class="card-title">Gerar relatório por período</div>
-    <div class="period-tabs">
-      <div class="period-tab active" onclick="setPeriod('mensal')">Mensal</div>
-      <div class="period-tab" onclick="setPeriod('quinzenal')">Quinzenal</div>
-      <div class="period-tab" onclick="setPeriod('semanal')">Semanal</div>
-      <div class="period-tab" onclick="setPeriod('personalizado')">Personalizado</div>
-    </div>
-    <div id="period-mensal">
-      <div class="form-row" style="margin-bottom:13px">
-        <div class="field"><label>Mês</label><select id="rep-month"><option value="0">Janeiro</option><option value="1">Fevereiro</option><option value="2">Março</option><option value="3">Abril</option><option value="4">Maio</option><option value="5">Junho</option><option value="6">Julho</option><option value="7">Agosto</option><option value="8">Setembro</option><option value="9">Outubro</option><option value="10">Novembro</option><option value="11">Dezembro</option></select></div>
-        <div class="field"><label>Ano</label><input type="number" id="rep-year" value="2025" min="2024" max="2035"/></div>
+    <!-- TAB: SHEETS (admin only) -->
+    <div id="tab-sheets" style="display:none">
+      <div class="info-box">
+        <strong>Integração com Google Sheets</strong><br>
+        Configure a URL do Apps Script na aba Admin. Relatórios gerados automaticamente no dia 23 (ou último dia útil anterior).<br><br>
+        <strong>Próximo relatório:</strong><span class="next-badge" id="next-report-date">—</span>
+      </div>
+      <div class="report-section">
+        <div class="card-title">Gerar relatório por período</div>
+        <div class="period-tabs">
+          <div class="period-tab active" onclick="setPeriod('mensal')">Mensal</div>
+          <div class="period-tab" onclick="setPeriod('quinzenal')">Quinzenal</div>
+          <div class="period-tab" onclick="setPeriod('semanal')">Semanal</div>
+          <div class="period-tab" onclick="setPeriod('personalizado')">Personalizado</div>
+        </div>
+        <div id="period-mensal">
+          <div class="form-row" style="margin-bottom:13px">
+            <div class="field"><label>Mês</label><select id="rep-month"><option value="0">Janeiro</option><option value="1">Fevereiro</option><option value="2">Março</option><option value="3">Abril</option><option value="4">Maio</option><option value="5">Junho</option><option value="6">Julho</option><option value="7">Agosto</option><option value="8">Setembro</option><option value="9">Outubro</option><option value="10">Novembro</option><option value="11">Dezembro</option></select></div>
+            <div class="field"><label>Ano</label><input type="number" id="rep-year" value="2025" min="2024" max="2035"/></div>
+          </div>
+        </div>
+        <div id="period-quinzenal" style="display:none">
+          <div class="form-row" style="margin-bottom:13px">
+            <div class="field"><label>Mês</label><select id="rep-month-q"><option value="0">Janeiro</option><option value="1">Fevereiro</option><option value="2">Março</option><option value="3">Abril</option><option value="4">Maio</option><option value="5">Junho</option><option value="6">Julho</option><option value="7">Agosto</option><option value="8">Setembro</option><option value="9">Outubro</option><option value="10">Novembro</option><option value="11">Dezembro</option></select></div>
+            <div class="field"><label>Ano</label><input type="number" id="rep-year-q" value="2025" min="2024" max="2035"/></div>
+          </div>
+          <div class="field" style="margin-bottom:13px"><label>Quinzena</label><select id="rep-quinzena"><option value="1">1ª quinzena (1 ao 15)</option><option value="2">2ª quinzena (16 ao último)</option></select></div>
+        </div>
+        <div id="period-semanal" style="display:none">
+          <div class="form-row" style="margin-bottom:13px">
+            <div class="field"><label>Data início</label><input type="date" id="rep-sem-ini"/></div>
+            <div class="field"><label>Data fim</label><input type="date" id="rep-sem-fim"/></div>
+          </div>
+        </div>
+        <div id="period-personalizado" style="display:none">
+          <div class="form-row" style="margin-bottom:8px">
+            <div class="field"><label>Data início</label><input type="date" id="rep-per-ini"/></div>
+            <div class="field"><label>Data fim</label><input type="date" id="rep-per-fim"/></div>
+          </div>
+          <div class="field" style="margin-bottom:13px"><label>Responsável (vazio = todos)</label>
+            <select id="rep-per-resp"><option value="">Todos</option><option value="Ayrton">Ayrton</option><option value="Giovanna">Giovanna</option><option value="Neudson">Neudson</option><option value="Rodrigo">Rodrigo</option></select>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn-secondary" onclick="exportCSV()">Exportar CSV</button>
+          <button class="btn-secondary" onclick="sendToSheets()">Enviar ao Sheets</button>
+        </div>
+        <div id="export-msg" style="margin-top:10px;font-size:13px;color:var(--tx2)"></div>
+      </div>
+      <div class="report-section">
+        <div class="card-title">Histórico de envios</div>
+        <div id="send-history" style="font-size:13px;color:var(--tx2)">Nenhum envio registrado.</div>
       </div>
     </div>
-    <div id="period-quinzenal" style="display:none">
-      <div class="form-row" style="margin-bottom:13px">
-        <div class="field"><label>Mês</label><select id="rep-month-q"><option value="0">Janeiro</option><option value="1">Fevereiro</option><option value="2">Março</option><option value="3">Abril</option><option value="4">Maio</option><option value="5">Junho</option><option value="6">Julho</option><option value="7">Agosto</option><option value="8">Setembro</option><option value="9">Outubro</option><option value="10">Novembro</option><option value="11">Dezembro</option></select></div>
-        <div class="field"><label>Ano</label><input type="number" id="rep-year-q" value="2025" min="2024" max="2035"/></div>
-      </div>
-      <div class="field" style="margin-bottom:13px"><label>Quinzena</label><select id="rep-quinzena"><option value="1">1ª quinzena (1 ao 15)</option><option value="2">2ª quinzena (16 ao último)</option></select></div>
-    </div>
-    <div id="period-semanal" style="display:none">
-      <div class="form-row" style="margin-bottom:13px">
-        <div class="field"><label>Data início</label><input type="date" id="rep-sem-ini"/></div>
-        <div class="field"><label>Data fim</label><input type="date" id="rep-sem-fim"/></div>
-      </div>
-    </div>
-    <div id="period-personalizado" style="display:none">
-      <div class="form-row" style="margin-bottom:8px">
-        <div class="field"><label>Data início</label><input type="date" id="rep-per-ini"/></div>
-        <div class="field"><label>Data fim</label><input type="date" id="rep-per-fim"/></div>
-      </div>
-      <div class="field" style="margin-bottom:13px"><label>Responsável (vazio = todos)</label>
-        <select id="rep-per-resp"><option value="">Todos</option><option value="Ayrton">Ayrton</option><option value="Giovanna">Giovanna</option><option value="Neudson">Neudson</option><option value="Rodrigo">Rodrigo</option></select>
-      </div>
-    </div>
-    <div class="btn-row">
-      <button class="btn-secondary" onclick="exportCSV()">Exportar CSV</button>
-      <button class="btn-secondary" onclick="sendToSheets()">Enviar ao Sheets</button>
-    </div>
-    <div id="export-msg" style="margin-top:10px;font-size:13px;color:var(--tx2)"></div>
-  </div>
-  <div class="report-section">
-    <div class="card-title">Histórico de envios</div>
-    <div id="send-history" style="font-size:13px;color:var(--tx2)">Nenhum envio registrado.</div>
-  </div>
-</div>
 
-<!-- TAB: RELATÓRIO TÉCNICO (visualização local) -->
-<div id="tab-report-tech" style="display:none">
-  <div class="report-section">
-    <div class="card-title">Visualizar registros por período</div>
-    <div class="period-tabs">
-      <div class="period-tab active" onclick="setTechPeriod('semanal')">Semanal</div>
-      <div class="period-tab" onclick="setTechPeriod('quinzenal')">Quinzenal</div>
-      <div class="period-tab" onclick="setTechPeriod('mensal')">Mensal</div>
-      <div class="period-tab" onclick="setTechPeriod('personalizado')">Personalizado</div>
-    </div>
-    <div id="tech-period-semanal">
-      <div class="form-row" style="margin-bottom:13px">
-        <div class="field"><label>Data início</label><input type="date" id="tech-sem-ini"/></div>
-        <div class="field"><label>Data fim</label><input type="date" id="tech-sem-fim"/></div>
+    <!-- TAB: GERENCIAR (admin only) -->
+    <div id="tab-gerenciar" style="display:none">
+
+      <!-- SUB TABS -->
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
+        <button class="ger-tab active" onclick="showGerTab('usuarios')" id="gt-usuarios" style="padding:9px 16px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);border:2px solid #1D9E75;background:#1D9E75;color:#fff">👥 Usuários</button>
+        <button class="ger-tab" onclick="showGerTab('locais')" id="gt-locais" style="padding:9px 16px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);border:2px solid #b8d4cc;background:#fff;color:#2d4a44">📍 Locais</button>
+        <button class="ger-tab" onclick="showGerTab('senhas')" id="gt-senhas" style="padding:9px 16px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);border:2px solid #b8d4cc;background:#fff;color:#2d4a44">🔐 Senhas</button>
+      </div>
+
+      <!-- USUÁRIOS -->
+      <div id="ger-tab-usuarios">
+        <div class="card">
+          <div class="card-title">Usuários cadastrados</div>
+          <div id="adm-users-list"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">➕ Adicionar usuário</div>
+          <div class="form-row">
+            <div class="field"><label>Nome</label><input type="text" id="adm-new-user-name" placeholder="Ex: Carlos"/></div>
+            <div class="field"><label>Perfil</label><select id="adm-new-user-perfil"><option value="SEMED">SEMED</option><option value="ARPTECH">ARPTECH</option></select></div>
+          </div>
+          <div class="field" style="margin-bottom:12px"><label>Senha inicial</label><input type="password" id="adm-new-user-senha" placeholder="Mínimo 8 caracteres" autocomplete="new-password"/></div>
+          <div class="field" style="margin-bottom:14px">
+            <label>Locais permitidos</label>
+            <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:6px" id="adm-new-user-locais">
+              <label style="display:flex;align-items:center;gap:6px;font-size:14px;cursor:pointer;font-weight:500"><input type="checkbox" value="todos" checked onchange="admLocaisToggle(this)"/> Todos</label>
+              <label style="display:flex;align-items:center;gap:6px;font-size:14px;cursor:pointer;font-weight:500"><input type="checkbox" value="setor"/> Setores</label>
+              <label style="display:flex;align-items:center;gap:6px;font-size:14px;cursor:pointer;font-weight:500"><input type="checkbox" value="urbana"/> Esc. Urbanas</label>
+              <label style="display:flex;align-items:center;gap:6px;font-size:14px;cursor:pointer;font-weight:500"><input type="checkbox" value="rural"/> Esc. Rurais</label>
+              <label style="display:flex;align-items:center;gap:6px;font-size:14px;cursor:pointer;font-weight:500"><input type="checkbox" value="externo"/> Externos</label>
+            </div>
+          </div>
+          <button class="btn-submit" onclick="admAdicionarUsuario()">Adicionar Usuário</button>
+          <div id="adm-user-msg" style="font-size:13px;margin-top:10px;display:none"></div>
+        </div>
+      </div>
+
+      <!-- LOCAIS -->
+      <div id="ger-tab-locais" style="display:none">
+        <div class="card">
+          <div class="card-title">Locais de Atendimento</div>
+          <div class="period-tabs">
+            <div class="period-tab active" onclick="admSetLocalTab('setor')" id="lt-setor">Setores</div>
+            <div class="period-tab" onclick="admSetLocalTab('urbana')" id="lt-urbana">Urbanas</div>
+            <div class="period-tab" onclick="admSetLocalTab('rural')" id="lt-rural">Rurais</div>
+            <div class="period-tab" onclick="admSetLocalTab('externo')" id="lt-externo">Externos</div>
+          </div>
+          <div id="adm-locais-list" style="max-height:280px;overflow-y:auto;margin:12px 0;background:#f4f8f6;border:2px solid #b8d4cc;border-radius:12px;padding:10px"></div>
+          <div style="display:flex;gap:8px">
+            <input type="text" id="adm-new-local" class="field" placeholder="Nome do novo local..." style="flex:1;padding:11px 13px;font-size:15px;border:2px solid #b8d4cc;border-radius:14px;background:#f4f8f6;color:#0f1f1c;font-family:var(--font);outline:none" onkeydown="if(event.key==='Enter')admAdicionarLocal()"/>
+            <button onclick="admAdicionarLocal()" class="btn-submit" style="width:auto;padding:11px 18px;font-size:14px">+ Adicionar</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SENHAS -->
+      <div id="ger-tab-senhas" style="display:none">
+        <div class="card">
+          <div class="card-title">Redefinir senhas dos usuários</div>
+          <div style="font-size:13px;color:#7a9e96;margin-bottom:14px">Deixe em branco para manter a senha atual. O usuário não precisa saber a senha atual.</div>
+          <div id="adm-senhas-fields"></div>
+          <button class="btn-submit" style="margin-top:6px" onclick="admSalvarSenhas()">✓ Salvar senhas</button>
+          <div id="adm-senhas-msg" style="font-size:13px;color:#0d6b4f;margin-top:10px;display:none"></div>
+        </div>
+      </div>
+
+    </div><!-- /tab-gerenciar -->
+    <div id="tab-report-tech" style="display:none">
+      <div class="report-section">
+        <div class="card-title">Visualizar registros por período</div>
+        <div class="period-tabs">
+          <div class="period-tab active" onclick="setTechPeriod('semanal')">Semanal</div>
+          <div class="period-tab" onclick="setTechPeriod('quinzenal')">Quinzenal</div>
+          <div class="period-tab" onclick="setTechPeriod('mensal')">Mensal</div>
+          <div class="period-tab" onclick="setTechPeriod('personalizado')">Personalizado</div>
+        </div>
+        <div id="tech-period-semanal">
+          <div class="form-row" style="margin-bottom:13px">
+            <div class="field"><label>Data início</label><input type="date" id="tech-sem-ini"/></div>
+            <div class="field"><label>Data fim</label><input type="date" id="tech-sem-fim"/></div>
+          </div>
+        </div>
+        <div id="tech-period-quinzenal" style="display:none">
+          <div class="form-row" style="margin-bottom:13px">
+            <div class="field"><label>Mês</label><select id="tech-month-q"><option value="0">Janeiro</option><option value="1">Fevereiro</option><option value="2">Março</option><option value="3">Abril</option><option value="4">Maio</option><option value="5">Junho</option><option value="6">Julho</option><option value="7">Agosto</option><option value="8">Setembro</option><option value="9">Outubro</option><option value="10">Novembro</option><option value="11">Dezembro</option></select></div>
+            <div class="field"><label>Ano</label><input type="number" id="tech-year-q" value="2025" min="2024" max="2035"/></div>
+          </div>
+          <div class="field" style="margin-bottom:13px"><label>Quinzena</label><select id="tech-quinzena"><option value="1">1ª quinzena (1 ao 15)</option><option value="2">2ª quinzena (16 ao último)</option></select></div>
+        </div>
+        <div id="tech-period-mensal" style="display:none">
+          <div class="form-row" style="margin-bottom:13px">
+            <div class="field"><label>Mês</label><select id="tech-month"><option value="0">Janeiro</option><option value="1">Fevereiro</option><option value="2">Março</option><option value="3">Abril</option><option value="4">Maio</option><option value="5">Junho</option><option value="6">Julho</option><option value="7">Agosto</option><option value="8">Setembro</option><option value="9">Outubro</option><option value="10">Novembro</option><option value="11">Dezembro</option></select></div>
+            <div class="field"><label>Ano</label><input type="number" id="tech-year" value="2025" min="2024" max="2035"/></div>
+          </div>
+        </div>
+        <div id="tech-period-personalizado" style="display:none">
+          <div class="form-row" style="margin-bottom:13px">
+            <div class="field"><label>Data início</label><input type="date" id="tech-per-ini"/></div>
+            <div class="field"><label>Data fim</label><input type="date" id="tech-per-fim"/></div>
+          </div>
+        </div>
+        <button class="btn-secondary" onclick="visualizarRelatorioTecnico()">Visualizar</button>
+      </div>
+      <div id="tech-report-result"></div>
+      <!-- Histórico de visualizações -->
+      <div class="report-section" style="margin-top:13px">
+        <div class="card-title" style="display:flex;justify-content:space-between;align-items:center">
+          <span>Histórico de relatórios visualizados</span>
+          <button onclick="limparHistoricoTecnico()" style="background:none;border:none;color:#dc2626;font-size:12px;cursor:pointer;font-family:var(--font);font-weight:600">Apagar histórico</button>
+        </div>
+        <div id="tech-history" style="font-size:13px;color:var(--tx2)">Nenhum relatório visualizado ainda.</div>
       </div>
     </div>
-    <div id="tech-period-quinzenal" style="display:none">
-      <div class="form-row" style="margin-bottom:13px">
-        <div class="field"><label>Mês</label><select id="tech-month-q"><option value="0">Janeiro</option><option value="1">Fevereiro</option><option value="2">Março</option><option value="3">Abril</option><option value="4">Maio</option><option value="5">Junho</option><option value="6">Julho</option><option value="7">Agosto</option><option value="8">Setembro</option><option value="9">Outubro</option><option value="10">Novembro</option><option value="11">Dezembro</option></select></div>
-        <div class="field"><label>Ano</label><input type="number" id="tech-year-q" value="2025" min="2024" max="2035"/></div>
-      </div>
-      <div class="field" style="margin-bottom:13px"><label>Quinzena</label><select id="tech-quinzena"><option value="1">1ª quinzena (1 ao 15)</option><option value="2">2ª quinzena (16 ao último)</option></select></div>
-    </div>
-    <div id="tech-period-mensal" style="display:none">
-      <div class="form-row" style="margin-bottom:13px">
-        <div class="field"><label>Mês</label><select id="tech-month"><option value="0">Janeiro</option><option value="1">Fevereiro</option><option value="2">Março</option><option value="3">Abril</option><option value="4">Maio</option><option value="5">Junho</option><option value="6">Julho</option><option value="7">Agosto</option><option value="8">Setembro</option><option value="9">Outubro</option><option value="10">Novembro</option><option value="11">Dezembro</option></select></div>
-        <div class="field"><label>Ano</label><input type="number" id="tech-year" value="2025" min="2024" max="2035"/></div>
-      </div>
-    </div>
-    <div id="tech-period-personalizado" style="display:none">
-      <div class="form-row" style="margin-bottom:13px">
-        <div class="field"><label>Data início</label><input type="date" id="tech-per-ini"/></div>
-        <div class="field"><label>Data fim</label><input type="date" id="tech-per-fim"/></div>
-      </div>
-    </div>
-    <button class="btn-secondary" onclick="visualizarRelatorioTecnico()">Visualizar</button>
-  </div>
-  <div id="tech-report-result"></div>
-  <!-- Histórico de visualizações -->
-  <div class="report-section" style="margin-top:13px">
-    <div class="card-title" style="display:flex;justify-content:space-between;align-items:center">
-      <span>Histórico de relatórios visualizados</span>
-      <button onclick="limparHistoricoTecnico()" style="background:none;border:none;color:#dc2626;font-size:12px;cursor:pointer;font-family:var(--font);font-weight:600">Apagar histórico</button>
-    </div>
-    <div id="tech-history" style="font-size:13px;color:var(--tx2)">Nenhum relatório visualizado ainda.</div>
-  </div>
-</div>
-```
 
   </div><!-- /content -->
 </div><!-- /app -->
@@ -1193,23 +1197,42 @@ function setupAdminTabs(){
     {id:'form',label:'Novo Registro'},
     {id:'list',label:'Registros'},
     {id:'stats',label:'Resumo'},
-    {id:'sheets',label:'Sheets'}
+    {id:'sheets',label:'Sheets'},
+    {id:'gerenciar',label:'⚙ Gerenciar'}
   ];
   buildTabs(tabs);
   document.getElementById('stats-filter').style.display='block';
-  // Preenche filtro de resumo com todos os usuarios
   var sf=document.getElementById('stats-resp-filter');
   var todosU=getTodosUsuarios();
   sf.innerHTML='<option value="">Todos</option>';
   Object.keys(todosU).filter(function(n){return n!=='Admin'}).sort().forEach(function(n){
     sf.innerHTML+='<option value="'+n+'">'+n+'</option>';
   });
-  // Resp group: todos os usuarios nao-admin
   var nomes=Object.keys(todosU).filter(function(n){return n!=='Admin'}).sort();
   nomes.push('Outros');
   buildRespGroup(nomes);
   acGrupos=getGruposComExtras(['todos']);
   showTab('form');
+}
+
+function showGerTab(t){
+  ['usuarios','locais','senhas'].forEach(function(x){
+    var el=document.getElementById('ger-tab-'+x);if(el)el.style.display=x===t?'block':'none';
+    var btn=document.getElementById('gt-'+x);
+    if(btn){
+      if(x===t){btn.style.background='#1D9E75';btn.style.color='#fff';btn.style.borderColor='#1D9E75'}
+      else{btn.style.background='#fff';btn.style.color='#2d4a44';btn.style.borderColor='#b8d4cc'}
+    }
+  });
+  if(t==='usuarios')admRenderUsers();
+  else if(t==='locais'){admRenderLocais();}
+  else if(t==='senhas'){
+    var html='';var todosU=getTodosUsuarios();
+    Object.keys(todosU).sort().forEach(function(user){
+      html+='<div class="field" style="margin-bottom:12px"><label>'+user+(user==='Admin'?' (Admin)':'')+'</label><input type="password" id="adm-senha-'+user+'" placeholder="Nova senha..." autocomplete="new-password"/></div>';
+    });
+    document.getElementById('adm-senhas-fields').innerHTML=html;
+  }
 }
 
 function setupTechTabs(user){
@@ -1250,7 +1273,7 @@ function selRespByName(name){
 }
 
 function showTab(t){
-  ['form','list','stats','sheets','report-tech'].forEach(function(x){
+  ['form','list','stats','sheets','report-tech','gerenciar'].forEach(function(x){
     var el=document.getElementById('tab-'+x);if(el)el.style.display='none';
     var btn=document.getElementById('tab-btn-'+x);if(btn)btn.classList.remove('active');
   });
@@ -1260,6 +1283,7 @@ function showTab(t){
   else if(t==='stats'){syncFromSheets(renderStats)}
   else if(t==='sheets')renderHistory();
   else if(t==='report-tech')renderTechHistory();
+  else if(t==='gerenciar'){admRenderUsers();admRenderLocais();}
 }
 
 // ── FORM ─────────────────────────────────────────────────────
@@ -1807,15 +1831,9 @@ function loadAdminFields(){
     if(cfg.loginLogoUrl){document.getElementById('adm-login-logo-url').value=cfg.loginLogoUrl;var lp=document.getElementById('adm-login-logo-preview');lp.src=cfg.loginLogoUrl;lp.classList.add('show')}
     admPreview();
   }catch(e){}
-  // Campos de senhas - todos os usuarios
-  var html='';
-  var todosU=getTodosUsuarios();
-  Object.keys(todosU).sort().forEach(function(user){
-    html+='<div class="admin-field"><label>'+user+(user==='Admin'?' (Admin)':'')+'</label><input type="password" id="adm-senha-'+user+'" placeholder="Nova senha..." autocomplete="new-password"/></div>';
-  });
-  document.getElementById('adm-senhas-fields').innerHTML=html;
-  admRenderUsers();
-  admRenderLocais();
+  // Campos de senhas agora ficam na aba Gerenciar → Senhas
+  // admRenderUsers e admRenderLocais também ficam na aba Gerenciar
+  admPreview();
 }
 
 // ── SETTINGS ─────────────────────────────────────────────────
@@ -1916,6 +1934,5 @@ function shade(hex,pct){
 
 init();
 </script>
-
 </body>
 </html>
