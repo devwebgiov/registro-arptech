@@ -953,27 +953,32 @@ function admSetLocalTab(tipo){
 function admRenderLocais(){
   var el=document.getElementById('adm-locais-list');if(!el)return;
   var tipo=_admLocalTab;
-  // Locais base (não deletáveis)
   var base=[];
   GRUPOS.forEach(function(g){if(g[2]===tipo)base=g[1]});
   var extras=LOCAIS_EXTRA[tipo]||[];
   var html='';
-  if(base.length){
-    html+='<div style="font-size:10px;font-weight:700;color:#7a9e96;margin-bottom:5px;text-transform:uppercase">Padrão</div>';
-    html+=base.map(function(loc){
-      return '<div style="font-size:12px;padding:5px 7px;color:#2d4a44;border-bottom:1px solid #edf2f0">'+loc+'</div>';
-    }).join('');
-  }
+
+  // Cadastrados pelo Admin aparecem primeiro (editáveis)
   if(extras.length){
-    html+='<div style="font-size:10px;font-weight:700;color:#7a9e96;margin:8px 0 5px;text-transform:uppercase">Cadastrados pelo Admin</div>';
+    html+='<div style="font-size:10px;font-weight:700;color:#0d6b4f;margin-bottom:8px;text-transform:uppercase;letter-spacing:.8px">✏️ Cadastrados pelo Admin</div>';
     html+=extras.map(function(loc,i){
-      return '<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 7px;border-bottom:1px solid #edf2f0">'+
-        '<span style="font-size:12px;color:#2d4a44">'+loc+'</span>'+
-        '<button onclick="admDeletarLocal(\''+tipo+'\','+i+')" style="background:none;border:none;color:#dc2626;font-size:13px;cursor:pointer;padding:0 4px">🗑</button>'+
+      return '<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 12px;background:#fff;border:2px solid #b8d4cc;border-radius:12px;margin-bottom:7px">'+
+        '<span style="font-size:14px;color:#0f1f1c;font-weight:500">'+loc+'</span>'+
+        '<button onclick="admDeletarLocal(\''+tipo+'\','+i+')" style="background:#FEE2E2;color:#dc2626;border:none;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font);white-space:nowrap">🗑 Excluir</button>'+
       '</div>';
     }).join('');
+    html+='<div style="height:1px;background:#e2e8e0;margin:10px 0"></div>';
+  } else {
+    html+='<div style="font-size:12px;color:#7a9e96;padding:8px 0 10px;font-style:italic">Nenhum local cadastrado pelo Admin nesta categoria ainda.</div>';
   }
-  if(!base.length&&!extras.length)html='<div style="font-size:12px;color:#7a9e96;padding:8px">Nenhum local cadastrado.</div>';
+
+  // Padrão (não editáveis)
+  if(base.length){
+    html+='<div style="font-size:10px;font-weight:700;color:#7a9e96;margin-bottom:6px;text-transform:uppercase;letter-spacing:.8px">Padrão do sistema</div>';
+    html+=base.map(function(loc){
+      return '<div style="padding:7px 10px;border-bottom:1px solid #edf2f0;font-size:13px;color:#7a9e96">'+loc+'</div>';
+    }).join('');
+  }
   el.innerHTML=html;
 }
 
