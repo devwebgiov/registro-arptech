@@ -1883,13 +1883,49 @@ function loadConfigSheets(){
       if(data.config){
         try{
           var cfg=typeof data.config==='string'?JSON.parse(data.config):data.config;
-          // Só aplica se tiver cores válidas — ignora config corrompida
           if(cfg&&cfg.hc&&cfg.hc.startsWith('#')){
+            // Sempre sobrescreve localStorage com config do Sheets
             localStorage.setItem('arp_dev_cfg',JSON.stringify(cfg));
             loadSettings();
           }
         }catch(e){}
       }
+      // Carrega senhas do Sheets também
+      fetch(gs,{method:'POST',body:JSON.stringify({action:'getSenhas'})})
+        .then(function(r){return r.json()})
+        .then(function(d){
+          if(d.senhas){
+            var s=typeof d.senhas==='string'?JSON.parse(d.senhas):d.senhas;
+            SENHAS=s;
+            try{localStorage.setItem('arp_senhas',JSON.stringify(SENHAS))}catch(e){}
+            popularLoginSelect();
+          }
+        }).catch(function(){});
+      // Carrega usuários extras do Sheets
+      fetch(gs,{method:'POST',body:JSON.stringify({action:'getUsuarios'})})
+        .then(function(r){return r.json()})
+        .then(function(d){
+          if(d.usuarios){
+            var u=typeof d.usuarios==='string'?JSON.parse(d.usuarios):d.usuarios;
+            USUARIOS_EXTRA=u;
+            try{localStorage.setItem('arp_usuarios_extra',JSON.stringify(USUARIOS_EXTRA))}catch(e){}
+            popularLoginSelect();
+          }
+        }).catch(function(){});
+      // Carrega locais extras do Sheets
+      fetch(gs,{method:'POST',body:JSON.stringify({action:'getLocais'})})
+        .then(function(r){return r.json()})
+        .then(function(d){
+          if(d.locais){
+            var l=typeof d.locais==='string'?JSON.parse(d.locais):d.locais;
+            LOCAIS_EXTRA=l;
+            try{localStorage.setItem('arp_locais_extra',JSON.stringify(LOCAIS_EXTRA))}catch(e){}
+            // Atualiza LOCAL_TYPE com novos locais
+            Object.keys(LOCAIS_EXTRA).forEach(function(tipo){
+              (LOCAIS_EXTRA[tipo]||[]).forEach(function(loc){LOCAL_TYPE[loc]=tipo});
+            });
+          }
+        }).catch(function(){});
     }).catch(function(){});
 }
 
