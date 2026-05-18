@@ -286,11 +286,6 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
       <label>Responsável</label>
       <select id="login-user">
         <option value="">Selecione...</option>
-        <option value="Ayrton">Ayrton</option>
-        <option value="Giovanna">Giovanna</option>
-        <option value="Neudson">Neudson</option>
-        <option value="Rodrigo">Rodrigo</option>
-        <option value="Admin">Administrador</option>
       </select>
     </div>
     <div class="login-field">
@@ -438,11 +433,52 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
 </div>
 
 <div class="admin-section">
-  <div class="admin-section-title">Gerenciar Senhas dos Usuários</div>
-  <div style="font-size:12px;color:var(--tx3);margin-bottom:10px">Como Admin, você pode redefinir as senhas dos usuários sem precisar saber a senha atual. Deixe em branco para manter a senha atual.</div>
+  <div class="admin-section-title">👥 Gerenciar Usuários</div>
+  <div style="font-size:12px;color:#7a9e96;margin-bottom:10px">Cadastre ou remova usuários. Perfil <strong>SEMED</strong> = atendimento escolar. Perfil <strong>ARPTECH</strong> = serviços da loja.</div>
+  <div id="adm-users-list" style="margin-bottom:10px"></div>
+  <div style="background:#f4f8f6;border:1.5px solid #b8d4cc;border-radius:12px;padding:13px">
+    <div style="font-size:12px;font-weight:700;color:#2d4a44;margin-bottom:10px">➕ Adicionar usuário</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+      <div><label style="font-size:12px;font-weight:600;color:#2d4a44;display:block;margin-bottom:3px">Nome</label><input type="text" id="adm-new-user-name" placeholder="Ex: Carlos" style="width:100%;padding:8px 10px;font-size:13px;border:1.5px solid #b8d4cc;border-radius:8px;background:#fff;font-family:var(--font);outline:none"/></div>
+      <div><label style="font-size:12px;font-weight:600;color:#2d4a44;display:block;margin-bottom:3px">Perfil</label><select id="adm-new-user-perfil" style="width:100%;padding:8px 10px;font-size:13px;border:1.5px solid #b8d4cc;border-radius:8px;background:#fff;font-family:var(--font);outline:none;-webkit-appearance:none"><option value="SEMED">SEMED</option><option value="ARPTECH">ARPTECH</option></select></div>
+    </div>
+    <div style="margin-bottom:8px"><label style="font-size:12px;font-weight:600;color:#2d4a44;display:block;margin-bottom:3px">Senha inicial</label><input type="password" id="adm-new-user-senha" placeholder="Mínimo 8 caracteres" style="width:100%;padding:8px 10px;font-size:13px;border:1.5px solid #b8d4cc;border-radius:8px;background:#fff;font-family:var(--font);outline:none" autocomplete="new-password"/></div>
+    <div style="margin-bottom:10px"><label style="font-size:12px;font-weight:600;color:#2d4a44;display:block;margin-bottom:3px">Locais permitidos</label>
+      <div style="display:flex;flex-wrap:wrap;gap:6px" id="adm-new-user-locais">
+        <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer"><input type="checkbox" value="todos" checked onchange="admLocaisToggle(this)"/> Todos</label>
+        <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer"><input type="checkbox" value="setor"/> Setores</label>
+        <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer"><input type="checkbox" value="urbana"/> Escolas Urbanas</label>
+        <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer"><input type="checkbox" value="rural"/> Escolas Rurais</label>
+        <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer"><input type="checkbox" value="externo"/> Externos</label>
+      </div>
+    </div>
+    <button onclick="admAdicionarUsuario()" style="width:100%;padding:9px;background:#1D9E75;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font)">Adicionar Usuário</button>
+    <div id="adm-user-msg" style="font-size:12px;margin-top:6px;display:none"></div>
+  </div>
+</div>
+
+<div class="admin-section">
+  <div class="admin-section-title">📍 Gerenciar Locais de Atendimento</div>
+  <div style="font-size:12px;color:#7a9e96;margin-bottom:10px">Adicione ou remova locais. Ficam disponíveis na busca do formulário.</div>
+  <div class="period-tabs" style="margin-bottom:10px">
+    <div class="period-tab active" onclick="admSetLocalTab('setor')" id="lt-setor">Setores</div>
+    <div class="period-tab" onclick="admSetLocalTab('urbana')" id="lt-urbana">Urbanas</div>
+    <div class="period-tab" onclick="admSetLocalTab('rural')" id="lt-rural">Rurais</div>
+    <div class="period-tab" onclick="admSetLocalTab('externo')" id="lt-externo">Externos</div>
+  </div>
+  <div id="adm-locais-list" style="max-height:200px;overflow-y:auto;margin-bottom:10px;background:#f4f8f6;border:1.5px solid #b8d4cc;border-radius:10px;padding:8px"></div>
+  <div style="display:flex;gap:8px">
+    <input type="text" id="adm-new-local" placeholder="Nome do local..." style="flex:1;padding:9px 11px;font-size:13px;border:1.5px solid #b8d4cc;border-radius:8px;background:#fff;font-family:var(--font);outline:none" onkeydown="if(event.key==='Enter')admAdicionarLocal()"/>
+    <button onclick="admAdicionarLocal()" style="padding:9px 14px;background:#1D9E75;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font)">+ Adicionar</button>
+  </div>
+</div>
+
+<div class="admin-section">
+  <div class="admin-section-title">🔐 Gerenciar Senhas dos Usuários</div>
+  <div style="font-size:12px;color:#7a9e96;margin-bottom:10px">Redefina senhas sem precisar saber a senha atual.</div>
   <div id="adm-senhas-fields"></div>
   <button class="btn-secondary" style="font-size:12px;padding:7px 13px;margin-top:6px" onclick="admSalvarSenhas()">Salvar senhas</button>
-  <div id="adm-senhas-msg" style="font-size:12px;color:var(--gr-d);margin-top:6px;display:none"></div>
+  <div id="adm-senhas-msg" style="font-size:12px;color:#0d6b4f;margin-top:6px;display:none"></div>
 </div>
 
 <div class="admin-section">
@@ -709,6 +745,262 @@ var pendingRec=null;
 var SENHAS_PADRAO={'Ayrton':'ayrton123','Giovanna':'giovanna123','Neudson':'neudson123','Rodrigo':'rodrigo123','Admin':'admin@arptech'};
 var SENHAS={};
 
+// ── ETAPA 2: USUÁRIOS, LOCAIS E PERFIS ───────────────────────
+
+// Usuários dinâmicos: {nome, perfil:'SEMED'|'ARPTECH', locais:['todos'|'setor'|'urbana'|'rural'|'externo']}
+var USUARIOS_EXTRA={}; // usuários cadastrados pelo admin além dos padrão
+var USUARIOS_PADRAO={
+  'Ayrton':  {perfil:'SEMED',  locais:['todos']},
+  'Giovanna':{perfil:'SEMED',  locais:['todos']},
+  'Neudson': {perfil:'SEMED',  locais:['todos']},
+  'Rodrigo': {perfil:'SEMED',  locais:['todos']},
+  'Admin':   {perfil:'ADMIN',  locais:['todos']}
+};
+
+// Locais extras cadastrados pelo admin: {setor:[], urbana:[], rural:[], externo:[]}
+var LOCAIS_EXTRA={setor:[],urbana:[],rural:[],externo:[]};
+var _admLocalTab='setor';
+
+function carregarUsuarios(){
+  try{var u=localStorage.getItem('arp_usuarios_extra');if(u)USUARIOS_EXTRA=JSON.parse(u)}catch(e){}
+}
+function salvarUsuarios(){
+  try{localStorage.setItem('arp_usuarios_extra',JSON.stringify(USUARIOS_EXTRA))}catch(e){}
+  // Sincroniza com Sheets
+  var gs=getGs();
+  if(gs){fetch(gs,{method:'POST',body:JSON.stringify({action:'saveUsuarios',usuarios:USUARIOS_EXTRA})}).catch(function(){})}
+}
+
+function carregarLocaisExtra(){
+  try{var l=localStorage.getItem('arp_locais_extra');if(l)LOCAIS_EXTRA=JSON.parse(l)}catch(e){}
+}
+function salvarLocaisExtra(){
+  try{localStorage.setItem('arp_locais_extra',JSON.stringify(LOCAIS_EXTRA))}catch(e){}
+  var gs=getGs();
+  if(gs){fetch(gs,{method:'POST',body:JSON.stringify({action:'saveLocais',locais:LOCAIS_EXTRA})}).catch(function(){})}
+}
+
+function getTodosUsuarios(){
+  var todos=JSON.parse(JSON.stringify(USUARIOS_PADRAO));
+  Object.keys(USUARIOS_EXTRA).forEach(function(n){todos[n]=USUARIOS_EXTRA[n]});
+  return todos;
+}
+
+function getPerfilUsuario(nome){
+  if(USUARIOS_EXTRA[nome])return USUARIOS_EXTRA[nome].perfil;
+  if(USUARIOS_PADRAO[nome])return USUARIOS_PADRAO[nome].perfil;
+  return 'SEMED';
+}
+
+function getLocaisPermitidos(nome){
+  var u=USUARIOS_EXTRA[nome]||USUARIOS_PADRAO[nome];
+  if(!u)return['todos'];
+  return u.locais||['todos'];
+}
+
+function popularLoginSelect(){
+  var sel=document.getElementById('login-user');
+  var todos=getTodosUsuarios();
+  var nomes=Object.keys(todos).sort(function(a,b){
+    if(a==='Admin')return 1;if(b==='Admin')return -1;
+    return a.localeCompare(b);
+  });
+  sel.innerHTML='<option value="">Selecione...</option>';
+  nomes.forEach(function(n){
+    var label=n==='Admin'?'Administrador':n;
+    sel.innerHTML+='<option value="'+n+'">'+label+'</option>';
+  });
+}
+
+// ── GRUPOS DE LOCAIS COM EXTRAS ───────────────────────────────
+function getGruposComExtras(locaisPermitidos){
+  var temTodos=locaisPermitidos.indexOf('todos')>=0;
+  var resultado=[];
+  GRUPOS.forEach(function(g){
+    var tipo=g[2];
+    if(!temTodos&&locaisPermitidos.indexOf(tipo)<0)return;
+    var itens=g[1].slice();
+    // Adiciona extras do mesmo tipo
+    if(LOCAIS_EXTRA[tipo]&&LOCAIS_EXTRA[tipo].length){
+      itens=itens.concat(LOCAIS_EXTRA[tipo]);
+    }
+    resultado.push([g[0],itens,tipo]);
+  });
+  // Externos sempre aparecem se permitido
+  if((temTodos||locaisPermitidos.indexOf('externo')>=0)&&LOCAIS_EXTRA.externo&&LOCAIS_EXTRA.externo.length){
+    resultado.push(['Externos',LOCAIS_EXTRA.externo,'externo']);
+  }
+  return resultado;
+}
+
+// ── ADMIN: GERENCIAR USUÁRIOS ─────────────────────────────────
+function admLocaisToggle(cb){
+  var wrap=document.getElementById('adm-new-user-locais');
+  var todos=wrap.querySelector('input[value="todos"]');
+  if(cb.value==='todos'&&cb.checked){
+    wrap.querySelectorAll('input[type=checkbox]').forEach(function(el){if(el.value!=='todos')el.checked=false});
+  } else if(cb.value!=='todos'&&cb.checked){
+    if(todos)todos.checked=false;
+  }
+}
+
+function admAdicionarUsuario(){
+  var nome=document.getElementById('adm-new-user-name').value.trim();
+  var perfil=document.getElementById('adm-new-user-perfil').value;
+  var senha=document.getElementById('adm-new-user-senha').value;
+  var msg=document.getElementById('adm-user-msg');
+  msg.style.display='block';
+
+  if(!nome){msg.style.color='#dc2626';msg.textContent='Informe o nome.';return}
+  if(getTodosUsuarios()[nome]){msg.style.color='#dc2626';msg.textContent='Usuário "'+nome+'" já existe.';return}
+  if(!senha||senha.length<6){msg.style.color='#dc2626';msg.textContent='Senha deve ter pelo menos 6 caracteres.';return}
+
+  var locaisChecks=document.querySelectorAll('#adm-new-user-locais input:checked');
+  var locais=[];
+  locaisChecks.forEach(function(el){locais.push(el.value)});
+  if(!locais.length)locais=['todos'];
+
+  USUARIOS_EXTRA[nome]={perfil:perfil,locais:locais};
+  salvarUsuarios();
+  SENHAS[nome]=senha;
+  SENHAS_PADRAO[nome]=senha; // Marca como padrão para expirar em 3 dias
+  try{localStorage.setItem('arp_senhas',JSON.stringify(SENHAS));localStorage.setItem('arp_senha_padrao_'+nome,Date.now().toString())}catch(e){}
+  var gs=getGs();
+  if(gs){fetch(gs,{method:'POST',body:JSON.stringify({action:'saveSenhas',senhas:SENHAS})}).catch(function(){})}
+
+  document.getElementById('adm-new-user-name').value='';
+  document.getElementById('adm-new-user-senha').value='';
+  msg.style.color='#0d6b4f';msg.textContent='✓ Usuário "'+nome+'" adicionado!';
+  setTimeout(function(){msg.style.display='none'},3000);
+  admRenderUsers();
+  popularLoginSelect();
+}
+
+function admDeletarUsuario(nome){
+  if(USUARIOS_PADRAO[nome]&&nome!=='Admin'){
+    // Não deleta os padrão (exceto pelo perfil)
+    if(!confirm('Atenção: "'+nome+'" é um usuário padrão. Deletar vai apagar apenas os dados extras. Continuar?'))return;
+  }
+  if(!confirm('Deletar o usuário "'+nome+'"? Esta ação não pode ser desfeita.'))return;
+  delete USUARIOS_EXTRA[nome];
+  delete SENHAS[nome];
+  salvarUsuarios();
+  try{localStorage.setItem('arp_senhas',JSON.stringify(SENHAS));localStorage.removeItem('arp_senha_padrao_'+nome)}catch(e){}
+  var gs=getGs();
+  if(gs){fetch(gs,{method:'POST',body:JSON.stringify({action:'saveSenhas',senhas:SENHAS})}).catch(function(){})}
+  admRenderUsers();
+  popularLoginSelect();
+}
+
+function admAlterarPerfilUsuario(nome,perfil){
+  if(USUARIOS_EXTRA[nome]){USUARIOS_EXTRA[nome].perfil=perfil;salvarUsuarios()}
+  else if(USUARIOS_PADRAO[nome]){
+    // Cria entrada extra para override
+    USUARIOS_EXTRA[nome]={perfil:perfil,locais:USUARIOS_PADRAO[nome].locais};
+    salvarUsuarios();
+  }
+}
+
+function admAlterarLocaisUsuario(nome,locais){
+  if(USUARIOS_EXTRA[nome]){USUARIOS_EXTRA[nome].locais=locais;salvarUsuarios()}
+  else{USUARIOS_EXTRA[nome]={perfil:getPerfilUsuario(nome),locais:locais};salvarUsuarios()}
+}
+
+function admRenderUsers(){
+  var el=document.getElementById('adm-users-list');if(!el)return;
+  var todos=getTodosUsuarios();
+  var nomes=Object.keys(todos).filter(function(n){return n!=='Admin'}).sort();
+  if(!nomes.length){el.innerHTML='<div style="font-size:12px;color:#7a9e96">Nenhum usuário cadastrado.</div>';return}
+  el.innerHTML=nomes.map(function(n){
+    var u=todos[n];
+    var isExtra=!!USUARIOS_EXTRA[n];
+    var perfilBg=u.perfil==='ARPTECH'?'#FEF3C7':'#d4f0e5';
+    var perfilCor=u.perfil==='ARPTECH'?'#92400e':'#0d6b4f';
+    var locLabel=(u.locais||['todos']).join(', ');
+    return '<div style="display:flex;align-items:center;justify-content:space-between;padding:9px 10px;background:#fff;border:1.5px solid #b8d4cc;border-radius:10px;margin-bottom:7px;gap:8px">'+
+      '<div style="flex:1;min-width:0">'+
+        '<div style="font-size:13px;font-weight:700;color:#0f1f1c">'+n+'</div>'+
+        '<div style="display:flex;align-items:center;gap:6px;margin-top:3px;flex-wrap:wrap">'+
+          '<span style="font-size:11px;padding:2px 7px;border-radius:8px;font-weight:700;background:'+perfilBg+';color:'+perfilCor+'">'+u.perfil+'</span>'+
+          '<span style="font-size:11px;color:#7a9e96">'+locLabel+'</span>'+
+        '</div>'+
+      '</div>'+
+      '<div style="display:flex;gap:5px;flex-shrink:0">'+
+        '<select onchange="admAlterarPerfilUsuario(\''+n+'\',this.value)" style="font-size:11px;padding:3px 5px;border:1px solid #b8d4cc;border-radius:6px;background:#f4f8f6;font-family:var(--font)">'+
+          '<option value="SEMED"'+(u.perfil==='SEMED'?' selected':'')+'>SEMED</option>'+
+          '<option value="ARPTECH"'+(u.perfil==='ARPTECH'?' selected':'')+'>ARPTECH</option>'+
+        '</select>'+
+        (isExtra?'<button onclick="admDeletarUsuario(\''+n+'\')" style="background:#FEE2E2;color:#dc2626;border:none;border-radius:6px;padding:4px 8px;font-size:12px;cursor:pointer">🗑</button>':'')+
+      '</div>'+
+    '</div>';
+  }).join('');
+}
+
+// ── ADMIN: GERENCIAR LOCAIS ───────────────────────────────────
+function admSetLocalTab(tipo){
+  _admLocalTab=tipo;
+  ['setor','urbana','rural','externo'].forEach(function(t){
+    var el=document.getElementById('lt-'+t);
+    if(el)el.classList.toggle('active',t===tipo);
+  });
+  admRenderLocais();
+}
+
+function admRenderLocais(){
+  var el=document.getElementById('adm-locais-list');if(!el)return;
+  var tipo=_admLocalTab;
+  // Locais base (não deletáveis)
+  var base=[];
+  GRUPOS.forEach(function(g){if(g[2]===tipo)base=g[1]});
+  var extras=LOCAIS_EXTRA[tipo]||[];
+  var html='';
+  if(base.length){
+    html+='<div style="font-size:10px;font-weight:700;color:#7a9e96;margin-bottom:5px;text-transform:uppercase">Padrão</div>';
+    html+=base.map(function(loc){
+      return '<div style="font-size:12px;padding:5px 7px;color:#2d4a44;border-bottom:1px solid #edf2f0">'+loc+'</div>';
+    }).join('');
+  }
+  if(extras.length){
+    html+='<div style="font-size:10px;font-weight:700;color:#7a9e96;margin:8px 0 5px;text-transform:uppercase">Cadastrados pelo Admin</div>';
+    html+=extras.map(function(loc,i){
+      return '<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 7px;border-bottom:1px solid #edf2f0">'+
+        '<span style="font-size:12px;color:#2d4a44">'+loc+'</span>'+
+        '<button onclick="admDeletarLocal(\''+tipo+'\','+i+')" style="background:none;border:none;color:#dc2626;font-size:13px;cursor:pointer;padding:0 4px">🗑</button>'+
+      '</div>';
+    }).join('');
+  }
+  if(!base.length&&!extras.length)html='<div style="font-size:12px;color:#7a9e96;padding:8px">Nenhum local cadastrado.</div>';
+  el.innerHTML=html;
+}
+
+function admAdicionarLocal(){
+  var inp=document.getElementById('adm-new-local');
+  var nome=inp.value.trim();
+  if(!nome)return;
+  var tipo=_admLocalTab;
+  if(!LOCAIS_EXTRA[tipo])LOCAIS_EXTRA[tipo]=[];
+  // Verifica duplicata
+  var base=[];GRUPOS.forEach(function(g){if(g[2]===tipo)base=g[1]});
+  if(base.indexOf(nome)>=0||LOCAIS_EXTRA[tipo].indexOf(nome)>=0){
+    alert('"'+nome+'" já existe nesta categoria.');return;
+  }
+  LOCAIS_EXTRA[tipo].push(nome);
+  // Atualiza LOCAL_TYPE
+  LOCAL_TYPE[nome]=tipo;
+  salvarLocaisExtra();
+  inp.value='';
+  admRenderLocais();
+}
+
+function admDeletarLocal(tipo,idx){
+  if(!confirm('Remover este local?'))return;
+  var nome=LOCAIS_EXTRA[tipo][idx];
+  LOCAIS_EXTRA[tipo].splice(idx,1);
+  delete LOCAL_TYPE[nome];
+  salvarLocaisExtra();
+  admRenderLocais();
+}
+
 function save(){try{localStorage.setItem('arp_rec',JSON.stringify(records))}catch(e){}}
 function saveGsUrl(){try{localStorage.setItem('arp_gs',document.getElementById('gs-url').value)}catch(e){}}
 function getGs(){return document.getElementById('gs-url').value.trim()}
@@ -756,6 +1048,13 @@ function init(){
   var nr=getNextReportDate();
   document.getElementById('next-report-date').textContent=nr.toLocaleDateString('pt-BR',{day:'numeric',month:'long',year:'numeric'});
   carregarSenhas();
+  carregarUsuarios();
+  carregarLocaisExtra();
+  // Popula LOCAL_TYPE com locais extras
+  Object.keys(LOCAIS_EXTRA).forEach(function(tipo){
+    (LOCAIS_EXTRA[tipo]||[]).forEach(function(loc){LOCAL_TYPE[loc]=tipo});
+  });
+  popularLoginSelect();
   // Logo padrão da tela de login
   var _defaultLogo='https://tisemed406-a11y.github.io/registro-arptech/Sem%20t%C3%ADtulo-1.png';
   try{
@@ -799,7 +1098,7 @@ function doLogin(){
   if(!user){err.textContent='Selecione o responsável.';err.style.display='block';return}
   if(!pass){err.textContent='Digite a senha.';err.style.display='block';return}
   if(SENHAS[user]&&pass===SENHAS[user]){
-    var usandoPadrao=SENHAS_PADRAO[user]&&pass===SENHAS_PADRAO[user];
+    var usandoPadrao=!isAdmin&&SENHAS_PADRAO[user]&&pass===SENHAS_PADRAO[user];
     currentUser=user;isAdmin=(user==='Admin');
 
     // Verifica expiração de senha padrão (3 dias) - somente para técnicos
@@ -898,7 +1197,18 @@ function setupAdminTabs(){
   ];
   buildTabs(tabs);
   document.getElementById('stats-filter').style.display='block';
-  buildRespGroup(['Ayrton','Giovanna','Neudson','Rodrigo','Outros']);
+  // Preenche filtro de resumo com todos os usuarios
+  var sf=document.getElementById('stats-resp-filter');
+  var todosU=getTodosUsuarios();
+  sf.innerHTML='<option value="">Todos</option>';
+  Object.keys(todosU).filter(function(n){return n!=='Admin'}).sort().forEach(function(n){
+    sf.innerHTML+='<option value="'+n+'">'+n+'</option>';
+  });
+  // Resp group: todos os usuarios nao-admin
+  var nomes=Object.keys(todosU).filter(function(n){return n!=='Admin'}).sort();
+  nomes.push('Outros');
+  buildRespGroup(nomes);
+  acGrupos=getGruposComExtras(['todos']);
   showTab('form');
 }
 
@@ -911,9 +1221,11 @@ function setupTechTabs(user){
   ];
   buildTabs(tabs);
   document.getElementById('stats-filter').style.display='none';
-  // Técnico vê só seu nome
   buildRespGroup([user]);
   selRespByName(user);
+  // Filtra locais conforme permissao do usuario
+  var locaisPermitidos=getLocaisPermitidos(user);
+  acGrupos=getGruposComExtras(locaisPermitidos);
   showTab('form');
 }
 
@@ -964,11 +1276,13 @@ function updCount(){
   el.className='char-count'+(v>250?' warn':'')+(v>270?' danger':'');
 }
 
+var acGrupos=GRUPOS; // Atualizado conforme perfil do usuário
+
 function acFilter(){
   var q=(document.getElementById('ac-input').value||'').toLowerCase().trim();
   var drop=document.getElementById('ac-drop');acFocused=-1;
   var html='';
-  GRUPOS.forEach(function(g){
+  acGrupos.forEach(function(g){
     var items=q?g[1].filter(function(i){return i.toLowerCase().includes(q)}):g[1].slice(0,5);
     if(!items.length)return;
     html+='<div class="ac-group">'+g[0]+'</div>';
@@ -1427,13 +1741,13 @@ function admPreview(){
 
 function admSalvarSenhas(){
   var alteradas=0;
-  Object.keys(SENHAS_PADRAO).forEach(function(user){
+  var todosU=getTodosUsuarios();
+  Object.keys(todosU).forEach(function(user){
     var inp=document.getElementById('adm-senha-'+user);
     if(inp&&inp.value.trim()){
       SENHAS[user]=inp.value.trim();
       inp.value='';
       alteradas++;
-      // Limpa o flag de senha padrão expirada
       try{localStorage.removeItem('arp_senha_padrao_'+user)}catch(e){}
     }
   });
@@ -1442,7 +1756,7 @@ function admSalvarSenhas(){
     var gs=getGs();
     if(gs){fetch(gs,{method:'POST',body:JSON.stringify({action:'saveSenhas',senhas:SENHAS})}).catch(function(){})}
     var msg=document.getElementById('adm-senhas-msg');
-    msg.style.display='block';msg.textContent='✓ '+alteradas+' senha(s) atualizada(s) e sincronizada(s)!';
+    msg.style.display='block';msg.textContent='✓ '+alteradas+' senha(s) atualizada(s)!';
     setTimeout(function(){msg.style.display='none'},3000);
   } else {alert('Nenhuma senha foi alterada.')}
 }
@@ -1493,12 +1807,15 @@ function loadAdminFields(){
     if(cfg.loginLogoUrl){document.getElementById('adm-login-logo-url').value=cfg.loginLogoUrl;var lp=document.getElementById('adm-login-logo-preview');lp.src=cfg.loginLogoUrl;lp.classList.add('show')}
     admPreview();
   }catch(e){}
-  // Campos de senhas
+  // Campos de senhas - todos os usuarios
   var html='';
-  Object.keys(SENHAS_PADRAO).forEach(function(user){
-    html+='<div class="admin-field"><label>'+user+'</label><input type="password" id="adm-senha-'+user+'" placeholder="Nova senha..." autocomplete="new-password"/></div>';
+  var todosU=getTodosUsuarios();
+  Object.keys(todosU).sort().forEach(function(user){
+    html+='<div class="admin-field"><label>'+user+(user==='Admin'?' (Admin)':'')+'</label><input type="password" id="adm-senha-'+user+'" placeholder="Nova senha..." autocomplete="new-password"/></div>';
   });
   document.getElementById('adm-senhas-fields').innerHTML=html;
+  admRenderUsers();
+  admRenderLocais();
 }
 
 // ── SETTINGS ─────────────────────────────────────────────────
