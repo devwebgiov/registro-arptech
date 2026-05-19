@@ -1358,8 +1358,8 @@ function init(){
   var _defaultLogo='https://tisemed406-a11y.github.io/registro-arptech/Sem%20t%C3%ADtulo-1.png';
   try{
     var _cfg=JSON.parse(localStorage.getItem('arp_dev_cfg')||'null');
-    applyLoginLogo((_cfg&&_cfg.loginLogoUrl)||_defaultLogo);
-    if(_cfg&&!_cfg.loginLogoUrl){_cfg.loginLogoUrl=_defaultLogo;localStorage.setItem('arp_dev_cfg',JSON.stringify(_cfg))}
+    var _logoUrl=(_cfg&&_cfg.loginLogoUrl)||_defaultLogo;
+    applyLoginLogo(_logoUrl);
   }catch(e){applyLoginLogo(_defaultLogo)}
   loadSettings();
   // Carrega config do Sheets em segundo plano
@@ -1373,7 +1373,9 @@ function init(){
           if(cfg&&cfg.hc&&cfg.hc.startsWith('#')){
             localStorage.setItem('arp_dev_cfg',JSON.stringify(cfg));
             loadSettings();
-            if(cfg.loginLogoUrl)applyLoginLogo(cfg.loginLogoUrl);
+            // Aplica logo: usa a do Sheets se tiver, senão mantém o padrão
+            var _dl='https://tisemed406-a11y.github.io/registro-arptech/Sem%20t%C3%ADtulo-1.png';
+            applyLoginLogo(cfg.loginLogoUrl||_dl);
           }
         }catch(e){}
       }
@@ -1421,14 +1423,33 @@ function getNextReportDate(){
 
 // ── AUTH ─────────────────────────────────────────────────────
 function carregarSenhas(){
-  try{var s=localStorage.getItem('arp_senhas');SENHAS=s?JSON.parse(s):JSON.parse(JSON.stringify(SENHAS_PADRAO))}
-  catch(e){SENHAS=JSON.parse(JSON.stringify(SENHAS_PADRAO))}
+  // Sempre começa com os padrões
+  SENHAS=JSON.parse(JSON.stringify(SENHAS_PADRAO));
+  // Sobrescreve com o que está salvo localmente
+  try{
+    var s=localStorage.getItem('arp_senhas');
+    if(s){
+      var local=JSON.parse(s);
+      // Merge: padrões + local (local tem prioridade)
+      Object.keys(local).forEach(function(k){SENHAS[k]=local[k]});
+    }
+  }catch(e){}
+  // Busca do Sheets em segundo plano (não bloqueia o login)
   var gs=getGs();
   if(gs){
     fetch(gs,{method:'POST',body:JSON.stringify({action:'getSenhas'})})
       .then(function(r){return r.json()})
       .then(function(data){
-        if(data.senhas){var s=typeof data.senhas==='string'?JSON.parse(data.senhas):data.senhas;SENHAS=s;try{localStorage.setItem('arp_senhas',JSON.stringify(SENHAS))}catch(e){}}
+        if(data.senhas){
+          var s=typeof data.senhas==='string'?JSON.parse(data.senhas):data.senhas;
+          // Merge: padrões + Sheets (nunca apaga os padrões)
+          Object.keys(SENHAS_PADRAO).forEach(function(k){
+            if(!s[k])s[k]=SENHAS_PADRAO[k]; // garante padrões
+          });
+          SENHAS=s;
+          try{localStorage.setItem('arp_senhas',JSON.stringify(SENHAS))}catch(e){}
+          popularLoginSelect();
+        }
       }).catch(function(){});
   }
 }
