@@ -845,9 +845,13 @@ function getTodosUsuarios(){
   var todos=JSON.parse(JSON.stringify(USUARIOS_PADRAO));
   Object.keys(USUARIOS_EXTRA).forEach(function(n){
     if(USUARIOS_EXTRA[n]&&USUARIOS_EXTRA[n].deletado){
-      delete todos[n]; // Remove deletados
+      // Só remove do select se NÃO for usuário padrão
+      if(!USUARIOS_PADRAO[n]){
+        delete todos[n];
+      }
+      // Usuários padrão deletados: mantém no login mas bloqueia acesso via doLogin
     } else if(USUARIOS_EXTRA[n]){
-      todos[n]=USUARIOS_EXTRA[n]; // Sobrescreve com dados do EXTRA
+      todos[n]=USUARIOS_EXTRA[n];
     }
   });
   return todos;
@@ -1114,9 +1118,9 @@ function admRenderUsers(){
   var el=document.getElementById('adm-users-list');if(!el)return;
   var todos=getTodosUsuarios();
   var nomes=Object.keys(todos).filter(function(n){return n!=='Admin'}).sort();
-  if(!nomes.length){el.innerHTML='<div style="font-size:13px;color:#7a9e96;padding:8px">Nenhum usuário cadastrado.</div>';return}
-  var LOPTS=[{v:'todos',l:'Todos'},{v:'setor',l:'Setores'},{v:'urbana',l:'Esc. Urbanas'},{v:'rural',l:'Esc. Rurais'},{v:'externo',l:'Externos'}];
-  el.innerHTML=nomes.map(function(n){
+  if(!nomes.length){el.innerHTML='<div style="font-size:13px;color:#7a9e96;padding:8px">Nenhum usuario cadastrado.</div>';return}
+  var LOPTS=[{v:'setor',l:'Setores'},{v:'urbana',l:'Esc. Urbanas'},{v:'rural',l:'Esc. Rurais'},{v:'externo',l:'Externos'}];
+  el.innerHTML=nomes.map(function(n,idx){
     var u=todos[n];
     var perfilBg=u.perfil==='ARPTECH'?'#FEF3C7':'#d4f0e5';
     var perfilCor=u.perfil==='ARPTECH'?'#92400e':'#0d6b4f';
@@ -1124,25 +1128,24 @@ function admRenderUsers(){
     var checks=LOPTS.map(function(opt){
       var checked=locaisAtuais.indexOf(opt.v)>=0;
       var disabled=(u.perfil==='SEMED'&&opt.v==='externo')||(u.perfil==='ARPTECH'&&(opt.v==='setor'||opt.v==='urbana'||opt.v==='rural'));
-      if(opt.v==='todos')return '';
       var chk=checked?' checked':'';
       var dis=disabled?' disabled':'';
       var op=disabled?'opacity:0.3;cursor:default;':'cursor:pointer;';
       return '<label style="display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:500;'+op+'padding:6px 10px;background:#f4f8f6;border:1.5px solid #b8d4cc;border-radius:10px;">'+
-        '<input type="checkbox" value="'+opt.v+'"'+chk+dis+' onchange="admSalvarLocaisInline(''+n+'',this)" style="width:16px;height:16px;accent-color:#1D9E75;flex-shrink:0"/> '+opt.l+'</label>';
+        '<input type="checkbox" data-user="'+idx+'" data-tipo="'+opt.v+'"'+chk+dis+' onchange="admLocaisChange(this)" style="width:16px;height:16px;accent-color:#1D9E75;flex-shrink:0"/> '+opt.l+'</label>';
     }).join('');
-    return '<div data-user-card="'+n+'" style="background:#fff;border:2px solid #b8d4cc;border-radius:16px;padding:15px;margin-bottom:12px">'+
+    return '<div data-user-card="'+idx+'" data-user-name="'+n+'" style="background:#fff;border:2px solid #b8d4cc;border-radius:16px;padding:15px;margin-bottom:12px">'+
       '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:8px">'+
         '<div>'+
           '<div style="font-size:15px;font-weight:700;color:#0f1f1c">'+n+'</div>'+
           '<span style="font-size:11px;padding:2px 8px;border-radius:8px;font-weight:700;background:'+perfilBg+';color:'+perfilCor+'">'+u.perfil+'</span>'+
         '</div>'+
         '<div style="display:flex;gap:6px;align-items:center">'+
-          '<select onchange="admAlterarPerfilUsuario(''+n+'',this.value)" style="font-size:12px;padding:5px 8px;border:1.5px solid #b8d4cc;border-radius:8px;background:#f4f8f6;font-family:var(--font)">'+
+          '<select data-user-idx="'+idx+'" onchange="admPerfilChange(this)" style="font-size:12px;padding:5px 8px;border:1.5px solid #b8d4cc;border-radius:8px;background:#f4f8f6;font-family:var(--font)">'+
             '<option value="SEMED"'+(u.perfil==='SEMED'?' selected':'')+'>SEMED</option>'+
             '<option value="ARPTECH"'+(u.perfil==='ARPTECH'?' selected':'')+'>ARPTECH</option>'+
           '</select>'+
-          '<button onclick="admDeletarUsuario(''+n+'')" style="background:#FEE2E2;color:#dc2626;border:none;border-radius:8px;padding:7px 10px;font-size:13px;cursor:pointer">&#x1F5D1;</button>'+
+          '<button data-user-idx="'+idx+'" onclick="admDeletarChange(this)" style="background:#FEE2E2;color:#dc2626;border:none;border-radius:8px;padding:7px 10px;font-size:13px;cursor:pointer">&#x1F5D1;</button>'+
         '</div>'+
       '</div>'+
       '<div style="border-top:1.5px solid #edf2f0;padding-top:10px">'+
@@ -1152,6 +1155,52 @@ function admRenderUsers(){
     '</div>';
   }).join('');
 }
+
+function _getNomeFromCard(el){
+  var card=el;
+  for(var i=0;i<10;i++){
+    if(!card)return null;
+    var n=card.getAttribute&&card.getAttribute('data-user-name');
+    if(n)return n;
+    card=card.parentElement;
+  }
+  return null;
+}
+
+function admLocaisChange(cb){
+  var nome=_getNomeFromCard(cb);if(!nome)return;
+  var card=cb;
+  for(var i=0;i<10;i++){if(!card)break;if(card.getAttribute&&card.getAttribute('data-user-name')===nome)break;card=card.parentElement;}
+  if(!card)return;
+  var checks=card.querySelectorAll('input[type=checkbox]');
+  if(cb.getAttribute('data-tipo')==='todos'&&cb.checked){
+    checks.forEach(function(el){if(el.getAttribute('data-tipo')!=='todos'&&!el.disabled)el.checked=false});
+  } else if(cb.checked){
+    var t=card.querySelector('input[data-tipo="todos"]');if(t)t.checked=false;
+  }
+  var algum=false;
+  checks.forEach(function(el){if(el.checked&&!el.disabled)algum=true});
+  if(!algum){cb.checked=true;}
+  var locais=[];
+  checks.forEach(function(el){if(el.checked&&!el.disabled)locais.push(el.getAttribute('data-tipo'))});
+  if(!locais.length){locais=getPerfilUsuario(nome)==='ARPTECH'?['externo']:['setor','urbana','rural'];}
+  if(!USUARIOS_EXTRA[nome]){USUARIOS_EXTRA[nome]={perfil:getPerfilUsuario(nome),locais:locais};}
+  else{USUARIOS_EXTRA[nome].locais=locais;}
+  salvarUsuarios();
+  showBanner('\u2713 Locais de "'+nome+'" atualizados!');
+}
+
+function admPerfilChange(sel){
+  var nome=_getNomeFromCard(sel);if(!nome)return;
+  admAlterarPerfilUsuario(nome,sel.value);
+  admRenderUsers();
+}
+
+function admDeletarChange(btn){
+  var nome=_getNomeFromCard(btn);if(!nome)return;
+  admDeletarUsuario(nome);
+}
+
 
 function admSalvarLocaisInline(nome,cb){
   // Sobe pelo DOM sem usar closest com seletor complexo (Safari fix)
@@ -1350,6 +1399,20 @@ function init(){
   document.getElementById('next-report-date').textContent=nr.toLocaleDateString('pt-BR',{day:'numeric',month:'long',year:'numeric'});
   carregarSenhas();
   carregarUsuarios();
+  // Limpa flags de deletado em usuários padrão (correção de bug anterior)
+  var _corrigido=false;
+  Object.keys(USUARIOS_PADRAO).forEach(function(n){
+    if(USUARIOS_EXTRA[n]&&USUARIOS_EXTRA[n].deletado){
+      delete USUARIOS_EXTRA[n];
+      _corrigido=true;
+    }
+  });
+  if(_corrigido){
+    try{localStorage.setItem('arp_usuarios_extra',JSON.stringify(USUARIOS_EXTRA))}catch(e){}
+    // Sincroniza correção com Sheets
+    var _gsUrl=document.getElementById('gs-url').value.trim()||'https://script.google.com/macros/s/AKfycbxF0pK_w-l1Nvsi6ln4QGzyLPlIpLMOcBrGn2qN0ShVmxla0BDzbfHdVeHG2OXpUH4D/exec';
+    fetch(_gsUrl,{method:'POST',body:JSON.stringify({action:'saveUsuarios',usuarios:USUARIOS_EXTRA})}).catch(function(){});
+  }
   carregarLocaisExtra();
   carregarLocaisDeletados();
   // Popula select IMEDIATAMENTE com dados do localStorage
