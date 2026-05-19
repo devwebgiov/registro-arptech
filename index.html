@@ -1047,7 +1047,7 @@ function admEditarLocais(nome){
     if(!el)return;
     el.checked=locaisAtuais.indexOf(v)>=0;
     el.disabled=false;
-    var label=el.closest('label');
+    var label=el.parentElement;
     if(!label)return;
     label.style.display='flex';
     label.style.opacity='1';
@@ -1131,7 +1131,7 @@ function admRenderUsers(){
       return '<label style="display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:500;'+op+'padding:6px 10px;background:#f4f8f6;border:1.5px solid #b8d4cc;border-radius:10px;">'+
         '<input type="checkbox" value="'+opt.v+'"'+chk+dis+' onchange="admSalvarLocaisInline(''+n+'',this)" style="width:16px;height:16px;accent-color:#1D9E75;flex-shrink:0"/> '+opt.l+'</label>';
     }).join('');
-    return '<div style="background:#fff;border:2px solid #b8d4cc;border-radius:16px;padding:15px;margin-bottom:12px">'+
+    return '<div data-user-card="'+n+'" style="background:#fff;border:2px solid #b8d4cc;border-radius:16px;padding:15px;margin-bottom:12px">'+
       '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:8px">'+
         '<div>'+
           '<div style="font-size:15px;font-weight:700;color:#0f1f1c">'+n+'</div>'+
@@ -1154,27 +1154,31 @@ function admRenderUsers(){
 }
 
 function admSalvarLocaisInline(nome,cb){
-  var card=cb.closest('div[style*="border:2px solid #b8d4cc;border-radius:16px"]');
-  if(!card){return;}
+  // Sobe pelo DOM sem usar closest com seletor complexo (Safari fix)
+  var el=cb;
+  var card=null;
+  for(var i=0;i<10;i++){
+    el=el.parentElement;
+    if(!el)break;
+    if(el.getAttribute&&el.getAttribute('data-user-card')===nome){card=el;break;}
+  }
+  if(!card)return;
   var checks=card.querySelectorAll('input[type=checkbox]');
-  // Toggle exclusivo Todos
   if(cb.value==='todos'&&cb.checked){
     checks.forEach(function(el){if(el.value!=='todos'&&!el.disabled)el.checked=false});
   } else if(cb.value!=='todos'&&cb.checked){
     var t=card.querySelector('input[value="todos"]');if(t)t.checked=false;
   }
-  // Impede desmarcar tudo
   var algum=false;
   checks.forEach(function(el){if(el.checked&&!el.disabled)algum=true});
   if(!algum){cb.checked=true;}
-  // Coleta selecionados
   var locais=[];
   checks.forEach(function(el){if(el.checked&&!el.disabled)locais.push(el.value)});
   if(!locais.length){locais=getPerfilUsuario(nome)==='ARPTECH'?['externo']:['setor','urbana','rural'];}
   if(!USUARIOS_EXTRA[nome]){USUARIOS_EXTRA[nome]={perfil:getPerfilUsuario(nome),locais:locais};}
   else{USUARIOS_EXTRA[nome].locais=locais;}
   salvarUsuarios();
-  showBanner('✓ Locais de "'+nome+'" atualizados!');
+  showBanner('\u2713 Locais de "'+nome+'" atualizados!');
 }
 
 
