@@ -330,16 +330,56 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
 
 <!-- MODAL EDITAR LOCAIS USUÁRIO -->
 <div class="chpwd-overlay" id="edit-locais-overlay">
-  <div class="chpwd-box" style="max-width:420px">
-    <div class="chpwd-title">✏️ Editar Locais — <span id="edit-locais-nome"></span></div>
-    <div style="font-size:13px;color:#7a9e96;margin-bottom:14px">Selecione quais locais este usuário pode visualizar.</div>
-    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:18px" id="edit-locais-checks">
-      <label style="display:flex;align-items:center;gap:10px;font-size:15px;cursor:pointer;padding:10px;background:#f4f8f6;border:2px solid #b8d4cc;border-radius:12px"><input type="checkbox" id="elc-todos" value="todos" onchange="editLocaisToggle(this)" style="width:18px;height:18px;accent-color:#1D9E75"/> <strong>Todos os locais</strong></label>
-      <label style="display:flex;align-items:center;gap:10px;font-size:15px;cursor:pointer;padding:10px;background:#f4f8f6;border:2px solid #b8d4cc;border-radius:12px"><input type="checkbox" id="elc-setor" value="setor" onchange="editLocaisToggle(this)" style="width:18px;height:18px;accent-color:#1D9E75"/> Setores</label>
-      <label style="display:flex;align-items:center;gap:10px;font-size:15px;cursor:pointer;padding:10px;background:#f4f8f6;border:2px solid #b8d4cc;border-radius:12px"><input type="checkbox" id="elc-urbana" value="urbana" onchange="editLocaisToggle(this)" style="width:18px;height:18px;accent-color:#1D9E75"/> Escolas Urbanas</label>
-      <label style="display:flex;align-items:center;gap:10px;font-size:15px;cursor:pointer;padding:10px;background:#f4f8f6;border:2px solid #b8d4cc;border-radius:12px"><input type="checkbox" id="elc-rural" value="rural" onchange="editLocaisToggle(this)" style="width:18px;height:18px;accent-color:#1D9E75"/> Escolas Rurais</label>
-      <label style="display:flex;align-items:center;gap:10px;font-size:15px;cursor:pointer;padding:10px;background:#f4f8f6;border:2px solid #b8d4cc;border-radius:12px"><input type="checkbox" id="elc-externo" value="externo" onchange="editLocaisToggle(this)" style="width:18px;height:18px;accent-color:#1D9E75"/> Externos</label>
+  <div class="chpwd-box" style="max-width:440px">
+    <div class="chpwd-title">📍 Locais Permitidos</div>
+    <div style="font-size:14px;color:#2d4a44;font-weight:600;margin-bottom:4px">Usuário: <span id="edit-locais-nome" style="color:#1D9E75"></span></div>
+    <div style="font-size:13px;color:#7a9e96;margin-bottom:16px">Marque os locais que este usuário pode visualizar e registrar atendimentos.</div>
+
+    <!-- Checklist visual clara -->
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px">
+
+      <label id="elc-label-todos" style="display:flex;align-items:center;gap:12px;cursor:pointer;padding:12px 14px;background:#f4f8f6;border:2px solid #b8d4cc;border-radius:14px;transition:all .15s" onclick="elcToggle('todos')">
+        <div id="elc-box-todos" style="width:22px;height:22px;border:2px solid #b8d4cc;border-radius:6px;background:#fff;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s"></div>
+        <div>
+          <div style="font-size:15px;font-weight:700;color:#0f1f1c">Todos os locais</div>
+          <div style="font-size:12px;color:#7a9e96">Acesso completo a todos os tipos</div>
+        </div>
+      </label>
+
+      <label id="elc-label-setor" style="display:flex;align-items:center;gap:12px;cursor:pointer;padding:12px 14px;background:#f4f8f6;border:2px solid #b8d4cc;border-radius:14px;transition:all .15s" onclick="elcToggle('setor')">
+        <div id="elc-box-setor" style="width:22px;height:22px;border:2px solid #b8d4cc;border-radius:6px;background:#fff;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s"></div>
+        <div>
+          <div style="font-size:15px;font-weight:700;color:#0f1f1c">Setores</div>
+          <div style="font-size:12px;color:#7a9e96">DTI, RH, Coordenação, etc.</div>
+        </div>
+      </label>
+
+      <label id="elc-label-urbana" style="display:flex;align-items:center;gap:12px;cursor:pointer;padding:12px 14px;background:#f4f8f6;border:2px solid #b8d4cc;border-radius:14px;transition:all .15s" onclick="elcToggle('urbana')">
+        <div id="elc-box-urbana" style="width:22px;height:22px;border:2px solid #b8d4cc;border-radius:6px;background:#fff;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s"></div>
+        <div>
+          <div style="font-size:15px;font-weight:700;color:#0f1f1c">Escolas Urbanas</div>
+          <div style="font-size:12px;color:#7a9e96">Escolas municipais urbanas</div>
+        </div>
+      </label>
+
+      <label id="elc-label-rural" style="display:flex;align-items:center;gap:12px;cursor:pointer;padding:12px 14px;background:#f4f8f6;border:2px solid #b8d4cc;border-radius:14px;transition:all .15s" onclick="elcToggle('rural')">
+        <div id="elc-box-rural" style="width:22px;height:22px;border:2px solid #b8d4cc;border-radius:6px;background:#fff;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s"></div>
+        <div>
+          <div style="font-size:15px;font-weight:700;color:#0f1f1c">Escolas Rurais</div>
+          <div style="font-size:12px;color:#7a9e96">Escolas municipais rurais e indígenas</div>
+        </div>
+      </label>
+
+      <label id="elc-label-externo" style="display:flex;align-items:center;gap:12px;cursor:pointer;padding:12px 14px;background:#f4f8f6;border:2px solid #b8d4cc;border-radius:14px;transition:all .15s" onclick="elcToggle('externo')">
+        <div id="elc-box-externo" style="width:22px;height:22px;border:2px solid #b8d4cc;border-radius:6px;background:#fff;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s"></div>
+        <div>
+          <div style="font-size:15px;font-weight:700;color:#0f1f1c">Externos</div>
+          <div style="font-size:12px;color:#7a9e96">Locais externos cadastrados pelo Admin</div>
+        </div>
+      </label>
+
     </div>
+    <div id="elc-aviso" style="font-size:12px;color:#dc2626;margin-bottom:10px;display:none">⚠️ Selecione pelo menos um tipo de local.</div>
     <div class="chpwd-btns">
       <button class="btn-chpwd-cancel" onclick="closeEditLocais()">Cancelar</button>
       <button class="btn-chpwd-ok" onclick="salvarEditLocais()">✓ Salvar</button>
@@ -1073,31 +1113,69 @@ function admRenderUsers(){
   var el=document.getElementById('adm-users-list');if(!el)return;
   var todos=getTodosUsuarios();
   var nomes=Object.keys(todos).filter(function(n){return n!=='Admin'}).sort();
-  if(!nomes.length){el.innerHTML='<div style="font-size:12px;color:#7a9e96">Nenhum usuário cadastrado.</div>';return}
+  if(!nomes.length){el.innerHTML='<div style="font-size:13px;color:#7a9e96;padding:8px">Nenhum usuário cadastrado.</div>';return}
+  var LOPTS=[{v:'todos',l:'Todos'},{v:'setor',l:'Setores'},{v:'urbana',l:'Esc. Urbanas'},{v:'rural',l:'Esc. Rurais'},{v:'externo',l:'Externos'}];
   el.innerHTML=nomes.map(function(n){
     var u=todos[n];
-    var isExtra=!!USUARIOS_EXTRA[n];
     var perfilBg=u.perfil==='ARPTECH'?'#FEF3C7':'#d4f0e5';
     var perfilCor=u.perfil==='ARPTECH'?'#92400e':'#0d6b4f';
-    var locLabel=(u.locais||['todos']).join(', ');
-    return '<div style="display:flex;align-items:center;justify-content:space-between;padding:9px 10px;background:#fff;border:1.5px solid #b8d4cc;border-radius:10px;margin-bottom:7px;gap:8px">'+
-      '<div style="flex:1;min-width:0">'+
-        '<div style="font-size:13px;font-weight:700;color:#0f1f1c">'+n+'</div>'+
-        '<div style="display:flex;align-items:center;gap:6px;margin-top:3px;flex-wrap:wrap">'+
-          '<span style="font-size:11px;padding:2px 7px;border-radius:8px;font-weight:700;background:'+perfilBg+';color:'+perfilCor+'">'+u.perfil+'</span>'+
-          '<span style="font-size:11px;color:#7a9e96">'+locLabel+'</span>'+
+    var locaisAtuais=getLocaisPermitidos(n);
+    var checks=LOPTS.map(function(opt){
+      var checked=locaisAtuais.indexOf(opt.v)>=0;
+      var disabled=(u.perfil==='SEMED'&&opt.v==='externo')||(u.perfil==='ARPTECH'&&(opt.v==='setor'||opt.v==='urbana'||opt.v==='rural'));
+      if(opt.v==='todos')return '';
+      var chk=checked?' checked':'';
+      var dis=disabled?' disabled':'';
+      var op=disabled?'opacity:0.3;cursor:default;':'cursor:pointer;';
+      return '<label style="display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:500;'+op+'padding:6px 10px;background:#f4f8f6;border:1.5px solid #b8d4cc;border-radius:10px;">'+
+        '<input type="checkbox" value="'+opt.v+'"'+chk+dis+' onchange="admSalvarLocaisInline(''+n+'',this)" style="width:16px;height:16px;accent-color:#1D9E75;flex-shrink:0"/> '+opt.l+'</label>';
+    }).join('');
+    return '<div style="background:#fff;border:2px solid #b8d4cc;border-radius:16px;padding:15px;margin-bottom:12px">'+
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:8px">'+
+        '<div>'+
+          '<div style="font-size:15px;font-weight:700;color:#0f1f1c">'+n+'</div>'+
+          '<span style="font-size:11px;padding:2px 8px;border-radius:8px;font-weight:700;background:'+perfilBg+';color:'+perfilCor+'">'+u.perfil+'</span>'+
+        '</div>'+
+        '<div style="display:flex;gap:6px;align-items:center">'+
+          '<select onchange="admAlterarPerfilUsuario(''+n+'',this.value)" style="font-size:12px;padding:5px 8px;border:1.5px solid #b8d4cc;border-radius:8px;background:#f4f8f6;font-family:var(--font)">'+
+            '<option value="SEMED"'+(u.perfil==='SEMED'?' selected':'')+'>SEMED</option>'+
+            '<option value="ARPTECH"'+(u.perfil==='ARPTECH'?' selected':'')+'>ARPTECH</option>'+
+          '</select>'+
+          '<button onclick="admDeletarUsuario(''+n+'')" style="background:#FEE2E2;color:#dc2626;border:none;border-radius:8px;padding:7px 10px;font-size:13px;cursor:pointer">&#x1F5D1;</button>'+
         '</div>'+
       '</div>'+
-      '<div style="display:flex;gap:5px;flex-shrink:0">'+
-        '<select onchange="admAlterarPerfilUsuario(\''+n+'\',this.value)" style="font-size:11px;padding:3px 5px;border:1px solid #b8d4cc;border-radius:6px;background:#f4f8f6;font-family:var(--font)">'+
-          '<option value="SEMED"'+(u.perfil==='SEMED'?' selected':'')+'>SEMED</option>'+
-          '<option value="ARPTECH"'+(u.perfil==='ARPTECH'?' selected':'')+'>ARPTECH</option>'+
-        '</select>'+
-        (isExtra?'<button onclick="admDeletarUsuario(\''+n+'\')" style="background:#FEE2E2;color:#dc2626;border:none;border-radius:6px;padding:4px 8px;font-size:12px;cursor:pointer">🗑</button>':'')+
+      '<div style="border-top:1.5px solid #edf2f0;padding-top:10px">'+
+        '<div style="font-size:11px;font-weight:700;color:#7a9e96;margin-bottom:8px;text-transform:uppercase;letter-spacing:.8px">Locais permitidos</div>'+
+        '<div style="display:flex;flex-wrap:wrap;gap:7px">'+checks+'</div>'+
       '</div>'+
     '</div>';
   }).join('');
 }
+
+function admSalvarLocaisInline(nome,cb){
+  var card=cb.closest('div[style*="border:2px solid #b8d4cc;border-radius:16px"]');
+  if(!card){return;}
+  var checks=card.querySelectorAll('input[type=checkbox]');
+  // Toggle exclusivo Todos
+  if(cb.value==='todos'&&cb.checked){
+    checks.forEach(function(el){if(el.value!=='todos'&&!el.disabled)el.checked=false});
+  } else if(cb.value!=='todos'&&cb.checked){
+    var t=card.querySelector('input[value="todos"]');if(t)t.checked=false;
+  }
+  // Impede desmarcar tudo
+  var algum=false;
+  checks.forEach(function(el){if(el.checked&&!el.disabled)algum=true});
+  if(!algum){cb.checked=true;}
+  // Coleta selecionados
+  var locais=[];
+  checks.forEach(function(el){if(el.checked&&!el.disabled)locais.push(el.value)});
+  if(!locais.length){locais=getPerfilUsuario(nome)==='ARPTECH'?['externo']:['setor','urbana','rural'];}
+  if(!USUARIOS_EXTRA[nome]){USUARIOS_EXTRA[nome]={perfil:getPerfilUsuario(nome),locais:locais};}
+  else{USUARIOS_EXTRA[nome].locais=locais;}
+  salvarUsuarios();
+  showBanner('✓ Locais de "'+nome+'" atualizados!');
+}
+
 
 // ── ADMIN: GERENCIAR LOCAIS ───────────────────────────────────
 function admSetLocalTab(tipo){
