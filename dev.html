@@ -1,10 +1,3 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<title>ARP TECH — Registro de Atendimento</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
@@ -247,6 +240,28 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
   .radio-group{grid-template-columns:1fr}
   .header-title{display:none}
 }
+
+/* ARPTECH OS */
+.os-card{background:#fff;border:2px solid #b8d4cc;border-radius:18px;padding:16px;margin-bottom:14px}
+.os-badge{display:inline-block;font-size:11px;padding:3px 9px;border-radius:10px;font-weight:700;white-space:nowrap;margin-right:4px}
+.os-badge.interno{background:#DBEAFE;color:#1e40af}
+.os-badge.externo{background:#FEF3C7;color:#92400e}
+.os-badge.pago{background:#d4f0e5;color:#0d6b4f}
+.os-badge.pendente{background:#FEE2E2;color:#dc2626}
+.item-row{display:grid;grid-template-columns:1fr 70px 90px 30px;gap:8px;align-items:end;margin-bottom:8px;background:#f4f8f6;border-radius:12px;padding:11px}
+.item-del{background:none;border:none;color:#dc2626;font-size:20px;cursor:pointer;padding:0;line-height:1}
+.total-bar{background:#0a2e2a;color:#fff;border-radius:12px;padding:13px 16px;display:flex;justify-content:space-between;align-items:center;margin-top:10px}
+.total-bar .tl{font-size:13px;opacity:.7}
+.total-bar .tv{font-size:20px;font-weight:700;color:#1D9E75}
+.os-list-item{background:#fff;border:2px solid #b8d4cc;border-radius:14px;padding:14px;margin-bottom:10px}
+.os-cliente{font-size:15px;font-weight:700;color:#0f1f1c}
+.os-total-v{font-size:15px;font-weight:700;color:#0d6b4f}
+.resumo-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px}
+.resumo-item{background:#fff;border:2px solid #b8d4cc;border-radius:12px;padding:11px;text-align:center}
+.resumo-item .ri-label{font-size:10px;color:#7a9e96;font-weight:700;text-transform:uppercase;margin-bottom:3px}
+.resumo-item .ri-val{font-size:16px;font-weight:700;color:#0a2e2a}
+@media(max-width:480px){.item-row{grid-template-columns:1fr 60px 80px 26px}}
+@media print{.header,.tabs,.no-print{display:none!important}body{background:#fff!important;font-size:13px}}
 </style>
 </head>
 <body>
@@ -733,6 +748,110 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
       </div>
 
     </div><!-- /tab-gerenciar -->
+    <!-- TAB: ORDEM DE SERVIÇO ARPTECH -->
+    <div id="tab-os" style="display:none">
+      <div class="os-card" id="os-form-card">
+        <div class="card-title">Nova Ordem de Serviço</div>
+        <div class="field" style="margin-bottom:12px">
+          <label>Tipo de serviço</label>
+          <div style="display:flex;gap:10px;margin-top:6px">
+            <label style="display:flex;align-items:center;gap:7px;padding:10px 16px;border:2px solid #b8d4cc;border-radius:12px;cursor:pointer;flex:1;justify-content:center;font-weight:600;font-size:14px" id="os-tipo-int-label">
+              <input type="radio" name="os-tipo" value="interno" id="os-tipo-int" onchange="osTipoChange()" style="accent-color:#1D9E75;width:16px;height:16px"/> Interno
+            </label>
+            <label style="display:flex;align-items:center;gap:7px;padding:10px 16px;border:2px solid #b8d4cc;border-radius:12px;cursor:pointer;flex:1;justify-content:center;font-weight:600;font-size:14px" id="os-tipo-ext-label">
+              <input type="radio" name="os-tipo" value="externo" id="os-tipo-ext" onchange="osTipoChange()" style="accent-color:#1D9E75;width:16px;height:16px"/> Externo
+            </label>
+          </div>
+        </div>
+        <div class="field" id="os-tecnico-wrap" style="margin-bottom:12px;display:none">
+          <label>Tecnico responsavel</label>
+          <select id="os-tecnico" style="width:100%;padding:11px 13px;font-size:15px;border:2px solid #b8d4cc;border-radius:14px;background:#f4f8f6;font-family:var(--font);outline:none;-webkit-appearance:none"><option value="">Selecione...</option></select>
+        </div>
+        <div class="form-row">
+          <div class="field"><label>Cliente</label><input type="text" id="os-cliente" placeholder="Nome do cliente..."/></div>
+          <div class="field"><label>Empresa (opcional)</label><input type="text" id="os-empresa" placeholder="Nome da empresa..."/></div>
+        </div>
+        <div class="field" style="margin-bottom:12px">
+          <label>Tipo de servico realizado</label>
+          <select id="os-servico-tipo" onchange="osServicoChange()" style="width:100%;padding:11px 13px;font-size:15px;border:2px solid #b8d4cc;border-radius:14px;background:#f4f8f6;font-family:var(--font);outline:none;-webkit-appearance:none"><option value="">Selecione o servico...</option></select>
+        </div>
+        <div class="field" id="os-desc-wrap" style="margin-bottom:12px;display:none">
+          <label>Descricao da manutencao</label>
+          <textarea id="os-desc-manut" maxlength="300" placeholder="Ex: Reparo nas dobracas..." style="min-height:80px;resize:vertical"></textarea>
+        </div>
+        <div style="margin-bottom:12px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <label style="font-size:13px;font-weight:600;color:#2d4a44">Materiais / Pecas utilizadas</label>
+            <button onclick="osAddItem()" style="background:#1D9E75;color:#fff;border:none;border-radius:8px;padding:6px 12px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font)">+ Adicionar</button>
+          </div>
+          <div id="os-itens"></div>
+          <div class="total-bar" id="os-total-bar" style="display:none">
+            <span class="total-label">Total dos materiais</span>
+            <span class="total-value" id="os-total-mat">R$ 0,00</span>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="field"><label>Valor do servico (mao de obra)</label><input type="number" id="os-valor-servico" min="0" step="0.01" placeholder="0,00" oninput="osCalcularTotal()"/></div>
+          <div class="field"><label>Quantidade</label><input type="number" id="os-quantidade" min="1" value="1" oninput="osCalcularTotal()"/></div>
+        </div>
+        <div class="total-bar">
+          <span class="total-label">TOTAL GERAL</span>
+          <span class="total-value" id="os-total-geral">R$ 0,00</span>
+        </div>
+        <div class="form-row" style="margin-top:12px">
+          <div class="field">
+            <label>Status do pagamento</label>
+            <select id="os-status-pag" style="width:100%;padding:11px 13px;font-size:15px;border:2px solid #b8d4cc;border-radius:14px;background:#f4f8f6;font-family:var(--font);outline:none;-webkit-appearance:none">
+              <option value="pendente">Pendente</option>
+              <option value="pago">Pago</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Forma de pagamento</label>
+            <select id="os-forma-pag" style="width:100%;padding:11px 13px;font-size:15px;border:2px solid #b8d4cc;border-radius:14px;background:#f4f8f6;font-family:var(--font);outline:none;-webkit-appearance:none">
+              <option value="">Selecione...</option>
+              <option value="dinheiro">Dinheiro</option>
+              <option value="pix">PIX</option>
+              <option value="cartao_credito">Cartao de Credito</option>
+              <option value="cartao_debito">Cartao de Debito</option>
+              <option value="boleto">Boleto</option>
+              <option value="prazo">A prazo</option>
+            </select>
+          </div>
+        </div>
+        <div class="field" style="margin-top:12px;margin-bottom:16px">
+          <label>Data do servico</label>
+          <input type="date" id="os-data"/>
+        </div>
+        <button class="btn-submit" onclick="osSalvar()">Registrar Ordem de Servico</button>
+        <div id="os-msg" style="margin-top:10px;font-size:13px;display:none"></div>
+      </div>
+      <div style="margin-top:6px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <div style="font-size:13px;font-weight:700;color:#2d4a44">Ordens registradas</div>
+          <button onclick="window.print()" style="background:#0a2e2a;color:#fff;border:none;border-radius:8px;padding:7px 14px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font)">Imprimir</button>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+          <select id="os-filtro-periodo" onchange="osRenderLista()" style="padding:8px 12px;font-size:13px;border:2px solid #b8d4cc;border-radius:10px;background:#fff;font-family:var(--font);outline:none">
+            <option value="todos">Todos os periodos</option>
+            <option value="hoje">Hoje</option>
+            <option value="semana">Esta semana</option>
+            <option value="mes">Este mes</option>
+          </select>
+          <select id="os-filtro-tipo" onchange="osRenderLista()" style="padding:8px 12px;font-size:13px;border:2px solid #b8d4cc;border-radius:10px;background:#fff;font-family:var(--font);outline:none">
+            <option value="todos">Interno + Externo</option>
+            <option value="interno">Interno</option>
+            <option value="externo">Externo</option>
+          </select>
+          <select id="os-filtro-status" onchange="osRenderLista()" style="padding:8px 12px;font-size:13px;border:2px solid #b8d4cc;border-radius:10px;background:#fff;font-family:var(--font);outline:none">
+            <option value="todos">Pago + Pendente</option>
+            <option value="pago">Pago</option>
+            <option value="pendente">Pendente</option>
+          </select>
+        </div>
+        <div id="os-lista"></div>
+      </div>
+    </div><!-- /tab-os -->
     <div id="tab-report-tech" style="display:none">
       <div class="report-section">
         <div class="card-title">Visualizar registros por período</div>
@@ -1700,7 +1819,7 @@ function selRespByName(name){
 }
 
 function showTab(t){
-  ['form','list','stats','sheets','report-tech','gerenciar'].forEach(function(x){
+  ['form','list','stats','sheets','report-tech','gerenciar','os'].forEach(function(x){
     var el=document.getElementById('tab-'+x);if(el)el.style.display='none';
     var btn=document.getElementById('tab-btn-'+x);if(btn)btn.classList.remove('active');
   });
@@ -1711,6 +1830,7 @@ function showTab(t){
   else if(t==='sheets')renderHistory();
   else if(t==='report-tech')renderTechHistory();
   else if(t==='gerenciar'){admRenderUsers();admRenderLocais();}
+  else if(t==='os'){osIniciarTab();}
 }
 
 // ── FORM ─────────────────────────────────────────────────────
@@ -2394,6 +2514,226 @@ function shade(hex,pct){
   var g=Math.min(255,Math.max(0,((n>>8)&0xff)+Math.round(255*pct/100)));
   var b=Math.min(255,Math.max(0,(n&0xff)+Math.round(255*pct/100)));
   return '#'+[r,g,b].map(function(x){return x.toString(16).padStart(2,'0')}).join('');
+}
+
+// ── MÓDULO ARPTECH — ORDENS DE SERVIÇO ─────────────────────
+
+var OS_INT=['Manutenção de impressora','Manutenção de computador','Manutenção de notebook','Manutenção de aparelho eletrônico','Manutenção de câmera de vigilância','Formatação / Reinstalação','Troca de peça / componente','Outro serviço interno'];
+var OS_EXT=['Instalação de câmera de vigilância','Manutenção de câmera de vigilância','Instalação de portão eletrônico','Instalação de impressora','Instalação de cabeamento de rede','Instalação de computador','Suporte ao usuário','Outro serviço externo'];
+var FPAG={'dinheiro':'Dinheiro','pix':'PIX','cartao_credito':'Cartão Crédito','cartao_debito':'Cartão Débito','boleto':'Boleto','prazo':'A prazo'};
+var osOrdens=[];try{osOrdens=JSON.parse(localStorage.getItem('arp_os')||'[]')}catch(e){}
+var osItemCnt=0;
+
+function osFmt(v){return'R$ '+parseFloat(v||0).toFixed(2).replace('.',',');}
+
+function osTipoChange(){
+  var tipo=document.querySelector('input[name="os-tipo"]:checked');
+  if(!tipo)return;
+  var v=tipo.value;
+  var il=document.getElementById('os-int-lbl');
+  var el=document.getElementById('os-ext-lbl');
+  if(il){il.style.borderColor=v==='interno'?'#1D9E75':'#b8d4cc';il.style.background=v==='interno'?'#d4f0e5':'#fff';}
+  if(el){el.style.borderColor=v==='externo'?'#1D9E75':'#b8d4cc';el.style.background=v==='externo'?'#d4f0e5':'#fff';}
+  var sel=document.getElementById('os-servico');
+  if(!sel)return;
+  var svcs=v==='interno'?OS_INT:OS_EXT;
+  sel.innerHTML='<option value="">Selecione o serviço...</option>';
+  svcs.forEach(function(s){sel.innerHTML+='<option value="'+s+'">'+s+'</option>';});
+  var qtdW=document.getElementById('os-qtd-wrap');
+  if(qtdW)qtdW.style.display=v==='externo'?'':'none';
+}
+
+function osServicoChange(){
+  var s=document.getElementById('os-servico').value;
+  var w=document.getElementById('os-desc-wrap');
+  if(w)w.style.display=s?'block':'none';
+}
+
+function osAddItem(){
+  var id='osi'+(++osItemCnt);
+  var d=document.createElement('div');
+  d.className='item-row';d.id=id;
+  d.innerHTML='<div><input type="text" placeholder="Material..." oninput="osCalcTotal()" style="width:100%;padding:9px 11px;font-size:14px;border:2px solid #b8d4cc;border-radius:10px;background:#fff;font-family:var(--font);outline:none"/></div>'+
+    '<div><input type="number" value="1" min="1" oninput="osCalcTotal()" style="width:100%;padding:9px;font-size:14px;border:2px solid #b8d4cc;border-radius:10px;background:#fff;font-family:var(--font);outline:none;text-align:center"/></div>'+
+    '<div><input type="number" min="0" step="0.01" placeholder="0,00" oninput="osCalcTotal()" style="width:100%;padding:9px;font-size:14px;border:2px solid #b8d4cc;border-radius:10px;background:#fff;font-family:var(--font);outline:none"/></div>'+
+    '<button class="item-del no-print" onclick="this.parentElement.remove();osCalcTotal()">×</button>';
+  document.getElementById('os-itens').appendChild(d);
+  var bar=document.getElementById('os-mat-bar');
+  if(bar)bar.style.display='flex';
+  osCalcTotal();
+}
+
+function osCalcTotal(){
+  var totalMat=0;
+  document.querySelectorAll('#os-itens .item-row').forEach(function(row){
+    var ins=row.querySelectorAll('input');
+    var qtd=parseFloat((ins[1]&&ins[1].value)||1)||1;
+    var val=parseFloat((ins[2]&&ins[2].value)||0)||0;
+    totalMat+=qtd*val;
+  });
+  var mao=parseFloat((document.getElementById('os-mao-obra')&&document.getElementById('os-mao-obra').value)||0)||0;
+  var qtd=parseFloat((document.getElementById('os-qtd')&&document.getElementById('os-qtd').value)||1)||1;
+  var total=totalMat+(mao*qtd);
+  var tm=document.getElementById('os-tot-mat');if(tm)tm.textContent=osFmt(totalMat);
+  var tg=document.getElementById('os-tot-geral');if(tg)tg.textContent=osFmt(total);
+  return{totalMat:totalMat,total:total,mao:mao,qtd:qtd};
+}
+
+function osSalvar(){
+  var tipoEl=document.querySelector('input[name="os-tipo"]:checked');
+  if(!tipoEl){alert('Selecione o tipo de serviço.');return;}
+  var cliente=(document.getElementById('os-cliente').value||'').trim();
+  if(!cliente){alert('Informe o nome do cliente.');return;}
+  var servico=(document.getElementById('os-servico').value||'').trim();
+  if(!servico){alert('Selecione o serviço realizado.');return;}
+  var tecnico=currentUser;
+  var tEl=document.getElementById('os-tecnico');
+  if(tEl&&document.getElementById('os-tec-wrap').style.display!=='none'&&tEl.value)tecnico=tEl.value;
+  var itens=[];
+  document.querySelectorAll('#os-itens .item-row').forEach(function(row){
+    var ins=row.querySelectorAll('input');
+    var nome=(ins[0]&&ins[0].value.trim())||'';
+    if(!nome)return;
+    var qtd=parseFloat((ins[1]&&ins[1].value)||1)||1;
+    var val=parseFloat((ins[2]&&ins[2].value)||0)||0;
+    itens.push({nome:nome,qtd:qtd,valor:val,sub:qtd*val});
+  });
+  var calc=osCalcTotal();
+  var os={
+    id:Date.now(),tecnico:tecnico,tipo:tipoEl.value,
+    cliente:cliente,empresa:(document.getElementById('os-empresa').value||'').trim(),
+    servico:servico,desc:(document.getElementById('os-desc').value||'').trim(),
+    itens:itens,totalMat:calc.totalMat,maoObra:calc.mao,qtd:calc.qtd,total:calc.total,
+    pagStatus:(document.getElementById('os-pag-status').value||'pendente'),
+    pagForma:(document.getElementById('os-pag-forma').value||''),
+    data:(document.getElementById('os-data').value||new Date().toISOString().split('T')[0]),
+    ts:new Date().toISOString()
+  };
+  osOrdens.unshift(os);
+  try{localStorage.setItem('arp_os',JSON.stringify(osOrdens))}catch(e){}
+  osLimpar();osRender();
+  var msg=document.getElementById('os-msg');
+  if(msg){msg.style.display='block';msg.style.color='#0d6b4f';msg.textContent='Ordem de Serviço registrada com sucesso!';}
+  setTimeout(function(){if(msg)msg.style.display='none';},3000);
+}
+
+function osLimpar(){
+  ['os-cliente','os-empresa','os-mao-obra'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  var qtd=document.getElementById('os-qtd');if(qtd)qtd.value='1';
+  var desc=document.getElementById('os-desc');if(desc)desc.value='';
+  var serv=document.getElementById('os-servico');if(serv)serv.value='';
+  var dw=document.getElementById('os-desc-wrap');if(dw)dw.style.display='none';
+  var itens=document.getElementById('os-itens');if(itens)itens.innerHTML='';
+  var bar=document.getElementById('os-mat-bar');if(bar)bar.style.display='none';
+  var tg=document.getElementById('os-tot-geral');if(tg)tg.textContent='R$ 0,00';
+  var tm=document.getElementById('os-tot-mat');if(tm)tm.textContent='R$ 0,00';
+  var ti=document.querySelector('input[name="os-tipo"][value="interno"]');
+  if(ti){ti.checked=true;osTipoChange();}
+}
+
+function osGetFiltradas(){
+  var per=(document.getElementById('os-f-per')||{}).value||'todos';
+  var tipo=(document.getElementById('os-f-tipo')||{}).value||'todos';
+  var st=(document.getElementById('os-f-status')||{}).value||'todos';
+  var hoje=new Date().toISOString().split('T')[0];
+  var semAgo=new Date(Date.now()-7*86400000).toISOString().split('T')[0];
+  var mesAgo=new Date(new Date().getFullYear(),new Date().getMonth(),1).toISOString().split('T')[0];
+  return osOrdens.filter(function(os){
+    var perfil=getPerfilUsuario(currentUser);
+    if(perfil==='SEMED'&&!isAdmin&&os.tecnico!==currentUser)return false;
+    if(per==='hoje'&&os.data!==hoje)return false;
+    if(per==='semana'&&os.data<semAgo)return false;
+    if(per==='mes'&&os.data<mesAgo)return false;
+    if(tipo!=='todos'&&os.tipo!==tipo)return false;
+    if(st!=='todos'&&os.pagStatus!==st)return false;
+    return true;
+  });
+}
+
+function osRender(){
+  var el=document.getElementById('os-lista');if(!el)return;
+  var lista=osGetFiltradas();
+  if(!lista.length){el.innerHTML='<div class="empty-state">Nenhuma ordem de serviço encontrada.</div>';return;}
+  var tGeral=lista.reduce(function(s,o){return s+o.total;},0);
+  var tPago=lista.filter(function(o){return o.pagStatus==='pago';}).reduce(function(s,o){return s+o.total;},0);
+  var tPend=lista.filter(function(o){return o.pagStatus==='pendente';}).reduce(function(s,o){return s+o.total;},0);
+  var resumo='<div class="resumo-grid">'+
+    '<div class="resumo-item"><div class="ri-label">Total</div><div class="ri-val">'+osFmt(tGeral)+'</div></div>'+
+    '<div class="resumo-item"><div class="ri-label">Pago</div><div class="ri-val" style="color:#0d6b4f">'+osFmt(tPago)+'</div></div>'+
+    '<div class="resumo-item"><div class="ri-label">Pendente</div><div class="ri-val" style="color:#dc2626">'+osFmt(tPend)+'</div></div>'+
+  '</div>';
+  var cards=lista.map(function(os){
+    var itensHtml=(os.itens&&os.itens.length)?os.itens.map(function(it){
+      return '<div style="font-size:12px;color:#2d4a44;padding:3px 0;border-bottom:1px solid #edf2f0">'+it.nome+' x'+it.qtd+' = '+osFmt(it.sub)+'</div>';
+    }).join(''):'';
+    var fpLabel=os.pagForma?(FPAG[os.pagForma]||os.pagForma):'';
+    var canDel=isAdmin||(getPerfilUsuario(currentUser)==='ARPTECH');
+    var delBtn=canDel?'<button onclick="osDel('+os.id+')" class="no-print" style="background:#FEE2E2;color:#dc2626;border:none;border-radius:7px;padding:5px 9px;font-size:12px;cursor:pointer;font-family:var(--font)">&#128465;</button>':'';
+    return '<div class="os-list-item">'+
+      '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">'+
+        '<div>'+
+          '<div class="os-cliente">'+os.cliente+(os.empresa?' &mdash; <span style="font-weight:500;color:#7a9e96;font-size:13px">'+os.empresa+'</span>':'')+'</div>'+
+          '<div style="margin-top:5px;display:flex;gap:5px;flex-wrap:wrap;align-items:center">'+
+            '<span class="os-badge '+(os.tipo==='interno'?'interno':'externo')+'">'+(os.tipo==='interno'?'&#128295; Interno':'&#128663; Externo')+'</span>'+
+            '<span class="os-badge '+(os.pagStatus==='pago'?'pago':'pendente')+'">'+(os.pagStatus==='pago'?'&#9989; Pago':'&#9203; Pendente')+(fpLabel?' · '+fpLabel:'')+'</span>'+
+            '<span style="font-size:11px;color:#7a9e96">'+os.data+(os.tecnico?' · '+os.tecnico:'')+'</span>'+
+          '</div>'+
+        '</div>'+
+        delBtn+
+      '</div>'+
+      '<div style="font-size:13px;font-weight:600;color:#2d4a44;margin-bottom:4px">'+os.servico+'</div>'+
+      (os.desc?'<div style="font-size:12px;color:#7a9e96;margin-bottom:6px;font-style:italic">'+os.desc+'</div>':'')+
+      (itensHtml?'<div style="background:#f4f8f6;border-radius:8px;padding:8px;margin-bottom:8px">'+itensHtml+'</div>':'')+
+      '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px">'+
+        '<div style="font-size:12px;color:#7a9e96">'+
+          (os.maoObra?'Mão de obra: '+osFmt(os.maoObra)+(os.qtd>1?' x'+os.qtd:''):'')+(os.totalMat&&os.maoObra?' + ':'')+(os.totalMat?'Materiais: '+osFmt(os.totalMat):'')+
+        '</div>'+
+        '<div class="os-total-v">'+osFmt(os.total)+'</div>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+  el.innerHTML=resumo+cards;
+}
+
+function osDel(id){
+  if(!confirm('Excluir esta ordem de serviço?'))return;
+  osOrdens=osOrdens.filter(function(o){return o.id!==id;});
+  try{localStorage.setItem('arp_os',JSON.stringify(osOrdens))}catch(e){}
+  osRender();
+}
+
+function osIniciarTab(){
+  var d=new Date();
+  var dataEl=document.getElementById('os-data');if(dataEl)dataEl.value=d.toISOString().split('T')[0];
+  var perfil=getPerfilUsuario(currentUser);
+  var wrap=document.getElementById('os-tec-wrap');
+  if(wrap){
+    if(perfil==='SEMED'||isAdmin){
+      wrap.style.display='block';
+      var sel=document.getElementById('os-tecnico');
+      if(sel){
+        var todos=getTodosUsuarios();
+        sel.innerHTML='<option value="">Selecione...</option>';
+        Object.keys(todos).filter(function(n){return n!=='Admin';}).sort().forEach(function(n){
+          sel.innerHTML+='<option value="'+n+'">'+n+'</option>';
+        });
+        sel.value=currentUser;
+      }
+    } else {
+      wrap.style.display='none';
+    }
+  }
+  var tiInt=document.querySelector('input[name="os-tipo"][value="interno"]');
+  if(tiInt){tiInt.checked=true;osTipoChange();}
+  osRender();
+}
+
+// Aliases para compatibilidade com HTML
+function osRenderLista(){osRender();}
+function osCalcularTotal(){return osCalcTotal();}
+function elcToggle(v){
+  var cb=document.getElementById('elc-'+v);
+  if(cb){cb.checked=!cb.checked;editLocaisToggle(cb);}
 }
 
 init();
