@@ -840,6 +840,84 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
         <div id="os-lista"></div>
       </div>
     </div><!-- /tab-os -->
+    <!-- TAB: OS ABERTAS -->
+    <div id="tab-os-abertas" style="display:none">
+
+      <!-- Sub-abas -->
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
+        <button id="osa-btn-lista" onclick="osAbertasTab('lista')" style="padding:9px 16px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);border:2px solid #1D9E75;background:#1D9E75;color:#fff">📋 Lista</button>
+        <button id="osa-btn-stats" onclick="osAbertasTab('stats')" style="padding:9px 16px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);border:2px solid #b8d4cc;background:#fff;color:#2d4a44">📊 Estatísticas</button>
+      </div>
+
+      <!-- Filtros mês/ano -->
+      <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+        <select id="osa-mes" onchange="osAbertasRender()" style="padding:8px 12px;font-size:13px;border:2px solid #b8d4cc;border-radius:10px;background:#fff;font-family:var(--font);outline:none">
+          <option value="0">Todos os meses</option>
+          <option value="1">Janeiro</option><option value="2">Fevereiro</option>
+          <option value="3">Março</option><option value="4">Abril</option>
+          <option value="5">Maio</option><option value="6">Junho</option>
+          <option value="7">Julho</option><option value="8">Agosto</option>
+          <option value="9">Setembro</option><option value="10">Outubro</option>
+          <option value="11">Novembro</option><option value="12">Dezembro</option>
+        </select>
+        <select id="osa-ano" onchange="osAbertasRender()" style="padding:8px 12px;font-size:13px;border:2px solid #b8d4cc;border-radius:10px;background:#fff;font-family:var(--font);outline:none">
+        </select>
+      </div>
+
+      <!-- Conteúdo Lista -->
+      <div id="osa-content-lista">
+        <div id="osa-lista"></div>
+      </div>
+
+      <!-- Conteúdo Stats -->
+      <div id="osa-content-stats" style="display:none">
+        <!-- Cards resumo -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px" id="osa-cards"></div>
+        <!-- Detalhes por status -->
+        <div id="osa-stats-detail"></div>
+      </div>
+
+    </div><!-- /tab-os-abertas -->
+    <!-- TAB: OS ABERTAS (painel) -->
+    <div id="tab-os-abertas" style="display:none">
+      <!-- Sub-abas -->
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
+        <button id="osp-btn-lista" onclick="ospShowSub('lista')" style="padding:8px 16px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);border:2px solid #1D9E75;background:#1D9E75;color:#fff">📋 OS em andamento</button>
+        <button id="osp-btn-stats" onclick="ospShowSub('stats')" style="padding:8px 16px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);border:2px solid #b8d4cc;background:#fff;color:#2d4a44">📊 Estatísticas</button>
+      </div>
+
+      <!-- Filtro mês/ano -->
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap">
+        <select id="osp-mes" onchange="ospRender()" style="padding:8px 12px;font-size:13px;border:2px solid #b8d4cc;border-radius:10px;background:#fff;font-family:var(--font);outline:none">
+          <option value="0">Janeiro</option><option value="1">Fevereiro</option>
+          <option value="2">Março</option><option value="3">Abril</option>
+          <option value="4">Maio</option><option value="5">Junho</option>
+          <option value="6">Julho</option><option value="7">Agosto</option>
+          <option value="8">Setembro</option><option value="9">Outubro</option>
+          <option value="10">Novembro</option><option value="11">Dezembro</option>
+        </select>
+        <select id="osp-ano" onchange="ospRender()" style="padding:8px 12px;font-size:13px;border:2px solid #b8d4cc;border-radius:10px;background:#fff;font-family:var(--font);outline:none">
+        </select>
+        <select id="osp-status" onchange="ospRender()" style="padding:8px 12px;font-size:13px;border:2px solid #b8d4cc;border-radius:10px;background:#fff;font-family:var(--font);outline:none">
+          <option value="todos">Todos os status</option>
+          <option value="aberto">Em Aberto</option>
+          <option value="andamento">Em Andamento</option>
+          <option value="pendente">Pendente</option>
+          <option value="concluido">Concluída</option>
+        </select>
+      </div>
+
+      <!-- Sub: Lista -->
+      <div id="osp-sub-lista">
+        <div id="osp-lista"></div>
+      </div>
+
+      <!-- Sub: Estatísticas -->
+      <div id="osp-sub-stats" style="display:none">
+        <div id="osp-stats-content"></div>
+      </div>
+    </div><!-- /tab-os-abertas -->
+
 
     <!-- MODAL DETALHES / AÇÕES DA OS -->
     <div class="chpwd-overlay" id="os-modal-overlay" style="z-index:5000">
@@ -1866,6 +1944,7 @@ function setupTechTabs(user){
     {id:'list',label:'Meus Registros'},
     {id:'stats',label:'Resumo'},
     {id:'os',label:'🔧 OS / Serviços'},
+    {id:'os-abertas',label:'📋 OS Abertas'},
     {id:'report-tech',label:'Relatórios'}
   ];
   buildTabs(tabs);
@@ -1899,7 +1978,7 @@ function selRespByName(name){
 }
 
 function showTab(t){
-  ['form','list','stats','sheets','report-tech','gerenciar','os'].forEach(function(x){
+  ['form','list','stats','sheets','report-tech','gerenciar','os','os-abertas'].forEach(function(x){
     var el=document.getElementById('tab-'+x);if(el)el.style.display='none';
     var btn=document.getElementById('tab-btn-'+x);if(btn)btn.classList.remove('active');
   });
@@ -1911,6 +1990,7 @@ function showTab(t){
   else if(t==='report-tech')renderTechHistory();
   else if(t==='gerenciar'){admRenderUsers();admRenderLocais();}
   else if(t==='os'){osIniciarTab();}
+  else if(t==='os-abertas'){ospIniciarTab();}
 }
 
 // ── FORM ─────────────────────────────────────────────────────
@@ -2796,21 +2876,28 @@ function osAbrirModal(id){
   html+='</div>';
   document.getElementById('os-modal-content').innerHTML=html;
 
-  // Botões de ação conforme status
+  // Botões de ação conforme status e permissão
   var btns='';
-  var isAdmin=(currentUser==='Admin'||getPerfilUsuario(currentUser)==='ARPTECH');
-  if(os.status==='aberto'){
-    btns+='<button class="btn-chpwd-ok" style="background:#F59E0B;color:#fff;border:none" onclick="osIniciarAtendimento('+id+')">🔧 Iniciar Atendimento</button>';
+  var isAdmin=(currentUser==='Admin'||getPerfilUsuario(currentUser)==='ADMIN');
+  var isARPTECH=getPerfilUsuario(currentUser)==='ARPTECH';
+  // Pode alterar status: admin, ARPTECH ou técnico responsável pela OS
+  var podeAlterar=isAdmin||isARPTECH||(os.tecnico&&os.tecnico===currentUser)||os.status==='aberto';
+  if(podeAlterar){
+    if(os.status==='aberto'){
+      btns+='<button class="btn-chpwd-ok" style="background:#F59E0B;color:#fff;border:none" onclick="osIniciarAtendimento('+id+')">🔧 Iniciar Atendimento</button>';
+    }
+    if(os.status==='andamento'||os.status==='aberto'){
+      btns+='<button class="btn-chpwd-ok" style="background:#dc2626;color:#fff;border:none" onclick="osMudarPendente('+id+')">⏳ Pendente</button>';
+    }
+    if(os.status==='andamento'||os.status==='pendente'){
+      btns+='<button class="btn-chpwd-ok" onclick="osAbrirFin('+id+')">✅ Finalizar OS</button>';
+    }
+  } else {
+    btns+='<div style="font-size:12px;color:#7a9e96;padding:8px;background:#f4f8f6;border-radius:8px;width:100%">👀 Somente visualização — apenas o técnico responsável ou admin pode alterar esta OS</div>';
   }
-  if(os.status==='andamento'||os.status==='aberto'){
-    btns+='<button class="btn-chpwd-ok" style="background:#dc2626;color:#fff;border:none;margin-left:6px" onclick="osMudarPendente('+id+')">⏳ Marcar Pendente</button>';
-  }
-  if(os.status==='andamento'||os.status==='pendente'){
-    btns+='<button class="btn-chpwd-ok" style="margin-left:6px" onclick="osAbrirFin('+id+')">✅ Finalizar OS</button>';
-  }
-  btns+='<button class="btn-chpwd-ok" style="background:#0a2e2a;color:#fff;border:none;margin-left:6px" onclick="osImprimirOS('+id+')">🖨 Imprimir</button>';
-  if(isAdmin){
-    btns+='<button class="btn-chpwd-cancel" style="margin-left:6px;background:#FEE2E2;color:#dc2626;border:none" onclick="osDeletar('+id+')">🗑 Excluir</button>';
+  btns+='<button class="btn-chpwd-ok" style="background:#0a2e2a;color:#fff;border:none" onclick="osImprimirOS('+id+')">🖨 Imprimir</button>';
+  if(isAdmin||isARPTECH){
+    btns+='<button class="btn-chpwd-cancel" style="background:#FEE2E2;color:#dc2626;border:none" onclick="osDeletar('+id+')">🗑 Excluir</button>';
   }
   btns='<div style="display:flex;flex-wrap:wrap;gap:7px;width:100%">'+btns+'</div>';
   btns+='<button class="btn-chpwd-cancel" style="width:100%;margin-top:8px" onclick="osFecharModal()">Fechar</button>';
@@ -2820,23 +2907,60 @@ function osAbrirModal(id){
 
 function osFecharModal(){document.getElementById('os-modal-overlay').classList.remove('open');osModalId=null;}
 
+function osCanEdit(os){
+  // Admin ou técnico ARPTECH podem editar qualquer OS
+  // Técnico SEMED só pode editar se for o responsável ou se a OS não tiver técnico
+  var perfil=getPerfilUsuario(currentUser);
+  if(currentUser==='Admin'||perfil==='ARPTECH')return true;
+  if(!os.tecnico||os.tecnico===currentUser)return true;
+  return false;
+}
+
 function osIniciarAtendimento(id){
   var os=osOrdens.find(function(o){return o.id===id});if(!os)return;
-  // Seleciona o técnico
+  if(!osCanEdit(os)){alert('Apenas o técnico responsável ou o administrador pode alterar esta OS.');return}
+  // Técnico pode assumir ou indicar outro
   var todosU=getTodosUsuarios();
-  var opts=Object.keys(todosU).filter(function(n){return n!=='Admin'}).map(function(n){return'<option value="'+n+'"'+(n===currentUser?' selected':'')+'>'+n+'</option>'}).join('');
-  var tecnico=prompt('Técnico responsável:\n(Confirme ou altere o nome)') || currentUser;
-  if(!tecnico)return;
-  os.status='andamento';
-  os.tecnico=tecnico;
-  osSalvarStorage();
-  osFecharModal();
-  osRenderLista();
-  showBanner('OS #'+osFmtNum(os.numero)+' em andamento — '+tecnico);
+  var nomes=Object.keys(todosU).filter(function(n){return n!=='Admin'}).sort();
+  var tecnico=currentUser;
+  // Mostra modal interno de seleção de técnico
+  osSelecionarTecnico(id, nomes, function(tec){
+    os.status='andamento';
+    os.tecnico=tec;
+    osSalvarStorage();
+    osFecharModal();
+    osRenderLista();
+    if(document.getElementById('tab-os-abertas').style.display!=='none')ospRender();
+    showBanner('OS #'+osFmtNum(os.numero)+' em andamento — '+tec);
+  });
+}
+
+function osSelecionarTecnico(osId, nomes, callback){
+  // Cria mini modal de seleção
+  var overlay=document.createElement('div');
+  overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px';
+  var box=document.createElement('div');
+  box.style.cssText='background:#fff;border-radius:20px;padding:24px;width:100%;max-width:380px';
+  var opts=nomes.map(function(n){return'<option value="'+n+'"'+(n===currentUser?' selected':'')+'>'+n+'</option>'}).join('');
+  box.innerHTML='<div style="font-size:16px;font-weight:700;color:#0a2e2a;margin-bottom:14px">Técnico responsável</div>'+
+    '<select id="tec-sel-opt" style="width:100%;padding:11px 13px;font-size:15px;border:2px solid #b8d4cc;border-radius:12px;background:#f4f8f6;font-family:var(--font);outline:none;margin-bottom:16px">'+opts+'</select>'+
+    '<div style="display:flex;gap:8px">'+
+    '<button id="tec-sel-cancel" style="flex:1;padding:11px;background:#f4f8f6;color:#2d4a44;border:2px solid #b8d4cc;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font)">Cancelar</button>'+
+    '<button id="tec-sel-ok" style="flex:1;padding:11px;background:#1D9E75;color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font)">Confirmar</button>'+
+    '</div>';
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+  box.querySelector('#tec-sel-cancel').onclick=function(){document.body.removeChild(overlay)};
+  box.querySelector('#tec-sel-ok').onclick=function(){
+    var tec=box.querySelector('#tec-sel-opt').value;
+    document.body.removeChild(overlay);
+    if(tec)callback(tec);
+  };
 }
 
 function osMudarPendente(id){
   var os=osOrdens.find(function(o){return o.id===id});if(!os)return;
+  if(!osCanEdit(os)){alert('Apenas o técnico responsável ou o administrador pode alterar esta OS.');return}
   var motivo=prompt('Motivo da pendência (peça, pagamento, etc):');
   if(motivo===null)return;
   os.status='pendente';
@@ -2844,10 +2968,13 @@ function osMudarPendente(id){
   osSalvarStorage();
   osFecharModal();
   osRenderLista();
+  if(document.getElementById('tab-os-abertas').style.display!=='none')ospRender();
   showBanner('OS #'+osFmtNum(os.numero)+' marcada como Pendente');
 }
 
 function osAbrirFin(id){
+  var osCheck=osOrdens.find(function(o){return o.id===id});
+  if(osCheck&&!osCanEdit(osCheck)){alert('Apenas o técnico responsável ou o administrador pode finalizar esta OS.');return}
   osFinId=id;
   osFinItemCount=0;
   document.getElementById('os-fin-itens').innerHTML='';
@@ -2933,6 +3060,7 @@ function osConfirmarFin(){
   osSalvarStorage();
   osFecharFin();
   osRenderLista();
+  if(document.getElementById('tab-os-abertas').style.display!=='none')ospRender();
   showBanner('OS #'+osFmtNum(os.numero)+' finalizada — '+osFmtMoeda(os.total));
 }
 
@@ -2948,90 +3076,98 @@ function osImprimirOS(id){
   var os=osOrdens.find(function(o){return o.id===id});if(!os)return;
   var itensHtml='';
   if(os.itens&&os.itens.length){
-    itensHtml=os.itens.map(function(it){
-      return '<tr><td>'+it.nome+'</td><td style="text-align:center">'+it.qtd+'</td><td style="text-align:right">'+osFmtMoeda(it.valor)+'</td><td style="text-align:right">'+osFmtMoeda(it.subtotal)+'</td></tr>';
-    }).join('');
+    itensHtml='<table style="width:100%;border-collapse:collapse;margin-bottom:8px">'+
+      '<tr style="background:#e8f5f0"><th style="padding:6px 8px;text-align:left;font-size:12px">Peça/Produto</th>'+
+      '<th style="padding:6px 8px;text-align:center;font-size:12px">Qtd</th>'+
+      '<th style="padding:6px 8px;text-align:right;font-size:12px">Unitário</th>'+
+      '<th style="padding:6px 8px;text-align:right;font-size:12px">Total</th></tr>'+
+      os.itens.map(function(it){
+        return '<tr style="border-bottom:1px solid #e2e8e0">'+
+          '<td style="padding:5px 8px;font-size:12px">'+it.nome+'</td>'+
+          '<td style="padding:5px 8px;text-align:center;font-size:12px">'+it.qtd+'</td>'+
+          '<td style="padding:5px 8px;text-align:right;font-size:12px">'+osFmtMoeda(it.valor)+'</td>'+
+          '<td style="padding:5px 8px;text-align:right;font-size:12px;font-weight:600">'+osFmtMoeda(it.subtotal)+'</td>'+
+        '</tr>';
+      }).join('')+'</table>';
   }
-  var html='<div style="font-family:Arial,sans-serif;max-width:700px;margin:0 auto;padding:20px;font-size:13px">'+
-    '<div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #1D9E75;padding-bottom:14px;margin-bottom:14px">'+
-      '<div style="font-size:20px;font-weight:700;color:#0a2e2a">ARP TECH<br><span style="font-size:12px;color:#7a9e96;font-weight:400">da Amazônia</span></div>'+
-      '<div style="text-align:right;background:#f4f8f6;border:1.5px solid #b8d4cc;border-radius:10px;padding:10px 16px">'+
-        '<div style="font-size:14px;font-weight:700;color:#0a2e2a">O.S. Nº: '+osFmtNum(os.numero)+'</div>'+
-        '<div style="font-size:12px;color:#7a9e96">Data de abertura: '+os.dataAbertura+'</div>'+
-        (os.dataFinalizacao?'<div style="font-size:12px;color:#7a9e96">Finalizada em: '+os.dataFinalizacao+'</div>':'')+
-        '<div style="margin-top:4px"><span style="font-size:11px;padding:2px 8px;border-radius:8px;font-weight:700;background:'+(OS_STATUS[os.status]||OS_STATUS.aberto).bg+';color:'+(OS_STATUS[os.status]||OS_STATUS.aberto).color+'">'+
-        (OS_STATUS[os.status]||OS_STATUS.aberto).label+'</span></div>'+
+  var st=OS_STATUS[os.status]||OS_STATUS.aberto;
+  var html='<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"/>'+
+    '<title>OS #'+osFmtNum(os.numero)+'</title>'+
+    '<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;font-size:13px;color:#222;padding:24px;max-width:750px;margin:0 auto}'+
+    '.sec{background:#f7faf9;border:1px solid #c8ddd8;border-radius:6px;padding:12px 14px;margin-bottom:10px}'+
+    '.sec-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#1D9E75;margin-bottom:8px}'+
+    '.row{display:flex;gap:24px;margin-bottom:4px}.row .col{flex:1}'+
+    'table{width:100%;border-collapse:collapse}th,td{padding:6px 8px}'+
+    '.total-row td{font-weight:700;font-size:15px;border-top:2px solid #0a2e2a;padding-top:10px}'+
+    '.badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:8px;font-weight:700}'+
+    '.sig{display:flex;justify-content:space-between;margin-top:40px;padding-top:16px;border-top:1px solid #ccc}'+
+    '.sig div{width:45%;text-align:center;padding-top:8px;border-top:1.5px solid #333;font-size:12px;color:#666}'+
+    '.footer{text-align:center;margin-top:16px;font-size:11px;color:#999;border-top:1px solid #eee;padding-top:10px}'+
+    '@media print{@page{margin:15mm}button{display:none!important}}'+
+    '</style></head><body>'+
+    // Header
+    '<div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #1D9E75;padding-bottom:14px;margin-bottom:14px">'+
+      '<div>'+
+        '<div style="font-size:24px;font-weight:700;color:#0a2e2a;letter-spacing:1px">ARPTECH</div>'+
+        '<div style="font-size:11px;color:#7a9e96;letter-spacing:1px">DA AMAZÔNIA</div>'+
+        '<div style="font-size:11px;color:#7a9e96;margin-top:4px">CNPJ: 11.615.138/0001-11</div>'+
+        '<div style="font-size:11px;color:#7a9e96">Rua 5 de Setembro, 384 — Humaitá/AM</div>'+
+        '<div style="font-size:11px;color:#7a9e96">(97) 98429-4519 · suporte.arptech@gmail.com</div>'+
+      '</div>'+
+      '<div style="text-align:right;background:#f7faf9;border:1.5px solid #b8d4cc;border-radius:10px;padding:12px 18px">'+
+        '<div style="font-size:18px;font-weight:700;color:#0a2e2a">O.S. Nº: <span style="color:#1D9E75">'+osFmtNum(os.numero)+'</span></div>'+
+        '<div style="font-size:12px;color:#7a9e96;margin-top:3px">Abertura: '+os.dataAbertura+'</div>'+
+        (os.dataFinalizacao?'<div style="font-size:12px;color:#7a9e96">Finalizada: '+os.dataFinalizacao+'</div>':'')+
+        '<div style="margin-top:6px"><span class="badge" style="background:'+st.bg+';color:'+st.color+'">'+st.label+'</span></div>'+
       '</div>'+
     '</div>'+
     // Dados do cliente
-    '<div style="background:#f4f8f6;padding:12px;border-radius:8px;margin-bottom:12px">'+
-      '<div style="font-weight:700;color:#0a2e2a;margin-bottom:8px;text-transform:uppercase;font-size:12px;letter-spacing:.8px">Dados do Cliente</div>'+
-      '<table style="width:100%;border-collapse:collapse"><tr>'+
-        '<td style="padding:3px 8px 3px 0;width:50%"><strong>Nome/Empresa:</strong> '+os.cliente+'</td>'+
-        '<td style="padding:3px 0 3px 8px">'+(os.cnpj?'<strong>CNPJ/CPF:</strong> '+os.cnpj:'')+'</td>'+
-      '</tr><tr>'+
-        '<td style="padding:3px 8px 3px 0"><strong>Telefone:</strong> '+os.telefone+'</td>'+
-        '<td style="padding:3px 0 3px 8px">'+(os.endereco?'<strong>Endereço:</strong> '+os.endereco:'')+'</td>'+
-      '</tr></table>'+
+    '<div class="sec"><div class="sec-title">Dados do Cliente</div>'+
+    '<div class="row">'+
+      '<div class="col"><strong>Nome/Empresa:</strong> '+os.cliente+'</div>'+
+      '<div class="col">'+(os.cnpj?'<strong>CNPJ/CPF:</strong> '+os.cnpj:'')+'</div>'+
     '</div>'+
-    // Produto
-    '<div style="background:#f4f8f6;padding:12px;border-radius:8px;margin-bottom:12px">'+
-      '<div style="font-weight:700;color:#0a2e2a;margin-bottom:8px;text-transform:uppercase;font-size:12px;letter-spacing:.8px">Informações do Produto/Serviço</div>'+
-      '<strong>Serviço:</strong> '+os.servico+'<br>'+
-      (os.modelo?'<strong>Modelo/Equipamento:</strong> '+os.modelo+'<br>':'')+
-      (os.tecnico?'<strong>Técnico:</strong> '+os.tecnico+'<br>':'')+
+    '<div class="row">'+
+      '<div class="col"><strong>Telefone:</strong> '+os.telefone+'</div>'+
+      '<div class="col">'+(os.endereco?'<strong>Endereço:</strong> '+os.endereco:'')+'</div>'+
+    '</div></div>'+
+    // Produto/serviço
+    '<div class="sec"><div class="sec-title">Informações do Produto</div>'+
+    '<strong>Serviço:</strong> '+os.servico+'<br>'+
+    (os.modelo?'<strong>Modelo/Equipamento:</strong> '+os.modelo+'<br>':'')+
+    (os.tecnico?'<strong>Técnico responsável:</strong> '+os.tecnico+'<br>':'')+
     '</div>'+
     // Relato
-    '<div style="background:#f4f8f6;padding:12px;border-radius:8px;margin-bottom:12px">'+
-      '<div style="font-weight:700;color:#0a2e2a;margin-bottom:8px;text-transform:uppercase;font-size:12px;letter-spacing:.8px">Relato do Cliente</div>'+
-      os.relato+
+    '<div class="sec"><div class="sec-title">Relato do Cliente</div>'+os.relato+
+    (os.obsAbertura?'<br><br><em>Obs.: '+os.obsAbertura+'</em>':'')+
     '</div>'+
     // Diagnóstico
-    (os.diagnostico?
-    '<div style="background:#f4f8f6;padding:12px;border-radius:8px;margin-bottom:12px">'+
-      '<div style="font-weight:700;color:#0a2e2a;margin-bottom:8px;text-transform:uppercase;font-size:12px;letter-spacing:.8px">Diagnóstico e Serviço Realizado</div>'+
-      os.diagnostico+
-    '</div>':'')+
+    (os.diagnostico?'<div class="sec"><div class="sec-title">Diagnóstico e Serviço Realizado</div>'+os.diagnostico+'</div>':'')+
     // Garantia
-    (os.garantia?
-    '<div style="background:#f4f8f6;padding:12px;border-radius:8px;margin-bottom:12px">'+
-      '<div style="font-weight:700;color:#0a2e2a;margin-bottom:8px;text-transform:uppercase;font-size:12px;letter-spacing:.8px">Garantia e Observações</div>'+
-      os.garantia+(os.obsFin?'<br>'+os.obsFin:'')+'<br>'+
-    '</div>':'')+
+    (os.garantia?'<div class="sec"><div class="sec-title">Garantia e Observações</div>'+os.garantia+(os.obsFin?'<br>'+os.obsFin:'')+'</div>':'')+
     // Orçamento
     (os.total>0?
-    '<div style="background:#f4f8f6;padding:12px;border-radius:8px;margin-bottom:20px">'+
-      '<div style="font-weight:700;color:#0a2e2a;margin-bottom:8px;text-transform:uppercase;font-size:12px;letter-spacing:.8px">Orçamento</div>'+
-      (itensHtml?
-        '<table style="width:100%;border-collapse:collapse;margin-bottom:8px">'+
-          '<tr style="background:#e2e8e0"><th style="padding:5px 8px;text-align:left">Peça/Produto</th><th style="padding:5px 8px;text-align:center">Qtd</th><th style="padding:5px 8px;text-align:right">Unit.</th><th style="padding:5px 8px;text-align:right">Total</th></tr>'+
-          itensHtml+
-        '</table>':'')+
-      '<table style="width:100%;border-collapse:collapse">'+
-        (os.totalPecas?'<tr><td style="padding:4px 0">Valor das peças/produtos:</td><td style="text-align:right">'+osFmtMoeda(os.totalPecas)+'</td></tr>':'')+
-        '<tr><td style="padding:4px 0">Valor dos serviços:</td><td style="text-align:right">'+osFmtMoeda(os.valorMaoObra)+'</td></tr>'+
-        '<tr style="font-size:15px;font-weight:700"><td style="padding:8px 0;border-top:2px solid #0a2e2a">Valor total:</td><td style="text-align:right;border-top:2px solid #0a2e2a">'+osFmtMoeda(os.total)+'</td></tr>'+
+      '<div class="sec"><div class="sec-title">Orçamento</div>'+
+      itensHtml+
+      '<table>'+
+      (os.totalPecas?'<tr><td>Valor das peças/produtos:</td><td style="text-align:right">'+osFmtMoeda(os.totalPecas)+'</td></tr>':'')+
+      '<tr><td>Valor dos serviços (mão de obra):</td><td style="text-align:right">'+osFmtMoeda(os.valorMaoObra)+'</td></tr>'+
+      '<tr class="total-row"><td><strong>Valor total:</strong></td><td style="text-align:right"><strong>'+osFmtMoeda(os.total)+'</strong></td></tr>'+
       '</table>'+
-      (os.formaPag?'<div style="margin-top:6px;font-size:12px;color:#7a9e96">Pagamento: '+(FORMA_PAG_LABEL[os.formaPag]||os.formaPag)+(os.parcelas>1?' em '+os.parcelas+'x':'')+(os.dataPag?' — '+os.dataPag:'')+'</div>':'')+
-    '</div>':'')+
+      (os.formaPag?'<div style="margin-top:8px;font-size:12px;color:#555">Pagamento: '+(FORMA_PAG_LABEL[os.formaPag]||os.formaPag)+(os.parcelas>1?' em '+os.parcelas+'x':'')+(os.dataPag?' — '+os.dataPag:'')+'</div>':'')+
+      '</div>':'')+
     // Assinaturas
-    '<div style="display:flex;justify-content:space-between;margin-top:30px;padding-top:20px;border-top:1px solid #b8d4cc">'+
-      '<div style="text-align:center;width:45%"><div style="border-top:1.5px solid #0a2e2a;padding-top:8px;font-size:12px;color:#7a9e96">Assinatura do Cliente</div></div>'+
-      '<div style="text-align:center;width:45%"><div style="border-top:1.5px solid #0a2e2a;padding-top:8px;font-size:12px;color:#7a9e96">Assinatura do Técnico Responsável</div></div>'+
-    '</div>'+
-    '<div style="text-align:center;margin-top:16px;font-size:11px;color:#7a9e96">ARP TECH da Amazônia — Rua 5 de Setembro, 384 — Humaitá/AM — (97) 98429-4519 — suporte.arptech@gmail.com</div>'+
-  '</div>';
+    '<div class="sig"><div>Assinatura do Cliente</div><div>Assinatura do Técnico Responsável</div></div>'+
+    '<div class="footer">ARP TECH da Amazônia — CNPJ: 11.615.138/0001-11 — Rua 5 de Setembro, 384 — Humaitá/AM — (97) 98429-4519</div>'+
+    '<div style="text-align:center;margin-top:16px"><button onclick="window.print()" style="padding:12px 30px;background:#1D9E75;color:#fff;border:none;border-radius:8px;font-size:15px;cursor:pointer;font-family:Arial">🖨 Imprimir</button></div>'+
+  '</body></html>';
 
-  var printArea=document.getElementById('os-print-area');
-  var printContent=document.getElementById('os-print-content');
-  printContent.innerHTML=html;
-  printArea.style.display='block';
+  var w=window.open('','_blank','width=800,height=900');
+  if(w){w.document.write(html);w.document.close();}
+  else{alert('Permita pop-ups para imprimir a OS.');}
   osFecharModal();
-  setTimeout(function(){
-    window.print();
-    setTimeout(function(){printArea.style.display='none'},1000);
-  },300);
 }
+
 
 function osIniciarTab(){
   var d=new Date();
@@ -3070,6 +3206,316 @@ function osRenderLista(){
       '</div>'+
     '</div>';
   }).join('');
+}
+
+
+// ── PAINEL OS ABERTAS ────────────────────────────────────────
+
+function ospIniciarTab(){
+  // Popula anos disponíveis
+  var anos=new Set();
+  var anoAtual=new Date().getFullYear();
+  anos.add(String(anoAtual));
+  osOrdens.forEach(function(o){
+    var y=new Date(o.ts).getFullYear();
+    anos.add(String(y));
+  });
+  var selAno=document.getElementById('osp-ano');
+  selAno.innerHTML='';
+  Array.from(anos).sort(function(a,b){return b-a}).forEach(function(a){
+    selAno.innerHTML+='<option value="'+a+'"'+(a===String(anoAtual)?' selected':'')+'>'+a+'</option>';
+  });
+  // Mês atual
+  document.getElementById('osp-mes').value=String(new Date().getMonth());
+  ospShowSub('lista');
+  ospRender();
+}
+
+function ospShowSub(sub){
+  ['lista','stats'].forEach(function(s){
+    var el=document.getElementById('osp-sub-'+s);if(el)el.style.display=s===sub?'block':'none';
+    var btn=document.getElementById('osp-btn-'+s);
+    if(btn){
+      if(s===sub){btn.style.background='#1D9E75';btn.style.color='#fff';btn.style.borderColor='#1D9E75';}
+      else{btn.style.background='#fff';btn.style.color='#2d4a44';btn.style.borderColor='#b8d4cc';}
+    }
+  });
+  ospRender();
+}
+
+function ospGetFiltradas(){
+  var mes=parseInt(document.getElementById('osp-mes').value);
+  var ano=parseInt(document.getElementById('osp-ano').value);
+  var status=document.getElementById('osp-status').value;
+  return osOrdens.filter(function(o){
+    var d=new Date(o.ts);
+    if(d.getMonth()!==mes||d.getFullYear()!==ano)return false;
+    if(status!=='todos'&&o.status!==status)return false;
+    return true;
+  });
+}
+
+function ospRender(){
+  var lista=ospGetFiltradas();
+  var subAtiva=document.getElementById('osp-sub-stats').style.display!=='none'?'stats':'lista';
+
+  if(subAtiva==='stats'){
+    // Estatísticas
+    var tot=lista.length;
+    var aberto=lista.filter(function(o){return o.status==='aberto'}).length;
+    var andamento=lista.filter(function(o){return o.status==='andamento'}).length;
+    var pendente=lista.filter(function(o){return o.status==='pendente'}).length;
+    var concluido=lista.filter(function(o){return o.status==='concluido'}).length;
+    var totalFat=lista.filter(function(o){return o.status==='concluido'}).reduce(function(s,o){return s+o.total},0);
+    var totalPend=lista.filter(function(o){return o.statusPag==='pendente'&&o.total>0}).reduce(function(s,o){return s+o.total},0);
+    var meses=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+    var mes=parseInt(document.getElementById('osp-mes').value);
+    var ano=document.getElementById('osp-ano').value;
+
+    var html='<div style="text-align:center;font-size:14px;font-weight:700;color:#0a2e2a;margin-bottom:14px">'+meses[mes]+' / '+ano+'</div>';
+    // Cards totais
+    html+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">';
+    html+=ospStatCard('Total de OS','📋',tot,'#0a2e2a','#f4f8f6');
+    html+=ospStatCard('Em Aberto','📂',aberto,'#1e40af','#DBEAFE');
+    html+=ospStatCard('Em Andamento','🔧',andamento,'#92400e','#FEF3C7');
+    html+=ospStatCard('Pendentes','⏳',pendente,'#dc2626','#FEE2E2');
+    html+=ospStatCard('Concluídas','✅',concluido,'#0d6b4f','#d4f0e5');
+    html+='</div>';
+    // Financeiro
+    html+='<div style="background:#0a2e2a;color:#fff;border-radius:14px;padding:16px;margin-bottom:10px">';
+    html+='<div style="font-size:12px;opacity:.6;margin-bottom:4px;text-transform:uppercase;letter-spacing:.8px">Faturamento do mês</div>';
+    html+='<div style="font-size:24px;font-weight:700;color:#1D9E75">'+osFmtMoeda(totalFat)+'</div>';
+    if(totalPend>0)html+='<div style="font-size:12px;color:#FCA5A5;margin-top:4px">⚠ '+osFmtMoeda(totalPend)+' ainda pendente</div>';
+    html+='</div>';
+    // Gráfico de barras simples
+    if(tot>0){
+      var items=[
+        {label:'Aberto',val:aberto,color:'#1e40af',bg:'#DBEAFE'},
+        {label:'Andamento',val:andamento,color:'#92400e',bg:'#FEF3C7'},
+        {label:'Pendente',val:pendente,color:'#dc2626',bg:'#FEE2E2'},
+        {label:'Concluída',val:concluido,color:'#0d6b4f',bg:'#d4f0e5'}
+      ];
+      html+='<div style="background:#fff;border:2px solid #b8d4cc;border-radius:14px;padding:14px">';
+      html+='<div style="font-size:12px;font-weight:700;color:#7a9e96;margin-bottom:10px;text-transform:uppercase;letter-spacing:.8px">Distribuição por status</div>';
+      items.forEach(function(item){
+        if(item.val===0)return;
+        var pct=Math.round(item.val/tot*100);
+        html+='<div style="margin-bottom:8px">';
+        html+='<div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:3px"><span style="font-weight:600;color:'+item.color+'">'+item.label+'</span><span>'+item.val+' ('+pct+'%)</span></div>';
+        html+='<div style="background:#f4f8f6;border-radius:6px;height:10px;overflow:hidden"><div style="width:'+pct+'%;height:100%;background:'+item.color+';border-radius:6px;transition:.3s"></div></div>';
+        html+='</div>';
+      });
+      html+='</div>';
+    }
+    document.getElementById('osp-stats-content').innerHTML=html;
+    return;
+  }
+
+  // Sub: Lista
+  var el=document.getElementById('osp-lista');if(!el)return;
+  if(!lista.length){el.innerHTML='<div class="empty-state">Nenhuma OS neste período.</div>';return}
+  el.innerHTML=lista.map(function(os){
+    var st=OS_STATUS[os.status]||OS_STATUS.aberto;
+    var tecBadge=os.tecnico?'<span style="font-size:11px;background:#f4f8f6;color:#2d4a44;padding:2px 8px;border-radius:8px;font-weight:600">👤 '+os.tecnico+'</span>':'';
+    return '<div style="background:#fff;border:2px solid #b8d4cc;border-radius:16px;padding:14px;margin-bottom:10px;cursor:pointer" onclick="osAbrirModal('+os.id+')">'+
+      '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">'+
+        '<div>'+
+          '<div style="font-size:12px;color:#7a9e96;font-weight:600">OS #'+osFmtNum(os.numero)+' · '+os.dataAbertura+'</div>'+
+          '<div style="font-size:15px;font-weight:700;color:#0f1f1c">'+os.cliente+'</div>'+
+        '</div>'+
+        '<span style="font-size:11px;padding:3px 9px;border-radius:10px;font-weight:700;background:'+st.bg+';color:'+st.color+'">'+st.emoji+' '+st.label+'</span>'+
+      '</div>'+
+      '<div style="font-size:13px;color:#2d4a44;margin-bottom:4px"><strong>'+os.servico+'</strong>'+(os.modelo?' — '+os.modelo:'')+'</div>'+
+      '<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">'+
+        tecBadge+
+        (os.total>0?'<span style="font-size:12px;font-weight:700;color:#0d6b4f;margin-left:auto">'+osFmtMoeda(os.total)+'</span>':'')+
+      '</div>'+
+    '</div>';
+  }).join('');
+}
+
+function ospStatCard(label,emoji,val,color,bg){
+  return '<div style="background:'+bg+';border-radius:12px;padding:14px;text-align:center">'+
+    '<div style="font-size:22px;margin-bottom:4px">'+emoji+'</div>'+
+    '<div style="font-size:26px;font-weight:700;color:'+color+'">'+val+'</div>'+
+    '<div style="font-size:12px;font-weight:600;color:'+color+';opacity:.8">'+label+'</div>'+
+  '</div>';
+}
+
+
+// ── ABA OS ABERTAS ────────────────────────────────────────────
+
+var _osaTab = 'lista';
+
+function osAbertasIniciar(){
+  // Popula anos disponíveis
+  var anos=new Set();
+  var anoAtual=new Date().getFullYear();
+  anos.add(anoAtual);
+  osOrdens.forEach(function(os){
+    var d=new Date(os.ts);
+    if(!isNaN(d))anos.add(d.getFullYear());
+  });
+  var selAno=document.getElementById('osa-ano');
+  selAno.innerHTML='<option value="0">Todos os anos</option>';
+  Array.from(anos).sort().reverse().forEach(function(a){
+    selAno.innerHTML+='<option value="'+a+'"'+(a===anoAtual?' selected':'')+'>'+a+'</option>';
+  });
+  // Mês atual
+  document.getElementById('osa-mes').value=new Date().getMonth()+1;
+  _osaTab='lista';
+  osAbertasTab('lista');
+}
+
+function osAbertasTab(tab){
+  _osaTab=tab;
+  var btnL=document.getElementById('osa-btn-lista');
+  var btnS=document.getElementById('osa-btn-stats');
+  var cL=document.getElementById('osa-content-lista');
+  var cS=document.getElementById('osa-content-stats');
+  if(tab==='lista'){
+    btnL.style.background='#1D9E75';btnL.style.color='#fff';btnL.style.borderColor='#1D9E75';
+    btnS.style.background='#fff';btnS.style.color='#2d4a44';btnS.style.borderColor='#b8d4cc';
+    cL.style.display='block';cS.style.display='none';
+  } else {
+    btnS.style.background='#1D9E75';btnS.style.color='#fff';btnS.style.borderColor='#1D9E75';
+    btnL.style.background='#fff';btnL.style.color='#2d4a44';btnL.style.borderColor='#b8d4cc';
+    cL.style.display='none';cS.style.display='block';
+  }
+  osAbertasRender();
+}
+
+function osAbertasFiltrar(){
+  var mes=parseInt(document.getElementById('osa-mes').value);
+  var ano=parseInt(document.getElementById('osa-ano').value);
+  return osOrdens.filter(function(os){
+    var d=new Date(os.ts);
+    if(isNaN(d))return false;
+    if(mes>0&&d.getMonth()+1!==mes)return false;
+    if(ano>0&&d.getFullYear()!==ano)return false;
+    return true;
+  });
+}
+
+function osAbertasRender(){
+  if(_osaTab==='lista') osAbertasRenderLista();
+  else osAbertasRenderStats();
+}
+
+var MESES_PT=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+
+function osAbertasRenderLista(){
+  var el=document.getElementById('osa-lista');if(!el)return;
+  var lista=osAbertasFiltrar();
+  var mes=parseInt(document.getElementById('osa-mes').value);
+  var ano=parseInt(document.getElementById('osa-ano').value);
+  var titulo=(mes>0?MESES_PT[mes-1]+' ':'')+(ano>0?ano:'');
+
+  if(!lista.length){
+    el.innerHTML='<div class="empty-state">Nenhuma OS encontrada'+(titulo?' em '+titulo:'')+'.</div>';
+    return;
+  }
+
+  // Agrupa por status na ordem: aberto → andamento → pendente → concluido
+  var ordem=['aberto','andamento','pendente','concluido'];
+  var grupos={aberto:[],andamento:[],pendente:[],concluido:[]};
+  lista.forEach(function(os){grupos[os.status]&&grupos[os.status].push(os)});
+
+  var html='';
+  if(titulo)html+='<div style="font-size:14px;font-weight:700;color:#2d4a44;margin-bottom:12px">'+titulo+' — '+lista.length+' OS</div>';
+
+  ordem.forEach(function(status){
+    var group=grupos[status];
+    if(!group||!group.length)return;
+    var st=OS_STATUS[status];
+    html+='<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:'+st.color+';margin:14px 0 8px;padding:6px 10px;background:'+st.bg+';border-radius:8px;display:inline-block">'+st.emoji+' '+st.label+' ('+group.length+')</div>';
+    html+=group.map(function(os){
+      var tecBadge=os.status==='andamento'&&os.tecnico?
+        '<span style="font-size:11px;background:#f4f8f6;color:#2d4a44;padding:2px 8px;border-radius:8px;font-weight:600">👤 '+os.tecnico+'</span>':'';
+      return '<div style="background:#fff;border:2px solid #b8d4cc;border-radius:14px;padding:13px;margin-bottom:8px;cursor:pointer" onclick="osAbrirModal('+os.id+')">'+
+        '<div style="display:flex;justify-content:space-between;align-items:flex-start">'+
+          '<div>'+
+            '<div style="font-size:11px;color:#7a9e96;font-weight:600">OS #'+osFmtNum(os.numero)+' · '+os.dataAbertura+'</div>'+
+            '<div style="font-size:15px;font-weight:700;color:#0f1f1c">'+os.cliente+'</div>'+
+          '</div>'+
+          '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">'+
+            (os.total>0?'<span style="font-size:13px;font-weight:700;color:#0d6b4f">'+osFmtMoeda(os.total)+'</span>':'')+
+            tecBadge+
+          '</div>'+
+        '</div>'+
+        '<div style="font-size:12px;color:#2d4a44;margin-top:5px">'+os.servico+(os.modelo?' — <em>'+os.modelo+'</em>':'')+'</div>'+
+      '</div>';
+    }).join('');
+  });
+
+  el.innerHTML=html;
+}
+
+function osAbertasRenderStats(){
+  var lista=osAbertasFiltrar();
+  var mes=parseInt(document.getElementById('osa-mes').value);
+  var ano=parseInt(document.getElementById('osa-ano').value);
+  var titulo=(mes>0?MESES_PT[mes-1]+' ':'')+(ano>0?ano:'Todos os anos');
+
+  var counts={aberto:0,andamento:0,pendente:0,concluido:0,total:0};
+  var totalFaturado=0;var totalPendente=0;
+  lista.forEach(function(os){
+    counts[os.status]=(counts[os.status]||0)+1;
+    counts.total++;
+    if(os.status==='concluido'){
+      if(os.statusPag==='pago')totalFaturado+=os.total||0;
+      else totalPendente+=os.total||0;
+    }
+  });
+
+  // Cards
+  var cardsHtml=[
+    {label:'Total de OS',val:counts.total,bg:'#f4f8f6',cor:'#0a2e2a',icone:'📋'},
+    {label:'Concluídas',val:counts.concluido,bg:'#d4f0e5',cor:'#0d6b4f',icone:'✅'},
+    {label:'Em Andamento',val:counts.andamento,bg:'#FEF3C7',cor:'#92400e',icone:'🔧'},
+    {label:'Pendentes',val:counts.pendente,bg:'#FEE2E2',cor:'#dc2626',icone:'⏳'},
+    {label:'Em Aberto',val:counts.aberto,bg:'#DBEAFE',cor:'#1e40af',icone:'📂'},
+    {label:'Faturado',val:osFmtMoeda(totalFaturado),bg:'#d4f0e5',cor:'#0d6b4f',icone:'💰'},
+  ].map(function(card){
+    return '<div style="background:'+card.bg+';border-radius:14px;padding:14px;text-align:center">'+
+      '<div style="font-size:22px;margin-bottom:4px">'+card.icone+'</div>'+
+      '<div style="font-size:22px;font-weight:700;color:'+card.cor+'">'+card.val+'</div>'+
+      '<div style="font-size:11px;color:#7a9e96;font-weight:600;text-transform:uppercase;letter-spacing:.5px">'+card.label+'</div>'+
+    '</div>';
+  }).join('');
+
+  document.getElementById('osa-cards').innerHTML=cardsHtml;
+
+  // Detalhe: lista de técnicos
+  var porTecnico={};
+  lista.forEach(function(os){
+    var tec=os.tecnico||'Sem técnico';
+    if(!porTecnico[tec])porTecnico[tec]={total:0,concluido:0,andamento:0,pendente:0,aberto:0,faturado:0};
+    porTecnico[tec].total++;
+    porTecnico[tec][os.status]=(porTecnico[tec][os.status]||0)+1;
+    if(os.status==='concluido'&&os.statusPag==='pago')porTecnico[tec].faturado+=os.total||0;
+  });
+
+  var detailHtml='<div class="card"><div class="card-title">Por técnico — '+titulo+'</div>';
+  if(!Object.keys(porTecnico).length){
+    detailHtml+='<div style="color:#7a9e96;font-size:13px">Nenhuma OS neste período.</div>';
+  } else {
+    detailHtml+=Object.keys(porTecnico).sort().map(function(tec){
+      var t=porTecnico[tec];
+      return '<div style="background:#f4f8f6;border-radius:12px;padding:12px;margin-bottom:10px">'+
+        '<div style="font-size:14px;font-weight:700;color:#0f1f1c;margin-bottom:8px">👤 '+tec+' <span style="font-size:12px;color:#7a9e96;font-weight:500">('+t.total+' OS)</span></div>'+
+        '<div style="display:flex;flex-wrap:wrap;gap:7px">'+
+          '<span style="font-size:12px;padding:3px 9px;border-radius:8px;background:#d4f0e5;color:#0d6b4f;font-weight:600">✅ '+t.concluido+' concluídas</span>'+
+          (t.andamento?'<span style="font-size:12px;padding:3px 9px;border-radius:8px;background:#FEF3C7;color:#92400e;font-weight:600">🔧 '+t.andamento+' em andamento</span>':'')+
+          (t.pendente?'<span style="font-size:12px;padding:3px 9px;border-radius:8px;background:#FEE2E2;color:#dc2626;font-weight:600">⏳ '+t.pendente+' pendentes</span>':'')+
+          (t.aberto?'<span style="font-size:12px;padding:3px 9px;border-radius:8px;background:#DBEAFE;color:#1e40af;font-weight:600">📂 '+t.aberto+' em aberto</span>':'')+
+          (t.faturado?'<span style="font-size:12px;padding:3px 9px;border-radius:8px;background:#d4f0e5;color:#0d6b4f;font-weight:600">💰 '+osFmtMoeda(t.faturado)+'</span>':'')+
+        '</div>'+
+      '</div>';
+    }).join('');
+  }
+  detailHtml+='</div>';
+  document.getElementById('osa-stats-detail').innerHTML=detailHtml;
 }
 
 
