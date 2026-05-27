@@ -2635,6 +2635,7 @@ var OS_STATUS = {
 var FORMA_PAG_LABEL = {dinheiro:'Dinheiro',pix:'PIX',cartao_credito:'Cartão Crédito',cartao_debito:'Cartão Débito',boleto:'Boleto',prazo:'A prazo'};
 
 var osOrdens = [];
+var _osTipoAtual = "interno"; // rastreia tipo selecionado sem depender de :checked
 try{osOrdens=JSON.parse(localStorage.getItem('arp_os')||'[]')}catch(e){}
 var osNumSeq = 0;
 try{osNumSeq=parseInt(localStorage.getItem('arp_os_seq')||'0')}catch(e){}
@@ -2653,8 +2654,7 @@ function osFmtNum(n){return String(n).padStart(5,'0')}
 function osFmtMoeda(v){return'R$ '+parseFloat(v||0).toFixed(2).replace('.',',')}
 
 function osTipoChange(){
-  var r=document.querySelector('input[name="os-tipo"]:checked');
-  if(!r)return;
+  var r={value:_osTipoAtual||'interno'}; // usa variavel de estado
   var il=document.getElementById('os-tipo-int-label');
   var el=document.getElementById('os-tipo-ext-label');
   il.style.borderColor=r.value==='interno'?'#1D9E75':'#b8d4cc';
@@ -2668,14 +2668,14 @@ function osTipoChange(){
 }
 
 function osAbrir(){
-  var tipo=document.querySelector('input[name="os-tipo"]:checked');
-  if(!tipo){alert('Selecione o tipo de serviço.');return}
+  try{
+  var tipoVal=_osTipoAtual||'interno'; // usa variavel de estado (Safari-safe)
   var cliente=document.getElementById('os-cliente').value.trim();
   if(!cliente){alert('Informe o nome do cliente.');return}
   var telefone=document.getElementById('os-telefone').value.trim();
   if(!telefone){alert('Informe o telefone.');return}
   var servico=document.getElementById('os-servico-tipo').value;
-  if(!servico){alert('Selecione o tipo de serviço.');return}
+  if(!servico){alert('Selecione o tipo de servico realizado.');return}
   var relato=document.getElementById('os-relato').value.trim();
   if(!relato){alert('Preencha o relato do cliente.');return}
 
@@ -2684,7 +2684,7 @@ function osAbrir(){
     id:Date.now(),
     numero:osNumSeq,
     status:'aberto',
-    tipo:tipo.value,
+    tipo:tipoVal,
     tecnico:(currentUser==='Admin'?(document.getElementById('os-tecnico').value||''):currentUser),
     // Cliente
     cliente:cliente,
@@ -2715,14 +2715,14 @@ function osAbrir(){
   msg.textContent='✓ OS #'+osFmtNum(os.numero)+' aberta com sucesso!';
   setTimeout(function(){msg.style.display='none'},4000);
   showBanner('OS #'+osFmtNum(os.numero)+' aberta — '+cliente);
+  }catch(err){alert('Erro ao abrir OS: '+err.message);}
 }
 
 function osLimparForm(){
   ['os-cliente','os-cnpj','os-telefone','os-endereco','os-modelo','os-relato','os-obs-abertura'].forEach(function(id){
     var el=document.getElementById(id);if(el)el.value='';
   });
-  document.querySelector('input[name="os-tipo"][value="interno"]').checked=true;
-  osTipoChange();
+  osSetTipo('interno');
 }
 
 function osGetFiltradas(){
@@ -3487,10 +3487,12 @@ var _ospPageConcluidas = 0;
 var OSP_PER_PAGE = 30;
 
 function osSetTipo(tipo){
+  _osTipoAtual=tipo; // guarda estado
   var intR=document.getElementById('os-tipo-int');
   var extR=document.getElementById('os-tipo-ext');
   var intL=document.getElementById('os-tipo-int-label');
   var extL=document.getElementById('os-tipo-ext-label');
+  if(!intL||!extL)return;
   if(tipo==='interno'){
     if(intR)intR.checked=true;
     intL.style.background='#1D9E75';intL.style.color='#fff';
