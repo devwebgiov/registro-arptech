@@ -1837,7 +1837,9 @@ function setupAdminTabs(){
     {id:'list',label:'Registros'},
     {id:'stats',label:'Resumo'},
     {id:'sheets',label:'Sheets'},
-    {id:'gerenciar',label:'⚙ Gerenciar'}
+    {id:'os',label:'OS / Servicos'},
+    {id:'os-abertas',label:'OS Abertas'},
+    {id:'gerenciar',label:'Gerenciar'}
   ];
   buildTabs(tabs);
   document.getElementById('stats-filter').style.display='block';
@@ -1853,7 +1855,6 @@ function setupAdminTabs(){
   acGrupos=getGruposComExtras(['todos']);
   showTab('form');
 }
-
 function showGerTab(t){
   ['usuarios','locais','senhas'].forEach(function(x){
     var el=document.getElementById('ger-tab-'+x);if(el)el.style.display=x===t?'block':'none';
@@ -2684,7 +2685,7 @@ function osAbrir(){
     numero:osNumSeq,
     status:'aberto',
     tipo:tipo.value,
-    tecnico:'',
+    tecnico:(currentUser==='Admin'?(document.getElementById('os-tecnico').value||''):currentUser),
     // Cliente
     cliente:cliente,
     cnpj:document.getElementById('os-cnpj').value.trim(),
@@ -3107,12 +3108,23 @@ function osImprimirOS(id){
 
 
 function osIniciarTab(){
-  var d=new Date();
+  // Admin pode designar tecnico; outros tecnicos sao automaticamente o responsavel
+  var isAdmin=(currentUser==='Admin'||getPerfilUsuario(currentUser)==='ADMIN');
   var wrap=document.getElementById('os-tecnico-wrap');
-  if(wrap)wrap.style.display='none';
-  document.querySelector('input[name="os-tipo"][value="interno"]').checked=true;
-  osTipoChange();
-  osRenderLista();
+  if(wrap){
+    if(isAdmin){
+      wrap.style.display='block';
+      var sel=document.getElementById('os-tecnico');
+      var todosU=getTodosUsuarios();
+      sel.innerHTML='<option value="">Sem tecnico designado</option>';
+      Object.keys(todosU).filter(function(n){return n!=='Admin'}).sort().forEach(function(n){
+        sel.innerHTML+='<option value="'+n+'">'+n+'</option>';
+      });
+    } else {
+      wrap.style.display='none';
+    }
+  }
+  osSetTipo('interno');
 }
 
 // Aliases
