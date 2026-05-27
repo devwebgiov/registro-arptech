@@ -3161,22 +3161,25 @@ function osRenderLista(){
 // ── PAINEL OS ABERTAS ────────────────────────────────────────
 
 function ospIniciarTab(){
-  // Popula anos disponíveis
   var anos=new Set();
   var anoAtual=new Date().getFullYear();
-  anos.add(String(anoAtual));
+  anos.add(anoAtual);
   osOrdens.forEach(function(o){
     var y=new Date(o.ts).getFullYear();
-    anos.add(String(y));
+    if(!isNaN(y))anos.add(y);
   });
   var selAno=document.getElementById('osp-ano');
-  selAno.innerHTML='';
-  Array.from(anos).sort(function(a,b){return b-a}).forEach(function(a){
-    selAno.innerHTML+='<option value="'+a+'"'+(a===String(anoAtual)?' selected':'')+'>'+a+'</option>';
-  });
-  // Mês atual
-  document.getElementById('osp-mes').value=String(new Date().getMonth());
+  if(selAno){
+    selAno.innerHTML='<option value="99">Todos os anos</option>';
+    Array.from(anos).sort(function(a,b){return b-a}).forEach(function(a){
+      selAno.innerHTML+='<option value="'+a+'"'+(a===anoAtual?' selected':'')+'>'+a+'</option>';
+    });
+  }
+  // Seta mês atual (0=Jan...11=Dez)
+  var selMes=document.getElementById('osp-mes');
+  if(selMes)selMes.value=String(new Date().getMonth());
   _ospPageAtivas=0;_ospPageConcluidas=0;
+  _ospSub='ativas';
   ospShowSub('ativas');
 }
 
@@ -3196,92 +3199,100 @@ function ospShowSub(sub){
 function ospGetFiltradas(){
   var mes=parseInt(document.getElementById('osp-mes').value);
   var ano=parseInt(document.getElementById('osp-ano').value);
-  var status=document.getElementById('osp-status').value;
   return osOrdens.filter(function(o){
     var d=new Date(o.ts);
-    if(d.getMonth()!==mes||d.getFullYear()!==ano)return false;
-    if(status!=='todos'&&o.status!==status)return false;
+    if(isNaN(d))return false;
+    if(mes!==99&&d.getMonth()!==mes)return false;
+    if(ano!==99&&d.getFullYear()!==ano)return false;
     return true;
   });
 }
 
 function ospRender(){
   var lista=ospGetFiltradas();
-  var subAtiva=document.getElementById('osp-sub-stats').style.display!=='none'?'stats':'lista';
-
-  if(subAtiva==='stats'){
-    // Estatísticas
-    var tot=lista.length;
-    var aberto=lista.filter(function(o){return o.status==='aberto'}).length;
-    var andamento=lista.filter(function(o){return o.status==='andamento'}).length;
-    var pendente=lista.filter(function(o){return o.status==='pendente'}).length;
-    var concluido=lista.filter(function(o){return o.status==='concluido'}).length;
-    var totalFat=lista.filter(function(o){return o.status==='concluido'}).reduce(function(s,o){return s+o.total},0);
-    var totalPend=lista.filter(function(o){return o.statusPag==='pendente'&&o.total>0}).reduce(function(s,o){return s+o.total},0);
-    var meses=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
-    var mes=parseInt(document.getElementById('osp-mes').value);
-    var ano=document.getElementById('osp-ano').value;
-
-    var html='<div style="text-align:center;font-size:14px;font-weight:700;color:#0a2e2a;margin-bottom:14px">'+meses[mes]+' / '+ano+'</div>';
-    // Cards totais
-    html+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">';
-    html+=ospStatCard('Total de OS','📋',tot,'#0a2e2a','#f4f8f6');
-    html+=ospStatCard('Em Aberto','📂',aberto,'#1e40af','#DBEAFE');
-    html+=ospStatCard('Em Andamento','🔧',andamento,'#92400e','#FEF3C7');
-    html+=ospStatCard('Pendentes','⏳',pendente,'#dc2626','#FEE2E2');
-    html+=ospStatCard('Concluídas','✅',concluido,'#0d6b4f','#d4f0e5');
-    html+='</div>';
-    // Financeiro
-    html+='<div style="background:#0a2e2a;color:#fff;border-radius:14px;padding:16px;margin-bottom:10px">';
-    html+='<div style="font-size:12px;opacity:.6;margin-bottom:4px;text-transform:uppercase;letter-spacing:.8px">Faturamento do mês</div>';
-    html+='<div style="font-size:24px;font-weight:700;color:#1D9E75">'+osFmtMoeda(totalFat)+'</div>';
-    if(totalPend>0)html+='<div style="font-size:12px;color:#FCA5A5;margin-top:4px">⚠ '+osFmtMoeda(totalPend)+' ainda pendente</div>';
-    html+='</div>';
-    // Gráfico de barras simples
-    if(tot>0){
-      var items=[
-        {label:'Aberto',val:aberto,color:'#1e40af',bg:'#DBEAFE'},
-        {label:'Andamento',val:andamento,color:'#92400e',bg:'#FEF3C7'},
-        {label:'Pendente',val:pendente,color:'#dc2626',bg:'#FEE2E2'},
-        {label:'Concluída',val:concluido,color:'#0d6b4f',bg:'#d4f0e5'}
-      ];
-      html+='<div style="background:#fff;border:2px solid #b8d4cc;border-radius:14px;padding:14px">';
-      html+='<div style="font-size:12px;font-weight:700;color:#7a9e96;margin-bottom:10px;text-transform:uppercase;letter-spacing:.8px">Distribuição por status</div>';
-      items.forEach(function(item){
-        if(item.val===0)return;
-        var pct=Math.round(item.val/tot*100);
-        html+='<div style="margin-bottom:8px">';
-        html+='<div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:3px"><span style="font-weight:600;color:'+item.color+'">'+item.label+'</span><span>'+item.val+' ('+pct+'%)</span></div>';
-        html+='<div style="background:#f4f8f6;border-radius:6px;height:10px;overflow:hidden"><div style="width:'+pct+'%;height:100%;background:'+item.color+';border-radius:6px;transition:.3s"></div></div>';
-        html+='</div>';
-      });
-      html+='</div>';
-    }
-    document.getElementById('osp-stats-content').innerHTML=html;
-    return;
-  }
-
-  // Sub: Em Andamento/Aberto
   var ativas=lista.filter(function(o){return o.status==='aberto'||o.status==='andamento';});
   var concluidas=lista.filter(function(o){return o.status==='concluido'||o.status==='pendente';});
 
   if(_ospSub==='ativas'){
     var elA=document.getElementById('osp-lista');if(!elA)return;
-    if(!ativas.length){elA.innerHTML='<div class="empty-state">Nenhuma OS em andamento ou aberto.</div>';
-      document.getElementById('osp-pag-ativas').innerHTML='';return;}
+    if(!ativas.length){
+      elA.innerHTML='<div class="empty-state">Nenhuma OS em aberto ou andamento neste periodo.</div>';
+      var pA=document.getElementById('osp-pag-ativas');if(pA)pA.innerHTML='';
+      return;
+    }
     var sliceA=ativas.slice(_ospPageAtivas*OSP_PER_PAGE,(_ospPageAtivas+1)*OSP_PER_PAGE);
     elA.innerHTML=sliceA.map(function(os){return ospRenderCard(os,true);}).join('');
     ospRenderPaginacao(ativas.length,_ospPageAtivas,'osp-pag-ativas','ospSetPageAtivas');
   }
   else if(_ospSub==='concluidas'){
     var elC=document.getElementById('osp-lista-concluidas');if(!elC)return;
-    if(!concluidas.length){elC.innerHTML='<div class="empty-state">Nenhuma OS concluida ou pendente.</div>';
-      document.getElementById('osp-pag-concluidas').innerHTML='';return;}
+    if(!concluidas.length){
+      elC.innerHTML='<div class="empty-state">Nenhuma OS concluida ou pendente neste periodo.</div>';
+      var pC=document.getElementById('osp-pag-concluidas');if(pC)pC.innerHTML='';
+      return;
+    }
     var sliceC=concluidas.slice(_ospPageConcluidas*OSP_PER_PAGE,(_ospPageConcluidas+1)*OSP_PER_PAGE);
     elC.innerHTML=sliceC.map(function(os){return ospRenderCard(os,true);}).join('');
     ospRenderPaginacao(concluidas.length,_ospPageConcluidas,'osp-pag-concluidas','ospSetPageConcluidas');
   }
+  else if(_ospSub==='stats'){
+    var tot=lista.length;
+    var aberto=lista.filter(function(o){return o.status==='aberto'}).length;
+    var andamento=lista.filter(function(o){return o.status==='andamento'}).length;
+    var pendente=lista.filter(function(o){return o.status==='pendente'}).length;
+    var concluido=lista.filter(function(o){return o.status==='concluido'}).length;
+    var totalFat=lista.filter(function(o){return o.status==='concluido'&&o.statusPag==='pago'}).reduce(function(s,o){return s+(o.total||0)},0);
+    var totalARec=lista.filter(function(o){return o.status==='concluido'&&o.statusPag!=='pago'&&o.total>0}).reduce(function(s,o){return s+(o.total||0)},0);
+    var MESES_N=['Janeiro','Fevereiro','Marco','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+    var mesV=parseInt(document.getElementById('osp-mes').value);
+    var anoEl=document.getElementById('osp-ano');
+    var anoV=anoEl?anoEl.value:'';
+    var tituloP=(mesV!==99?MESES_N[mesV]+' / ':'')+anoV;
+
+    var html='<div style="text-align:center;font-size:14px;font-weight:700;color:#0a2e2a;margin-bottom:14px">'+tituloP+'</div>';
+    html+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">';
+    html+=ospStatCard('Total','',tot,'#0a2e2a','#f4f8f6');
+    html+=ospStatCard('Concluidas','',concluido,'#0d6b4f','#d4f0e5');
+    html+=ospStatCard('Andamento','',andamento,'#92400e','#FEF3C7');
+    html+=ospStatCard('Pendentes','',pendente,'#dc2626','#FEE2E2');
+    html+=ospStatCard('Em Aberto','',aberto,'#1e40af','#DBEAFE');
+    html+='</div>';
+    html+='<div style="background:#0a2e2a;color:#fff;border-radius:14px;padding:16px;margin-bottom:14px">';
+    html+='<div style="font-size:11px;opacity:.6;margin-bottom:4px;text-transform:uppercase;letter-spacing:.8px">Faturamento confirmado</div>';
+    html+='<div style="font-size:26px;font-weight:700;color:#1D9E75">'+osFmtMoeda(totalFat)+'</div>';
+    if(totalARec>0)html+='<div style="font-size:12px;color:#FCA5A5;margin-top:4px">'+osFmtMoeda(totalARec)+' a receber</div>';
+    html+='</div>';
+    // Por tecnico
+    var porTec={};
+    lista.forEach(function(o){
+      var t=o.tecnico||'Sem tecnico';
+      if(!porTec[t])porTec[t]={total:0,aberto:0,andamento:0,pendente:0,concluido:0,fat:0};
+      porTec[t].total++;
+      porTec[t][o.status]=(porTec[t][o.status]||0)+1;
+      if(o.status==='concluido'&&o.statusPag==='pago')porTec[t].fat+=(o.total||0);
+    });
+    if(Object.keys(porTec).length){
+      html+='<div class="card"><div class="card-title">Por Tecnico</div>';
+      Object.keys(porTec).sort().forEach(function(tec){
+        var t=porTec[tec];
+        html+='<div style="background:#f4f8f6;border-radius:12px;padding:12px;margin-bottom:10px">'+
+          '<div style="font-size:14px;font-weight:700;color:#0f1f1c;margin-bottom:7px">'+tec+
+          ' <span style="font-size:12px;color:#7a9e96">('+t.total+' OS)</span></div>'+
+          '<div style="display:flex;flex-wrap:wrap;gap:6px">'+
+            (t.concluido?'<span style="font-size:12px;padding:3px 9px;border-radius:8px;background:#d4f0e5;color:#0d6b4f;font-weight:600">'+t.concluido+' conc.</span>':'')+
+            (t.andamento?'<span style="font-size:12px;padding:3px 9px;border-radius:8px;background:#FEF3C7;color:#92400e;font-weight:600">'+t.andamento+' and.</span>':'')+
+            (t.pendente?'<span style="font-size:12px;padding:3px 9px;border-radius:8px;background:#FEE2E2;color:#dc2626;font-weight:600">'+t.pendente+' pend.</span>':'')+
+            (t.aberto?'<span style="font-size:12px;padding:3px 9px;border-radius:8px;background:#DBEAFE;color:#1e40af;font-weight:600">'+t.aberto+' aberto</span>':'')+
+            (t.fat?'<span style="font-size:12px;padding:3px 9px;border-radius:8px;background:#d4f0e5;color:#0d6b4f;font-weight:700">'+osFmtMoeda(t.fat)+'</span>':'')+
+          '</div>'+
+        '</div>';
+      });
+      html+='</div>';
+    }
+    document.getElementById('osp-stats-content').innerHTML=html;
+  }
 }
+
 
 function ospStatCard(label,emoji,val,color,bg){
   return '<div style="background:'+bg+';border-radius:12px;padding:14px;text-align:center">'+
