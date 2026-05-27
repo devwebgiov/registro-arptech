@@ -764,12 +764,12 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
         <!-- Tipo -->
         <div class="field" style="margin-bottom:12px">
           <label>Tipo de serviço</label>
-          <div style="display:flex;gap:10px;margin-top:6px">
-            <label id="os-tipo-int-label" style="display:flex;align-items:center;gap:7px;padding:10px 16px;border:2px solid #b8d4cc;border-radius:12px;cursor:pointer;flex:1;justify-content:center;font-weight:600;font-size:14px">
-              <input type="radio" name="os-tipo" value="interno" id="os-tipo-int" onchange="osTipoChange()" style="accent-color:#1D9E75;width:16px;height:16px"/> 🔧 Interno
+          <div style="display:flex;gap:0;margin-top:6px;border:2px solid #b8d4cc;border-radius:14px;overflow:hidden">
+            <label id="os-tipo-int-label" onclick="osSetTipo('interno')" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:13px 0;flex:1;cursor:pointer;font-weight:700;font-size:15px;background:#1D9E75;color:#fff;transition:.2s">
+              <input type="radio" name="os-tipo" value="interno" id="os-tipo-int" style="display:none"/> 🔧 Interno
             </label>
-            <label id="os-tipo-ext-label" style="display:flex;align-items:center;gap:7px;padding:10px 16px;border:2px solid #b8d4cc;border-radius:12px;cursor:pointer;flex:1;justify-content:center;font-weight:600;font-size:14px">
-              <input type="radio" name="os-tipo" value="externo" id="os-tipo-ext" onchange="osTipoChange()" style="accent-color:#1D9E75;width:16px;height:16px"/> 🚗 Externo
+            <label id="os-tipo-ext-label" onclick="osSetTipo('externo')" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:13px 0;flex:1;cursor:pointer;font-weight:700;font-size:15px;background:#fff;color:#7a9e96;transition:.2s">
+              <input type="radio" name="os-tipo" value="externo" id="os-tipo-ext" style="display:none"/> 🚗 Externo
             </label>
           </div>
         </div>
@@ -811,84 +811,20 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
         <div id="os-msg" style="margin-top:10px;font-size:13px;font-weight:600;display:none"></div>
       </div>
 
-      <!-- LISTA DE OS -->
-      <div style="margin-top:6px">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-          <div style="font-size:14px;font-weight:700;color:#2d4a44">Ordens de Serviço</div>
-        </div>
-        <!-- Filtros -->
-        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
-          <select id="os-filtro-status" onchange="osRenderLista()" style="padding:8px 12px;font-size:13px;border:2px solid #b8d4cc;border-radius:10px;background:#fff;font-family:var(--font);outline:none">
-            <option value="todos">Todos os status</option>
-            <option value="aberto">Em Aberto</option>
-            <option value="andamento">Em Andamento</option>
-            <option value="pendente">Pendente</option>
-            <option value="concluido">Concluída</option>
-          </select>
-          <select id="os-filtro-tipo" onchange="osRenderLista()" style="padding:8px 12px;font-size:13px;border:2px solid #b8d4cc;border-radius:10px;background:#fff;font-family:var(--font);outline:none">
-            <option value="todos">Interno + Externo</option>
-            <option value="interno">Interno</option>
-            <option value="externo">Externo</option>
-          </select>
-          <select id="os-filtro-periodo" onchange="osRenderLista()" style="padding:8px 12px;font-size:13px;border:2px solid #b8d4cc;border-radius:10px;background:#fff;font-family:var(--font);outline:none">
-            <option value="todos">Todos os períodos</option>
-            <option value="hoje">Hoje</option>
-            <option value="semana">Esta semana</option>
-            <option value="mes">Este mês</option>
-          </select>
-        </div>
-        <div id="os-lista"></div>
-      </div>
     </div><!-- /tab-os -->
-    <!-- TAB: OS ABERTAS -->
-    <div id="tab-os-abertas" style="display:none">
-
-      <!-- Sub-abas -->
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
-        <button id="osa-btn-lista" onclick="osAbertasTab('lista')" style="padding:9px 16px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);border:2px solid #1D9E75;background:#1D9E75;color:#fff">📋 Lista</button>
-        <button id="osa-btn-stats" onclick="osAbertasTab('stats')" style="padding:9px 16px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);border:2px solid #b8d4cc;background:#fff;color:#2d4a44">📊 Estatísticas</button>
-      </div>
-
-      <!-- Filtros mês/ano -->
-      <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
-        <select id="osa-mes" onchange="osAbertasRender()" style="padding:8px 12px;font-size:13px;border:2px solid #b8d4cc;border-radius:10px;background:#fff;font-family:var(--font);outline:none">
-          <option value="0">Todos os meses</option>
-          <option value="1">Janeiro</option><option value="2">Fevereiro</option>
-          <option value="3">Março</option><option value="4">Abril</option>
-          <option value="5">Maio</option><option value="6">Junho</option>
-          <option value="7">Julho</option><option value="8">Agosto</option>
-          <option value="9">Setembro</option><option value="10">Outubro</option>
-          <option value="11">Novembro</option><option value="12">Dezembro</option>
-        </select>
-        <select id="osa-ano" onchange="osAbertasRender()" style="padding:8px 12px;font-size:13px;border:2px solid #b8d4cc;border-radius:10px;background:#fff;font-family:var(--font);outline:none">
-        </select>
-      </div>
-
-      <!-- Conteúdo Lista -->
-      <div id="osa-content-lista">
-        <div id="osa-lista"></div>
-      </div>
-
-      <!-- Conteúdo Stats -->
-      <div id="osa-content-stats" style="display:none">
-        <!-- Cards resumo -->
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px" id="osa-cards"></div>
-        <!-- Detalhes por status -->
-        <div id="osa-stats-detail"></div>
-      </div>
-
-    </div><!-- /tab-os-abertas -->
     <!-- TAB: OS ABERTAS (painel) -->
     <div id="tab-os-abertas" style="display:none">
       <!-- Sub-abas -->
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
-        <button id="osp-btn-lista" onclick="ospShowSub('lista')" style="padding:8px 16px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);border:2px solid #1D9E75;background:#1D9E75;color:#fff">📋 OS em andamento</button>
-        <button id="osp-btn-stats" onclick="ospShowSub('stats')" style="padding:8px 16px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);border:2px solid #b8d4cc;background:#fff;color:#2d4a44">📊 Estatísticas</button>
+        <button id="osp-btn-ativas" onclick="ospShowSub('ativas')" style="padding:8px 14px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);border:2px solid #1D9E75;background:#1D9E75;color:#fff">🔧 Em Andamento</button>
+        <button id="osp-btn-concluidas" onclick="ospShowSub('concluidas')" style="padding:8px 14px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);border:2px solid #b8d4cc;background:#fff;color:#2d4a44">✅ Concluídas/Pend.</button>
+        <button id="osp-btn-stats" onclick="ospShowSub('stats')" style="padding:8px 14px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);border:2px solid #b8d4cc;background:#fff;color:#2d4a44">📊 Estatísticas</button>
       </div>
 
       <!-- Filtro mês/ano -->
       <div style="display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap">
         <select id="osp-mes" onchange="ospRender()" style="padding:8px 12px;font-size:13px;border:2px solid #b8d4cc;border-radius:10px;background:#fff;font-family:var(--font);outline:none">
+          <option value="99">Todos os meses</option>
           <option value="0">Janeiro</option><option value="1">Fevereiro</option>
           <option value="2">Março</option><option value="3">Abril</option>
           <option value="4">Maio</option><option value="5">Junho</option>
@@ -898,18 +834,18 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
         </select>
         <select id="osp-ano" onchange="ospRender()" style="padding:8px 12px;font-size:13px;border:2px solid #b8d4cc;border-radius:10px;background:#fff;font-family:var(--font);outline:none">
         </select>
-        <select id="osp-status" onchange="ospRender()" style="padding:8px 12px;font-size:13px;border:2px solid #b8d4cc;border-radius:10px;background:#fff;font-family:var(--font);outline:none">
-          <option value="todos">Todos os status</option>
-          <option value="aberto">Em Aberto</option>
-          <option value="andamento">Em Andamento</option>
-          <option value="pendente">Pendente</option>
-          <option value="concluido">Concluída</option>
-        </select>
       </div>
 
-      <!-- Sub: Lista -->
-      <div id="osp-sub-lista">
-        <div id="osp-lista"></div>
+      <!-- Sub: Em Andamento/Aberto -->
+      <div id="osp-sub-ativas">
+        <div id="osp-lista" style="max-height:70vh;overflow-y:auto"></div>
+        <div id="osp-pag-ativas" style="display:flex;justify-content:center;gap:8px;margin-top:12px;flex-wrap:wrap"></div>
+      </div>
+
+      <!-- Sub: Concluídas e Pendentes -->
+      <div id="osp-sub-concluidas" style="display:none">
+        <div id="osp-lista-concluidas" style="max-height:70vh;overflow-y:auto"></div>
+        <div id="osp-pag-concluidas" style="display:flex;justify-content:center;gap:8px;margin-top:12px;flex-wrap:wrap"></div>
       </div>
 
       <!-- Sub: Estatísticas -->
@@ -2763,6 +2699,7 @@ function osAbrir(){
     diagnostico:'',itens:[],valorMaoObra:0,totalPecas:0,total:0,
     statusPag:'',formaPag:'',parcelas:1,dataPag:'',garantia:'',obsFin:'',
     // Datas
+    criadoPor:currentUser,
     dataAbertura:new Date().toLocaleDateString('pt-BR'),
     dataFinalizacao:'',
     ts:new Date().toISOString()
@@ -3227,12 +3164,13 @@ function ospIniciarTab(){
   });
   // Mês atual
   document.getElementById('osp-mes').value=String(new Date().getMonth());
-  ospShowSub('lista');
-  ospRender();
+  _ospPageAtivas=0;_ospPageConcluidas=0;
+  ospShowSub('ativas');
 }
 
 function ospShowSub(sub){
-  ['lista','stats'].forEach(function(s){
+  _ospSub=sub;
+  ['ativas','concluidas','stats'].forEach(function(s){
     var el=document.getElementById('osp-sub-'+s);if(el)el.style.display=s===sub?'block':'none';
     var btn=document.getElementById('osp-btn-'+s);
     if(btn){
@@ -3311,27 +3249,26 @@ function ospRender(){
     return;
   }
 
-  // Sub: Lista
-  var el=document.getElementById('osp-lista');if(!el)return;
-  if(!lista.length){el.innerHTML='<div class="empty-state">Nenhuma OS neste período.</div>';return}
-  el.innerHTML=lista.map(function(os){
-    var st=OS_STATUS[os.status]||OS_STATUS.aberto;
-    var tecBadge=os.tecnico?'<span style="font-size:11px;background:#f4f8f6;color:#2d4a44;padding:2px 8px;border-radius:8px;font-weight:600">👤 '+os.tecnico+'</span>':'';
-    return '<div style="background:#fff;border:2px solid #b8d4cc;border-radius:16px;padding:14px;margin-bottom:10px;cursor:pointer" onclick="osAbrirModal('+os.id+')">'+
-      '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">'+
-        '<div>'+
-          '<div style="font-size:12px;color:#7a9e96;font-weight:600">OS #'+osFmtNum(os.numero)+' · '+os.dataAbertura+'</div>'+
-          '<div style="font-size:15px;font-weight:700;color:#0f1f1c">'+os.cliente+'</div>'+
-        '</div>'+
-        '<span style="font-size:11px;padding:3px 9px;border-radius:10px;font-weight:700;background:'+st.bg+';color:'+st.color+'">'+st.emoji+' '+st.label+'</span>'+
-      '</div>'+
-      '<div style="font-size:13px;color:#2d4a44;margin-bottom:4px"><strong>'+os.servico+'</strong>'+(os.modelo?' — '+os.modelo:'')+'</div>'+
-      '<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">'+
-        tecBadge+
-        (os.total>0?'<span style="font-size:12px;font-weight:700;color:#0d6b4f;margin-left:auto">'+osFmtMoeda(os.total)+'</span>':'')+
-      '</div>'+
-    '</div>';
-  }).join('');
+  // Sub: Em Andamento/Aberto
+  var ativas=lista.filter(function(o){return o.status==='aberto'||o.status==='andamento';});
+  var concluidas=lista.filter(function(o){return o.status==='concluido'||o.status==='pendente';});
+
+  if(_ospSub==='ativas'){
+    var elA=document.getElementById('osp-lista');if(!elA)return;
+    if(!ativas.length){elA.innerHTML='<div class="empty-state">Nenhuma OS em andamento ou aberto.</div>';
+      document.getElementById('osp-pag-ativas').innerHTML='';return;}
+    var sliceA=ativas.slice(_ospPageAtivas*OSP_PER_PAGE,(_ospPageAtivas+1)*OSP_PER_PAGE);
+    elA.innerHTML=sliceA.map(function(os){return ospRenderCard(os,true);}).join('');
+    ospRenderPaginacao(ativas.length,_ospPageAtivas,'osp-pag-ativas','ospSetPageAtivas');
+  }
+  else if(_ospSub==='concluidas'){
+    var elC=document.getElementById('osp-lista-concluidas');if(!elC)return;
+    if(!concluidas.length){elC.innerHTML='<div class="empty-state">Nenhuma OS concluida ou pendente.</div>';
+      document.getElementById('osp-pag-concluidas').innerHTML='';return;}
+    var sliceC=concluidas.slice(_ospPageConcluidas*OSP_PER_PAGE,(_ospPageConcluidas+1)*OSP_PER_PAGE);
+    elC.innerHTML=sliceC.map(function(os){return ospRenderCard(os,true);}).join('');
+    ospRenderPaginacao(concluidas.length,_ospPageConcluidas,'osp-pag-concluidas','ospSetPageConcluidas');
+  }
 }
 
 function ospStatCard(label,emoji,val,color,bg){
@@ -3517,6 +3454,79 @@ function osAbertasRenderStats(){
   detailHtml+='</div>';
   document.getElementById('osa-stats-detail').innerHTML=detailHtml;
 }
+
+
+// ── FUNÇÕES COMPLEMENTARES OSP ────────────────────────────────
+
+var _ospSub = 'ativas';
+var _ospPageAtivas = 0;
+var _ospPageConcluidas = 0;
+var OSP_PER_PAGE = 30;
+
+function osSetTipo(tipo){
+  var intR=document.getElementById('os-tipo-int');
+  var extR=document.getElementById('os-tipo-ext');
+  var intL=document.getElementById('os-tipo-int-label');
+  var extL=document.getElementById('os-tipo-ext-label');
+  if(tipo==='interno'){
+    if(intR)intR.checked=true;
+    intL.style.background='#1D9E75';intL.style.color='#fff';
+    extL.style.background='#fff';extL.style.color='#7a9e96';
+  } else {
+    if(extR)extR.checked=true;
+    extL.style.background='#1D9E75';extL.style.color='#fff';
+    intL.style.background='#fff';intL.style.color='#7a9e96';
+  }
+  osTipoChange();
+}
+
+function ospRenderCard(os,showDel){
+  var st=OS_STATUS[os.status]||OS_STATUS.aberto;
+  var isAdmin=currentUser==='Admin'||getPerfilUsuario(currentUser)==='ADMIN';
+  var isARPTECH=getPerfilUsuario(currentUser)==='ARPTECH';
+  var podeDelete=isAdmin||isARPTECH||(os.criadoPor&&os.criadoPor===currentUser);
+  var delBtn=(showDel&&podeDelete)?
+    '<button onclick="event.stopPropagation();ospDeletar('+os.id+')" style="background:#FEE2E2;color:#dc2626;border:none;border-radius:7px;padding:4px 9px;font-size:12px;cursor:pointer;font-weight:700">Del</button>':'';
+  var tecBadge=os.tecnico?'<span style="font-size:11px;background:#f4f8f6;color:#2d4a44;padding:2px 8px;border-radius:8px;font-weight:600">'+os.tecnico+'</span>':'';
+  return '<div style="background:#fff;border:2px solid #b8d4cc;border-radius:16px;padding:14px;margin-bottom:10px;cursor:pointer" onclick="osAbrirModal('+os.id+')">'+
+    '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">'+
+      '<div style="flex:1">'+
+        '<div style="font-size:12px;color:#7a9e96;font-weight:600">OS #'+osFmtNum(os.numero)+' - '+os.dataAbertura+'</div>'+
+        '<div style="font-size:15px;font-weight:700;color:#0f1f1c">'+os.cliente+'</div>'+
+      '</div>'+
+      '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">'+
+        '<span style="font-size:11px;padding:3px 9px;border-radius:10px;font-weight:700;background:'+st.bg+';color:'+st.color+'">'+st.label+'</span>'+
+        delBtn+
+      '</div>'+
+    '</div>'+
+    '<div style="font-size:13px;color:#2d4a44;margin-bottom:4px">'+os.servico+(os.modelo?' - '+os.modelo:'')+'</div>'+
+    '<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">'+
+      tecBadge+
+      (os.total>0?'<span style="font-size:12px;font-weight:700;color:#0d6b4f;margin-left:auto">'+osFmtMoeda(os.total)+'</span>':'')+
+    '</div>'+
+  '</div>';
+}
+
+function ospDeletar(id){
+  if(!confirm('Excluir esta OS permanentemente?'))return;
+  osOrdens=osOrdens.filter(function(o){return o.id!==id});
+  osSalvarStorage();ospRender();showBanner('OS excluida.');
+}
+
+function ospRenderPaginacao(total,pagAtual,elId,onPageFn){
+  var totalPags=Math.ceil(total/OSP_PER_PAGE);
+  var el=document.getElementById(elId);if(!el)return;
+  if(totalPags<=1){el.innerHTML='';return;}
+  var html='';
+  for(var i=0;i<totalPags;i++){
+    var ativo=i===pagAtual;
+    html+='<button onclick="'+onPageFn+'('+i+')" style="padding:7px 13px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);border:2px solid '+(ativo?'#1D9E75':'#b8d4cc')+';background:'+(ativo?'#1D9E75':'#fff')+';color:'+(ativo?'#fff':'#2d4a44')+'">'+(i+1)+'</button>';
+  }
+  el.innerHTML=html;
+}
+
+function ospSetPageAtivas(p){_ospPageAtivas=p;ospRender();}
+function ospSetPageConcluidas(p){_ospPageConcluidas=p;ospRender();}
 
 
 init();
