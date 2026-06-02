@@ -686,6 +686,26 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
       </div>
     </div>
 
+    <!-- TAB: COMISSÕES (admin only) -->
+    <div id="tab-comissoes" style="display:none">
+      <div style="margin-bottom:16px">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap">
+          <div style="font-size:14px;font-weight:700;color:#2d4a44">Porcentagem de Comissão:</div>
+          <input type="number" id="com-percent" min="0" max="100" value="70" style="width:80px;padding:8px 12px;border:2px solid #b8d4cc;border-radius:10px;font-size:14px;font-family:var(--font)"/>
+          <span style="font-size:14px;font-weight:700;color:#7a9e96">%</span>
+          <button onclick="comSalvarPercent()" style="padding:8px 14px;background:#1D9E75;color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font)">Salvar</button>
+        </div>
+        <div style="font-size:12px;color:#7a9e96">Esta porcentagem será aplicada ao valor total do serviço para calcular a comissão de cada técnico.</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px" id="com-cards"></div>
+      <div class="card" id="com-detalhes"></div>
+    </div><!-- /tab-comissoes -->
+
+    <!-- TAB: MINHA COMISSÃO -->
+    <div id="tab-minha-comissao" style="display:none">
+      <div id="com-card-tech"></div>
+    </div><!-- /tab-minha-comissao -->
+
     <!-- TAB: GERENCIAR (admin only) -->
     <div id="tab-gerenciar" style="display:none">
 
@@ -791,6 +811,7 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
         </div>
         <div class="form-row">
           <div class="field"><label>Telefone <span style="color:#dc2626">*</span></label><input type="tel" id="os-telefone" placeholder="(00) 00000-0000"/></div>
+          <div class="field"><label>E-mail (opcional)</label><input type="email" id="os-email" placeholder="email@empresa.com"/></div>
           <div class="field"><label>Endereço (opcional)</label><input type="text" id="os-endereco" placeholder="Rua, número..."/></div>
         </div>
 
@@ -1853,6 +1874,7 @@ function setupAdminTabs(){
     {id:'sheets',label:'Sheets'},
     {id:'os',label:'OS / Servicos'},
     {id:'os-abertas',label:'OS Abertas'},
+    {id:'comissoes',label:'Comissoes'},
     {id:'gerenciar',label:'Gerenciar'}
   ];
   buildTabs(tabs);
@@ -1896,6 +1918,7 @@ function setupTechTabs(user){
     {id:'stats',label:'Resumo'},
     {id:'os',label:'🔧 OS / Serviços'},
     {id:'os-abertas',label:'📋 OS Abertas'},
+    {id:'minha-comissao',label:'💰 Minha Comissão'},
     {id:'report-tech',label:'Relatórios'}
   ];
   buildTabs(tabs);
@@ -1929,7 +1952,7 @@ function selRespByName(name){
 }
 
 function showTab(t){
-  ['form','list','stats','sheets','report-tech','gerenciar','os','os-abertas'].forEach(function(x){
+  ['form','list','stats','sheets','report-tech','gerenciar','os','os-abertas','comissoes','minha-comissao'].forEach(function(x){
     var el=document.getElementById('tab-'+x);if(el)el.style.display='none';
     var btn=document.getElementById('tab-btn-'+x);if(btn)btn.classList.remove('active');
   });
@@ -1942,6 +1965,8 @@ function showTab(t){
   else if(t==='gerenciar'){admRenderUsers();admRenderLocais();}
   else if(t==='os'){osIniciarTab();}
   else if(t==='os-abertas'){ospIniciarTab();}
+  else if(t==='comissoes'){comIniciar();}
+  else if(t==='minha-comissao'){tecRenderComissaoTab();}
 }
 
 // ── FORM ─────────────────────────────────────────────────────
@@ -2649,7 +2674,9 @@ var OS_STATUS = {
 var FORMA_PAG_LABEL = {dinheiro:'Dinheiro',pix:'PIX',cartao_credito:'Cartão Crédito',cartao_debito:'Cartão Débito',boleto:'Boleto',prazo:'A prazo'};
 
 var osOrdens = [];
-var _osTipoAtual = "interno"; // rastreia tipo selecionado sem depender de :checked
+var _osTipoAtual = "interno";
+var COMISSAO_PERCENT = 70;
+try{var saved=localStorage.getItem('comissao_percent');if(saved)COMISSAO_PERCENT=parseInt(saved);}catch(e){} // porcentagem padrão de comissão // rastreia tipo selecionado sem depender de :checked
 try{osOrdens=JSON.parse(localStorage.getItem('arp_os')||'[]')}catch(e){}
 var osNumSeq = 0;
 try{osNumSeq=parseInt(localStorage.getItem('arp_os_seq')||'0')}catch(e){}
@@ -2725,6 +2752,7 @@ function osAbrir(){
     cliente:cliente,
     cnpj:document.getElementById('os-cnpj').value.trim(),
     telefone:telefone,
+    email:(document.getElementById('os-email')||{value:''}).value.trim(),
     endereco:document.getElementById('os-endereco').value.trim(),
     // Serviço
     servico:servico,
@@ -2754,7 +2782,7 @@ function osAbrir(){
 }
 
 function osLimparForm(){
-  ['os-cliente','os-cnpj','os-telefone','os-endereco','os-modelo','os-relato','os-obs-abertura','os-outro-desc'].forEach(function(id){
+  ['os-cliente','os-cnpj','os-telefone','os-email','os-endereco','os-modelo','os-relato','os-obs-abertura','os-outro-desc'].forEach(function(id){
     var el=document.getElementById(id);if(el)el.value='';
   });
   osSetTipo('interno');
@@ -3589,6 +3617,115 @@ function ospRenderPaginacao(total,pagAtual,elId,onPageFn){
 
 function ospSetPageAtivas(p){_ospPageAtivas=p;ospRender();}
 function ospSetPageConcluidas(p){_ospPageConcluidas=p;ospRender();}
+
+
+// ── COMISSÕES ────────────────────────────────────────────────────
+
+function comIniciar(){
+  document.getElementById('com-percent').value=COMISSAO_PERCENT;
+  comRender();
+}
+
+function comSalvarPercent(){
+  var val=parseInt(document.getElementById('com-percent').value||70);
+  if(val<0||val>100){alert('Porcentagem deve ser entre 0 e 100.');return}
+  COMISSAO_PERCENT=val;
+  localStorage.setItem('comissao_percent',String(val));
+  comRender();
+  showBanner('Porcentagem de comissao atualizada: '+val+'%');
+}
+
+function comRender(){
+  var porcentagem=COMISSAO_PERCENT;
+  var todosU=getTodosUsuarios();
+  var tecnicos=Object.keys(todosU).filter(function(n){
+    var perfil=todosU[n].perfil;
+    return perfil==='ARPTECH'||perfil==='SEMED';
+  }).sort();
+
+  // Cards por tecnico
+  var cardsHtml='';
+  var porTecnico={};
+  
+  tecnicos.forEach(function(tec){
+    var totalFat=osOrdens.filter(function(o){
+      return o.tecnico===tec&&o.status==='concluido'&&o.statusPag==='pago'&&o.total>0;
+    }).reduce(function(s,o){return s+(o.total||0)},0);
+    var comissao=totalFat*(porcentagem/100);
+    porTecnico[tec]={totalFat:totalFat,comissao:comissao};
+    
+    cardsHtml+='<div style="background:#f4f8f6;border-radius:12px;padding:14px">'+
+      '<div style="font-size:13px;color:#7a9e96;font-weight:600;margin-bottom:3px">'+tec+'</div>'+
+      '<div style="font-size:18px;font-weight:700;color:#0d6b4f;margin-bottom:8px">'+osFmtMoeda(comissao)+'</div>'+
+      '<div style="font-size:12px;color:#7a9e96">Faturado: '+osFmtMoeda(totalFat)+'</div>'+
+      '<div style="font-size:11px;color:#7a9e96;margin-top:4px">'+porcentagem+'% de comissao</div>'+
+    '</div>';
+  });
+  
+  document.getElementById('com-cards').innerHTML=cardsHtml;
+  
+  // Detalhes por tecnico
+  var detalheHtml='<div class="card-title">Detalhes por Tecnico</div>';
+  var totalGeral=0;
+  var totalComissao=0;
+  
+  tecnicos.forEach(function(tec){
+    var t=porTecnico[tec];
+    totalGeral+=t.totalFat;
+    totalComissao+=t.comissao;
+    
+    var osDoTecnico=osOrdens.filter(function(o){return o.tecnico===tec&&o.status==='concluido'&&o.statusPag==='pago'});
+    detalheHtml+='<div style="background:#f4f8f6;border-radius:12px;padding:12px;margin-bottom:10px">'+
+      '<div style="font-size:13px;font-weight:700;color:#0f1f1c;margin-bottom:8px">'+tec+' ('+osDoTecnico.length+' OS)</div>'+
+      '<table style="width:100%;font-size:12px;color:#2d4a44">'+
+        '<tr><td>Faturado:</td><td style="text-align:right;font-weight:600">'+osFmtMoeda(t.totalFat)+'</td></tr>'+
+        '<tr><td>Comissao ('+porcentagem+'%):</td><td style="text-align:right;font-weight:700;color:#0d6b4f">'+osFmtMoeda(t.comissao)+'</td></tr>'+
+      '</table>'+
+    '</div>';
+  });
+  
+  detalheHtml+='<div style="background:#0a2e2a;color:#fff;border-radius:12px;padding:12px;margin-top:12px">'+
+    '<table style="width:100%;font-size:13px;font-weight:700">'+
+      '<tr><td>TOTAL FATURADO:</td><td style="text-align:right">'+osFmtMoeda(totalGeral)+'</td></tr>'+
+      '<tr><td>TOTAL COMISSOES:</td><td style="text-align:right;color:#1D9E75">'+osFmtMoeda(totalComissao)+'</td></tr>'+
+    '</table>'+
+  '</div>';
+  
+  document.getElementById('com-detalhes').innerHTML=detalheHtml;
+}
+
+function tecRenderComissao(){
+  // Para tecnico visualizar sua comissao
+  var porcentagem=COMISSAO_PERCENT;
+  var tec=currentUser;
+  var totalFat=osOrdens.filter(function(o){
+    return o.tecnico===tec&&o.status==='concluido'&&o.statusPag==='pago'&&o.total>0;
+  }).reduce(function(s,o){return s+(o.total||0)},0);
+  var comissao=totalFat*(porcentagem/100);
+  var osDoTecnico=osOrdens.filter(function(o){return o.tecnico===tec&&o.status==='concluido'&&o.statusPag==='pago'});
+
+  var html='<div class="card" style="text-align:center;padding:20px">'+
+    '<div style="font-size:13px;color:#7a9e96;font-weight:600;margin-bottom:8px">Sua Comissao</div>'+
+    '<div style="font-size:32px;font-weight:700;color:#0d6b4f;margin-bottom:12px">'+osFmtMoeda(comissao)+'</div>'+
+    '<div style="display:flex;justify-content:space-around;margin-bottom:12px">'+
+      '<div><span style="font-size:12px;color:#7a9e96">Faturado</span><div style="font-size:18px;font-weight:700;color:#2d4a44">'+osFmtMoeda(totalFat)+'</div></div>'+
+      '<div><span style="font-size:12px;color:#7a9e96">Taxa</span><div style="font-size:18px;font-weight:700;color:#2d4a44">'+porcentagem+'%</div></div>'+
+      '<div><span style="font-size:12px;color:#7a9e96">OS Pagas</span><div style="font-size:18px;font-weight:700;color:#2d4a44">'+osDoTecnico.length+'</div></div>'+
+    '</div>'+
+    '<div style="background:#f4f8f6;border-radius:10px;padding:12px;font-size:12px;color:#2d4a44;text-align:left">'+
+      '<strong>Detalhamento:</strong><br>Soma de todas as OS finalizadas com pagamento confirmado neste mes.'+
+    '</div>'+
+  '</div>';
+  
+  return html;
+}
+
+
+function tecRenderComissaoTab(){
+  var el=document.getElementById('com-card-tech');
+  if(!el)return;
+  el.innerHTML=tecRenderComissao();
+}
 
 
 init();
