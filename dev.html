@@ -601,7 +601,15 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
 
     <!-- TAB: REGISTROS -->
     <div id="tab-list" style="display:none">
-      <div class="search-bar"><input type="text" id="search-q" placeholder="🔍  Buscar por responsável, local ou descrição..." oninput="renderList()"/></div>
+      <div style="display:flex;gap:12px;align-items:flex-end;margin-bottom:12px;flex-wrap:wrap">
+        <div class="search-bar" style="flex:1;min-width:200px"><input type="text" id="search-q" placeholder="🔍  Buscar por responsável, local ou descrição..." oninput="renderList()"/></div>
+        <select id="list-stats-period" onchange="renderList()" style="padding:8px 12px;font-size:13px;border:2px solid #b8d4cc;border-radius:10px;background:#fff;font-family:var(--font);outline:none;-webkit-appearance:none;min-width:150px">
+          <option value="todos">Todos os registros</option>
+          <option value="hoje">Hoje</option>
+          <option value="semana">Esta semana</option>
+          <option value="mes-envio">Desde 22 do mês</option>
+        </select>
+      </div>
       <div id="list-content" style="max-height:65vh;overflow-y:auto;margin-bottom:12px;border:2px solid #b8d4cc;border-radius:14px"></div>
       <div id="list-pagination" style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap"></div>
     </div>
@@ -3761,7 +3769,9 @@ function tecRenderComissaoTab(){
 
 
 function getRegistrosFiltrados(){
-  var periodo=document.getElementById('stats-period').value;
+  // Verifica ambos os selects (admin tem stats-period, tech tem list-stats-period)
+  var periodoEl=document.getElementById('stats-period')||document.getElementById('list-stats-period');
+  var periodo=periodoEl?periodoEl.value:'todos'; // default 'todos' se nenhum elemento existir
   var hoje=new Date();
   var dataHoje=new Date(hoje.getFullYear(),hoje.getMonth(),hoje.getDate());
   var data22=new Date(hoje.getFullYear(),hoje.getMonth(),22);
