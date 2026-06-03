@@ -607,10 +607,10 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
           <option value="todos">Todos os registros</option>
           <option value="hoje">Hoje</option>
           <option value="semana">Esta semana</option>
-          <option value="mes-envio">Desde 22 do mês</option>
+          <option value="mes-envio">Desde último relatório</option>
         </select>
       </div>
-      <div id="list-content" style="max-height:65vh;overflow-y:auto;margin-bottom:12px;border:2px solid #b8d4cc;border-radius:14px"></div>
+      <div id="list-content" style="max-height:65vh;overflow-y:auto;margin-bottom:12px;border:2px solid #b8d4cc;border-radius:14px;background:#fff"></div>
       <div id="list-pagination" style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap"></div>
     </div>
 
@@ -636,7 +636,7 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
                 <option value="todos">Todos os serviços</option>
                 <option value="hoje">Hoje</option>
                 <option value="semana">Esta semana (7 dias)</option>
-                <option value="mes-envio">Desde 22 do mês</option>
+                <option value="mes-envio">Desde último relatório</option>
               </select>
             </div>
           </div>
@@ -2099,7 +2099,10 @@ function renderList(){
   if(totalPages>1){
     for(var i=0;i<totalPages;i++){
       var ativo=i===_listPage;
-      pagHtml+='<button onclick="_listPage='+i+';renderList()" style="padding:7px 13px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);border:2px solid '+(ativo?'#1D9E75':'#b8d4cc')+';background:'+(ativo?'#1D9E75':'#fff')+';color:'+(ativo?'#fff':'#2d4a44')+'">'+(i+1)+'</button>';
+      var bgColor=ativo?'#1D9E75':'#fff';
+      var textColor=ativo?'#fff':'#2d4a44';
+      var borderColor=ativo?'#1D9E75':'#b8d4cc';
+      pagHtml+='<button style="padding:7px 13px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);border:2px solid '+borderColor+';background:'+bgColor+';color:'+textColor+'" onclick="gotoPage('+i+')">'+(i+1)+'</button>';
     }
   }
   document.getElementById('list-pagination').innerHTML=pagHtml;
@@ -3825,6 +3828,12 @@ function renderListWithPagination(){
     }
   }
   document.getElementById('list-pagination').innerHTML=pagHtml;
+}
+
+
+function gotoPage(page){
+  _listPage=page;
+  renderList();
 }
 
 
