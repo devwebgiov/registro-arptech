@@ -602,7 +602,8 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
     <!-- TAB: REGISTROS -->
     <div id="tab-list" style="display:none">
       <div class="search-bar"><input type="text" id="search-q" placeholder="🔍  Buscar por responsável, local ou descrição..." oninput="renderList()"/></div>
-      <div id="rec-list" class="records-list"></div>
+      <div id="list-content" style="max-height:65vh;overflow-y:auto;margin-bottom:12px;border:2px solid #b8d4cc;border-radius:14px"></div>
+      <div id="list-pagination" style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap"></div>
     </div>
 
     <!-- TAB: RESUMO -->
@@ -610,15 +611,26 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
       <!-- ADMIN: filtro por responsável -->
       <div id="stats-filter" style="display:none;margin-bottom:13px">
         <div class="card" style="padding:12px 15px">
-          <div class="field" style="margin:0">
-            <label style="margin-bottom:6px">Filtrar por responsável</label>
-            <select id="stats-resp-filter" onchange="renderStats()">
-              <option value="">Todos</option>
-              <option value="Ayrton">Ayrton</option>
-              <option value="Giovanna">Giovanna</option>
-              <option value="Neudson">Neudson</option>
-              <option value="Rodrigo">Rodrigo</option>
-            </select>
+          <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end">
+            <div class="field" style="margin:0;flex:1;min-width:200px">
+              <label style="margin-bottom:6px">Filtrar por responsável</label>
+              <select id="stats-resp-filter" onchange="renderStats()">
+                <option value="">Todos</option>
+                <option value="Ayrton">Ayrton</option>
+                <option value="Giovanna">Giovanna</option>
+                <option value="Neudson">Neudson</option>
+                <option value="Rodrigo">Rodrigo</option>
+              </select>
+            </div>
+            <div class="field" style="margin:0;flex:1;min-width:200px">
+              <label style="margin-bottom:6px">Período</label>
+              <select id="stats-period" onchange="renderStats()" style="padding:8px 12px;font-size:13px;border:2px solid #b8d4cc;border-radius:10px;background:#fff;font-family:var(--font);outline:none;-webkit-appearance:none">
+                <option value="todos">Todos os serviços</option>
+                <option value="hoje">Hoje</option>
+                <option value="semana">Esta semana (7 dias)</option>
+                <option value="mes-envio">Desde 22 do mês</option>
+              </select>
+            </div>
           </div>
         </div>
       </div>
@@ -2049,24 +2061,42 @@ function closeSuccess(){document.getElementById('success-modal').classList.remov
 
 // ── LIST ─────────────────────────────────────────────────────
 function renderList(){
-  var q=(document.getElementById('search-q').value||'').toLowerCase();
-  var el=document.getElementById('rec-list');
-  var base=isAdmin?records:records.filter(function(r){return r.resp===currentUser});
-  var f=base.filter(function(r){return r.resp.toLowerCase().includes(q)||r.local.toLowerCase().includes(q)||r.desc.toLowerCase().includes(q)});
-  f.sort(function(a,b){
-    var da=(a.date||'')+(a.start?'T'+a.start:'T00:00');
-    var db=(b.date||'')+(b.start?'T'+b.start:'T00:00');
-    return db.localeCompare(da);
+  _listPage=0;
+  var q=(document.getElementById('search-q')||{value:''}).value.toLowerCase();
+  var lista=getRegistrosFiltrados().filter(function(r){
+    var texto=(r.setor+' '+r.responsavel+' '+r.local).toLowerCase();
+    return q===''||texto.indexOf(q)>=0;
   });
-  if(!f.length){el.innerHTML='<div class="empty-state">Nenhum registro encontrado.</div>';return}
-  var tl={'setor':'Setor','urbana':'Escola Urbana','rural':'Escola Rural'};
-  var showDel=isAdmin;
-  el.className='records-list'+(showDel?' show-del':'');
-  el.innerHTML=f.map(function(r){
-    var tc=r.locType==='urbana'?'blue':r.locType==='rural'?'orange':'';
-    return '<div class="record-item"><div class="record-header"><div class="record-name">'+r.resp+'</div><div style="display:flex;align-items:center;gap:6px"><div class="record-date">'+r.date+(r.start?' · '+r.start:'')+'</div><button class="record-del" onclick="deleteRecord('+r.id+')" title="Apagar">🗑</button></div></div><div class="record-desc">'+r.desc+'</div><div class="record-tags"><span class="tag '+tc+'">'+(tl[r.locType]||'Setor')+'</span><span class="tag">'+r.local+'</span></div></div>';
+  
+  var totalPages=Math.ceil(lista.length/LIST_PER_PAGE);
+  if(_listPage>=totalPages)_listPage=Math.max(0,totalPages-1);
+  
+  var slice=lista.slice(_listPage*LIST_PER_PAGE,(_listPage+1)*LIST_PER_PAGE);
+  var html=slice.map(function(r){
+    return '<div style="padding:12px;border-bottom:1px solid #e2e8e0;display:flex;justify-content:space-between;align-items:center;cursor:pointer;hover:background:#f9faf8" onclick="selRespByName(\''+r.responsavel+'\')">'+
+      '<div>'+
+        '<div style="font-size:13px;font-weight:700;color:#0f1f1c">'+r.setor+' <span style="color:#7a9e96;font-weight:400;">'+r.local+'</span></div>'+
+        '<div style="font-size:12px;color:#7a9e96">'+r.responsavel+' · '+r.data+'</div>'+
+      '</div>'+
+      '<div style="text-align:right">'+
+        '<span style="font-size:14px;font-weight:700;color:#0d6b4f">'+r.quantidade+'</span>'+
+      '</div>'+
+    '</div>';
   }).join('');
+  
+  document.getElementById('list-content').innerHTML=html||'<div style="padding:20px;text-align:center;color:#7a9e96">Nenhum registro encontrado.</div>';
+  
+  // Paginação
+  var pagHtml='';
+  if(totalPages>1){
+    for(var i=0;i<totalPages;i++){
+      var ativo=i===_listPage;
+      pagHtml+='<button onclick="_listPage='+i+';renderList()" style="padding:7px 13px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);border:2px solid '+(ativo?'#1D9E75':'#b8d4cc')+';background:'+(ativo?'#1D9E75':'#fff')+';color:'+(ativo?'#fff':'#2d4a44')+'">'+(i+1)+'</button>';
+    }
+  }
+  document.getElementById('list-pagination').innerHTML=pagHtml;
 }
+
 
 function deleteRecord(id){
   if(!confirm('Apagar este registro?'))return;
@@ -3547,6 +3577,8 @@ function osAbertasRenderStats(){
 // ── FUNÇÕES COMPLEMENTARES OSP ────────────────────────────────
 
 var _ospSub = 'ativas';
+var _listPage = 0;
+var LIST_PER_PAGE = 30;
 var _ospPageAtivas = 0;
 var _ospPageConcluidas = 0;
 var OSP_PER_PAGE = 30;
@@ -3725,6 +3757,64 @@ function tecRenderComissaoTab(){
   var el=document.getElementById('com-card-tech');
   if(!el)return;
   el.innerHTML=tecRenderComissao();
+}
+
+
+function getRegistrosFiltrados(){
+  var periodo=document.getElementById('stats-period').value;
+  var hoje=new Date();
+  var dataHoje=new Date(hoje.getFullYear(),hoje.getMonth(),hoje.getDate());
+  var data22=new Date(hoje.getFullYear(),hoje.getMonth(),22);
+  
+  return REGISTROS.filter(function(r){
+    var d=new Date(r.data.split('/').reverse().join('-'));
+    if(isNaN(d))return false;
+    
+    if(periodo==='hoje'){
+      return d.getTime()===dataHoje.getTime();
+    }
+    if(periodo==='semana'){
+      var semAgo=new Date(dataHoje.getTime()-7*86400000);
+      return d>=semAgo&&d<=dataHoje;
+    }
+    if(periodo==='mes-envio'){
+      var data22d=new Date(hoje.getFullYear(),hoje.getMonth(),22);
+      if(hoje.getDate()<22)data22d=new Date(hoje.getFullYear(),hoje.getMonth()-1,22);
+      return d>=data22d&&d<=dataHoje;
+    }
+    return true; // todos
+  });
+}
+
+function renderListWithPagination(){
+  var lista=getRegistrosFiltrados();
+  var totalPages=Math.ceil(lista.length/LIST_PER_PAGE);
+  if(_listPage>=totalPages)_listPage=Math.max(0,totalPages-1);
+  
+  var slice=lista.slice(_listPage*LIST_PER_PAGE,(_listPage+1)*LIST_PER_PAGE);
+  var html=slice.map(function(r){
+    return '<div style="padding:10px;border-bottom:1px solid #e2e8e0;display:flex;justify-content:space-between;align-items:center">'+
+      '<div>'+
+        '<div style="font-size:13px;font-weight:700;color:#0f1f1c">'+r.setor+'</div>'+
+        '<div style="font-size:12px;color:#7a9e96">'+r.responsavel+' · '+r.data+'</div>'+
+      '</div>'+
+      '<div style="text-align:right">'+
+        '<span style="font-size:13px;font-weight:700;color:#0d6b4f">'+r.quantidade+'</span>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+  
+  document.getElementById('list-content').innerHTML=html||'<div style="padding:20px;text-align:center;color:#7a9e96">Nenhum registro encontrado.</div>';
+  
+  // Paginação
+  var pagHtml='';
+  if(totalPages>1){
+    for(var i=0;i<totalPages;i++){
+      var ativo=i===_listPage;
+      pagHtml+='<button onclick="_listPage='+i+';renderListWithPagination()" style="padding:7px 13px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);border:2px solid '+(ativo?'#1D9E75':'#b8d4cc')+';background:'+(ativo?'#1D9E75':'#fff')+';color:'+(ativo?'#fff':'#2d4a44')+'">'+(i+1)+'</button>';
+    }
+  }
+  document.getElementById('list-pagination').innerHTML=pagHtml;
 }
 
 
