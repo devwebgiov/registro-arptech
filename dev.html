@@ -2211,7 +2211,7 @@ function sendToSheets(){
       var fim=recs.length?recs.reduce(function(a,b){return a.date>b.date?a:b}).date:'';
       return fetch(gs,{method:'POST',body:JSON.stringify({action:'monthlyReport',month:0,year:0,records:recs,periodoLabel:label,dataInicio:ini,dataFim:fim})})
         .then(function(res){return res.text()})
-        .then(function(){msg.textContent='✓ Enviado! '+recs.length+' registro(s) — '+label;logHistory('Relatório '+label+' — '+recs.length+' registros')});
+        .then(function(){msg.textContent='✓ Enviado! '+recs.length+' registro(s) — '+label;logHistory('Relatório '+label+' — '+recs.length+' registros');localStorage.setItem('last_report_date',new Date().toISOString().split('T')[0])});
     })
     .catch(function(e){msg.textContent='Erro: '+e.message;msg.style.color='#dc2626'});
 }
@@ -3774,9 +3774,8 @@ function getRegistrosFiltrados(){
   var periodo=periodoEl?periodoEl.value:'todos'; // default 'todos' se nenhum elemento existir
   var hoje=new Date();
   var dataHoje=new Date(hoje.getFullYear(),hoje.getMonth(),hoje.getDate());
-  var data22=new Date(hoje.getFullYear(),hoje.getMonth(),22);
   
-  return REGISTROS.filter(function(r){
+  return records.filter(function(r){
     var d=new Date(r.data.split('/').reverse().join('-'));
     if(isNaN(d))return false;
     
@@ -3788,9 +3787,10 @@ function getRegistrosFiltrados(){
       return d>=semAgo&&d<=dataHoje;
     }
     if(periodo==='mes-envio'){
-      var data22d=new Date(hoje.getFullYear(),hoje.getMonth(),22);
-      if(hoje.getDate()<22)data22d=new Date(hoje.getFullYear(),hoje.getMonth()-1,22);
-      return d>=data22d&&d<=dataHoje;
+      // Usa a data do último relatório enviado ao Sheets
+      var lastReportStr=localStorage.getItem('last_report_date');
+      var dataRelatorio=lastReportStr?new Date(lastReportStr+' 00:00:00'):new Date(hoje.getFullYear(),hoje.getMonth(),22);
+      return d>=dataRelatorio&&d<=dataHoje;
     }
     return true; // todos
   });
