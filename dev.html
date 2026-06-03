@@ -2072,7 +2072,7 @@ function renderList(){
   _listPage=0;
   var q=(document.getElementById('search-q')||{value:''}).value.toLowerCase();
   var lista=getRegistrosFiltrados().filter(function(r){
-    var texto=(r.setor+' '+r.responsavel+' '+r.local).toLowerCase();
+    var texto=(r.resp+' '+r.local+' '+r.desc).toLowerCase();
     return q===''||texto.indexOf(q)>=0;
   });
   
@@ -2081,13 +2081,13 @@ function renderList(){
   
   var slice=lista.slice(_listPage*LIST_PER_PAGE,(_listPage+1)*LIST_PER_PAGE);
   var html=slice.map(function(r){
-    return '<div style="padding:12px;border-bottom:1px solid #e2e8e0;display:flex;justify-content:space-between;align-items:center;cursor:pointer;hover:background:#f9faf8" onclick="selRespByName(\''+r.responsavel+'\')">'+
+    return '<div style="padding:12px;border-bottom:1px solid #e2e8e0;display:flex;justify-content:space-between;align-items:center;cursor:pointer;hover:background:#f9faf8" onclick="selRespByName(\''+r.resp+'\')">'+
       '<div>'+
-        '<div style="font-size:13px;font-weight:700;color:#0f1f1c">'+r.setor+' <span style="color:#7a9e96;font-weight:400;">'+r.local+'</span></div>'+
-        '<div style="font-size:12px;color:#7a9e96">'+r.responsavel+' · '+r.data+'</div>'+
+        '<div style="font-size:13px;font-weight:700;color:#0f1f1c">'+r.desc+' <span style="color:#7a9e96;font-weight:400;">'+r.local+'</span></div>'+
+        '<div style="font-size:12px;color:#7a9e96">'+r.resp+' · '+r.date+(r.start?' às '+r.start:'')+'</div>'+
       '</div>'+
       '<div style="text-align:right">'+
-        '<span style="font-size:14px;font-weight:700;color:#0d6b4f">'+r.quantidade+'</span>'+
+        '<span style="font-size:14px;font-weight:700;color:#0d6b4f">1</span>'+
       '</div>'+
     '</div>';
   }).join('');
@@ -3776,7 +3776,7 @@ function getRegistrosFiltrados(){
   var dataHoje=new Date(hoje.getFullYear(),hoje.getMonth(),hoje.getDate());
   
   return records.filter(function(r){
-    var d=new Date(r.data.split('/').reverse().join('-'));
+    var d=new Date(r.date.split('/').reverse().join('-'));
     if(isNaN(d))return false;
     
     if(periodo==='hoje'){
@@ -3805,11 +3805,11 @@ function renderListWithPagination(){
   var html=slice.map(function(r){
     return '<div style="padding:10px;border-bottom:1px solid #e2e8e0;display:flex;justify-content:space-between;align-items:center">'+
       '<div>'+
-        '<div style="font-size:13px;font-weight:700;color:#0f1f1c">'+r.setor+'</div>'+
-        '<div style="font-size:12px;color:#7a9e96">'+r.responsavel+' · '+r.data+'</div>'+
+        '<div style="font-size:13px;font-weight:700;color:#0f1f1c">'+r.desc+'</div>'+
+        '<div style="font-size:12px;color:#7a9e96">'+r.resp+' · '+r.date+(r.start?' às '+r.start:'')+'</div>'+
       '</div>'+
       '<div style="text-align:right">'+
-        '<span style="font-size:13px;font-weight:700;color:#0d6b4f">'+r.quantidade+'</span>'+
+        '<span style="font-size:13px;font-weight:700;color:#0d6b4f">1</span>'+
       '</div>'+
     '</div>';
   }).join('');
