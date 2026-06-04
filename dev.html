@@ -2078,25 +2078,34 @@ function renderList(){
   var html=lista.map(function(r){
     // Determine tipo e cor do balão
     var tipoLocal='';
-    var corBalao='#f0f0f0';
-    if(r.locType==='rural'){tipoLocal='Escola Rural';corBalao='#fff9e6';}
-    else if(r.locType==='urbana'){tipoLocal='Escola Urbana';corBalao='#f3e5ff';}
-    else if(r.locType==='setor'){tipoLocal='Setor';corBalao='#e0f7f6';}
+    var corBalao='';
+    if(r.locType==='rural'){
+      tipoLocal='Escola Rural';
+      corBalao='#ffd700'; // Amarelo
+    }
+    else if(r.locType==='urbana'){
+      tipoLocal='Escola Urbana';
+      corBalao='#d8a5f5'; // Roxo
+    }
+    else if(r.locType==='setor'){
+      tipoLocal='Setor';
+      corBalao='#4dd0e1'; // Verde piscina
+    }
     
-    return '<div style="background:#fff;padding:14px;margin-bottom:8px;border-radius:8px">'+
-      '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">'+
+    return '<div style="background:#fff;border:2px solid #0d6b4f;border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:0 2px 4px rgba(0,0,0,0.05)">'+
+      '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">'+
         '<div style="flex:1">'+
-          '<div style="font-family:Arial;font-weight:700;font-size:11px;color:#0f1f1c;margin-bottom:4px">'+r.resp+'</div>'+
-          '<div style="font-family:Arial;font-size:11px;color:#2d4a44;line-height:1.4;margin-bottom:10px">'+r.desc+'</div>'+
-          '<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">'+
-            '<span style="background:'+corBalao+';color:#333;padding:4px 10px;border-radius:8px;font-size:10px;font-weight:600">'+tipoLocal+'</span>'+
-            '<span style="font-size:10px;color:#666;font-weight:500">'+r.local+'</span>'+
-          '</div>'+
+          '<div style="font-family:Arial;font-weight:700;font-size:12px;color:#0f1f1c;margin-bottom:6px">'+r.resp+'</div>'+
+          '<div style="font-family:Arial;font-size:11px;color:#2d4a44;line-height:1.5;margin-bottom:12px">'+r.desc+'</div>'+
         '</div>'+
-        '<div style="text-align:right;font-size:9px;color:#999;white-space:nowrap;margin-left:10px">'+
-          '<div>'+r.date+'</div>'+
+        '<div style="text-align:right;font-size:9px;color:#999;white-space:nowrap;margin-left:12px">'+
+          '<div style="font-weight:600">'+r.date+'</div>'+
           '<div>'+(r.start||'--:--')+'</div>'+
         '</div>'+
+      '</div>'+
+      '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">'+
+        '<span style="background:'+corBalao+';color:#000;padding:6px 12px;border-radius:10px;font-size:10px;font-weight:700">'+tipoLocal+'</span>'+
+        '<span style="background:#4dd0e1;color:#000;padding:6px 12px;border-radius:10px;font-size:10px;font-weight:700">'+r.local+'</span>'+
       '</div>'+
     '</div>';
   }).join('');
