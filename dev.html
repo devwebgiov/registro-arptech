@@ -2068,6 +2068,34 @@ function confirmSave(){
 function closeSuccess(){document.getElementById('success-modal').classList.remove('open')}
 
 // ── LIST ─────────────────────────────────────────────────────
+function getRegistrosFiltrados(){
+  var periodoEl=document.getElementById('stats-period')||document.getElementById('list-stats-period');
+  var periodo=periodoEl?periodoEl.value:'todos';
+  var hoje=new Date();
+  var dataHoje=new Date(hoje.getFullYear(),hoje.getMonth(),hoje.getDate());
+  
+  return records.filter(function(r){
+    var parts=r.date.split('/');
+    if(parts.length!==3)return true; // se data inválida, inclui
+    var d=new Date(parseInt(parts[2]),parseInt(parts[1])-1,parseInt(parts[0]));
+    if(isNaN(d))return true;
+    
+    if(periodo==='hoje'){
+      return d.getTime()===dataHoje.getTime();
+    }
+    if(periodo==='semana'){
+      var semAgo=new Date(dataHoje.getTime()-7*86400000);
+      return d>=semAgo&&d<=dataHoje;
+    }
+    if(periodo==='mes-envio'){
+      var lastReportStr=localStorage.getItem('last_report_date');
+      var dataRelatorio=lastReportStr?new Date(lastReportStr):new Date(hoje.getFullYear(),hoje.getMonth(),22);
+      return d>=dataRelatorio&&d<=dataHoje;
+    }
+    return true; // todos
+  });
+}
+
 function renderList(){
   _listPage=0;
   var q=(document.getElementById('search-q')||{value:''}).value.toLowerCase();
