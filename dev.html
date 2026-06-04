@@ -603,8 +603,7 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
     <div id="tab-list" style="display:none">
       <div style="display:flex;gap:12px;align-items:flex-end;margin-bottom:12px;flex-wrap:wrap">
         <div class="search-bar" style="flex:1;min-width:200px"><input type="text" id="search-q" placeholder="🔍  Buscar por responsável, local ou descrição..." oninput="renderList()"/></div>
-        <button onclick="testFilter()" style="padding:10px 14px;background:#1D9E75;color:#fff;border:none;border-radius:10px;font-weight:700;cursor:pointer;font-family:var(--font)">🧪 Testar Filtro</button>
-        <select id="list-stats-period" onchange="renderList()" style="padding:10px 12px;font-size:14px;border:2px solid #1D9E75;border-radius:10px;background:#fff;font-family:var(--font);outline:none;color:#2d4a44;font-weight:600;cursor:pointer;width:auto;min-width:180px">
+<select id="list-stats-period" onchange="renderList()" style="padding:10px 12px;font-size:14px;border:2px solid #1D9E75;border-radius:10px;background:#fff;font-family:var(--font);outline:none;color:#2d4a44;font-weight:600;cursor:pointer;width:auto;min-width:180px">
           <option value="todos">Todos os registros</option>
           <option value="hoje">Hoje</option>
           <option value="semana">Esta semana</option>
@@ -2070,7 +2069,6 @@ function closeSuccess(){document.getElementById('success-modal').classList.remov
 
 // ── LIST ─────────────────────────────────────────────────────
 function renderList(){
-  console.log('renderList chamada, _listPage resetado');
   _listPage=0;
   var q=(document.getElementById('search-q')||{value:''}).value.toLowerCase();
   var lista=getRegistrosFiltrados().filter(function(r){
@@ -2083,14 +2081,25 @@ function renderList(){
   
   var slice=lista.slice(_listPage*LIST_PER_PAGE,(_listPage+1)*LIST_PER_PAGE);
   var html=slice.map(function(r){
-    return '<div style="padding:12px;border-bottom:1px solid #e2e8e0;display:flex;justify-content:space-between;align-items:center;cursor:pointer;hover:background:#f9faf8" onclick="selRespByName(\''+r.resp+'\')">'+
-      '<div>'+
-        '<div style="font-size:13px;font-weight:700;color:#0f1f1c">'+r.desc+' <span style="color:#7a9e96;font-weight:400;">'+r.local+'</span></div>'+
-        '<div style="font-size:12px;color:#7a9e96">'+r.resp+' · '+r.date+(r.start?' às '+r.start:'')+'</div>'+
+    // Determine tipo e cor do balão
+    var tipoLocal='';
+    var corBalao='#f0f0f0';
+    if(r.locType==='rural'){tipoLocal='Escola Rural';corBalao='#fff9e6';}
+    else if(r.locType==='urbana'){tipoLocal='Escola Urbana';corBalao='#f3e5ff';}
+    else if(r.locType==='setor'){tipoLocal='Setor';corBalao='#e0f7f6';}
+    
+    return '<div style="background:#fff;border:2px solid #0d6b4f;border-radius:12px;padding:14px;margin-bottom:12px">'+
+      '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">'+
+        '<div style="flex:1">'+
+          '<div style="font-family:Arial;font-weight:700;font-size:11px;color:#0f1f1c;margin-bottom:6px">'+r.resp+'</div>'+
+          '<div style="font-family:Arial;font-size:11px;color:#2d4a44;line-height:1.4;margin-bottom:10px">'+r.desc+'</div>'+
+          '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
+            '<span style="background:'+corBalao+';color:#333;padding:4px 10px;border-radius:8px;font-size:10px;font-weight:600">'+tipoLocal+'</span>'+
+          '</div>'+
+        '</div>'+
+        '<span style="background:#e0f7f6;color:#0d6b4f;padding:6px 10px;border-radius:8px;font-size:10px;font-weight:700;white-space:nowrap;margin-left:10px">'+r.local.substring(0,15)+'</span>'+
       '</div>'+
-      '<div style="text-align:right">'+
-        '<span style="font-size:14px;font-weight:700;color:#0d6b4f">1</span>'+
-      '</div>'+
+      '<div style="font-size:10px;color:#999;margin-top:8px">'+r.date+(r.start?' às '+r.start:'')+' | '+r.resp+'</div>'+
     '</div>';
   }).join('');
   
@@ -2104,7 +2113,7 @@ function renderList(){
       var bgColor=ativo?'#1D9E75':'#fff';
       var textColor=ativo?'#fff':'#2d4a44';
       var borderColor=ativo?'#1D9E75':'#b8d4cc';
-      pagHtml+='<button style="padding:7px 13px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);border:2px solid '+borderColor+';background:'+bgColor+';color:'+textColor+'" onclick="gotoPage('+i+')">'+(i+1)+'</button>';
+      pagHtml+='<button style="padding:8px 14px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);border:2px solid '+borderColor+';background:'+bgColor+';color:'+textColor+'" onclick="gotoPage('+i+')">'+(i+1)+'</button>';
     }
   }
   document.getElementById('list-pagination').innerHTML=pagHtml;
@@ -3837,15 +3846,6 @@ function gotoPage(page){
   console.log('gotoPage:', page);
   _listPage=page;
   renderList();
-}
-
-
-function testFilter(){
-  var sel=document.getElementById('list-stats-period');
-  var val=sel.value;
-  alert('Filtro selecionado: '+val);
-  renderList();
-  alert('renderList() executada');
 }
 
 
