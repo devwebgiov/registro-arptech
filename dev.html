@@ -603,7 +603,8 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
     <div id="tab-list" style="display:none">
       <div style="display:flex;gap:12px;align-items:flex-end;margin-bottom:12px;flex-wrap:wrap">
         <div class="search-bar" style="flex:1;min-width:200px"><input type="text" id="search-q" placeholder="🔍  Buscar por responsável, local ou descrição..." oninput="renderList()"/></div>
-        <select id="list-stats-period" onchange="renderList()" style="padding:8px 12px;font-size:13px;border:2px solid #b8d4cc;border-radius:10px;background:#fff;font-family:var(--font);outline:none;-webkit-appearance:none;min-width:150px">
+        <button onclick="testFilter()" style="padding:10px 14px;background:#1D9E75;color:#fff;border:none;border-radius:10px;font-weight:700;cursor:pointer;font-family:var(--font)">🧪 Testar Filtro</button>
+        <select id="list-stats-period" onchange="renderList()" style="padding:10px 12px;font-size:14px;border:2px solid #1D9E75;border-radius:10px;background:#fff;font-family:var(--font);outline:none;color:#2d4a44;font-weight:600;cursor:pointer;width:auto;min-width:180px">
           <option value="todos">Todos os registros</option>
           <option value="hoje">Hoje</option>
           <option value="semana">Esta semana</option>
@@ -632,7 +633,7 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
             </div>
             <div class="field" style="margin:0;flex:1;min-width:200px">
               <label style="margin-bottom:6px">Período</label>
-              <select id="stats-period" onchange="renderStats()" style="padding:8px 12px;font-size:13px;border:2px solid #b8d4cc;border-radius:10px;background:#fff;font-family:var(--font);outline:none;-webkit-appearance:none">
+              <select id="stats-period" onchange="renderStats()" style="padding:10px 12px;font-size:14px;border:2px solid #1D9E75;border-radius:10px;background:#fff;font-family:var(--font);outline:none;color:#2d4a44;font-weight:600;cursor:pointer;width:auto;min-width:180px">
                 <option value="todos">Todos os serviços</option>
                 <option value="hoje">Hoje</option>
                 <option value="semana">Esta semana (7 dias)</option>
@@ -2069,6 +2070,7 @@ function closeSuccess(){document.getElementById('success-modal').classList.remov
 
 // ── LIST ─────────────────────────────────────────────────────
 function renderList(){
+  console.log('renderList chamada, _listPage resetado');
   _listPage=0;
   var q=(document.getElementById('search-q')||{value:''}).value.toLowerCase();
   var lista=getRegistrosFiltrados().filter(function(r){
@@ -3832,8 +3834,18 @@ function renderListWithPagination(){
 
 
 function gotoPage(page){
+  console.log('gotoPage:', page);
   _listPage=page;
   renderList();
+}
+
+
+function testFilter(){
+  var sel=document.getElementById('list-stats-period');
+  var val=sel.value;
+  alert('Filtro selecionado: '+val);
+  renderList();
+  alert('renderList() executada');
 }
 
 
