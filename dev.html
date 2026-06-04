@@ -241,33 +241,7 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
   .header-title{display:none}
 }
 
-/* ARPTECH OS */
-.os-card{background:#fff;border:2px solid #b8d4cc;border-radius:18px;padding:16px;margin-bottom:14px}
-.os-badge{display:inline-block;font-size:11px;padding:3px 9px;border-radius:10px;font-weight:700;white-space:nowrap;margin-right:4px}
-.os-badge.interno{background:#DBEAFE;color:#1e40af}
-.os-badge.externo{background:#FEF3C7;color:#92400e}
-.os-badge.pago{background:#d4f0e5;color:#0d6b4f}
-.os-badge.pendente{background:#FEE2E2;color:#dc2626}
-.item-row{display:grid;grid-template-columns:1fr 70px 90px 30px;gap:8px;align-items:end;margin-bottom:8px;background:#f4f8f6;border-radius:12px;padding:11px}
-.item-del{background:none;border:none;color:#dc2626;font-size:20px;cursor:pointer;padding:0;line-height:1}
-.total-bar{background:#0a2e2a;color:#fff;border-radius:12px;padding:13px 16px;display:flex;justify-content:space-between;align-items:center;margin-top:10px}
-.total-bar .tl{font-size:13px;opacity:.7}
-.total-bar .tv{font-size:20px;font-weight:700;color:#1D9E75}
-.os-list-item{background:#fff;border:2px solid #b8d4cc;border-radius:14px;padding:14px;margin-bottom:10px}
-.os-cliente{font-size:15px;font-weight:700;color:#0f1f1c}
-.os-total-v{font-size:15px;font-weight:700;color:#0d6b4f}
-.resumo-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px}
-.resumo-item{background:#fff;border:2px solid #b8d4cc;border-radius:12px;padding:11px;text-align:center}
-.resumo-item .ri-label{font-size:10px;color:#7a9e96;font-weight:700;text-transform:uppercase;margin-bottom:3px}
-.resumo-item .ri-val{font-size:16px;font-weight:700;color:#0a2e2a}
-@media(max-width:480px){.item-row{grid-template-columns:1fr 60px 80px 26px}}
 @media print{.header,.tabs,.no-print{display:none!important}body{background:#fff!important;font-size:13px}}
-
-@media print {
-  body > *:not(#os-print-area) { display: none !important; }
-  #os-print-area { display: block !important; }
-  #os-print-content { display: block; }
-}
 </style>
 </head>
 <body>
@@ -601,17 +575,8 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
 
     <!-- TAB: REGISTROS -->
     <div id="tab-list" style="display:none">
-      <div style="display:flex;gap:12px;align-items:flex-end;margin-bottom:12px;flex-wrap:wrap">
-        <div class="search-bar" style="flex:1;min-width:200px"><input type="text" id="search-q" placeholder="🔍  Buscar por responsável, local ou descrição..." oninput="renderList()"/></div>
-<select id="list-stats-period" onchange="renderList()" style="padding:10px 12px;font-size:14px;border:2px solid #1D9E75;border-radius:10px;background:#fff;font-family:var(--font);outline:none;color:#2d4a44;font-weight:600;cursor:pointer;width:auto;min-width:180px">
-          <option value="todos">Todos os registros</option>
-          <option value="hoje">Hoje</option>
-          <option value="semana">Esta semana</option>
-          <option value="mes-envio">Desde último relatório</option>
-        </select>
-      </div>
-      <div id="list-content" style="max-height:65vh;overflow-y:auto;margin-bottom:12px;border:2px solid #b8d4cc;border-radius:14px;background:#fff"></div>
-      <div id="list-pagination" style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap"></div>
+      <div class="search-bar"><input type="text" id="search-q" placeholder="🔍  Buscar por responsável, local ou descrição..." oninput="renderList()"/></div>
+      <div id="rec-list" class="records-list"></div>
     </div>
 
     <!-- TAB: RESUMO -->
@@ -619,26 +584,15 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
       <!-- ADMIN: filtro por responsável -->
       <div id="stats-filter" style="display:none;margin-bottom:13px">
         <div class="card" style="padding:12px 15px">
-          <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end">
-            <div class="field" style="margin:0;flex:1;min-width:200px">
-              <label style="margin-bottom:6px">Filtrar por responsável</label>
-              <select id="stats-resp-filter" onchange="renderStats()">
-                <option value="">Todos</option>
-                <option value="Ayrton">Ayrton</option>
-                <option value="Giovanna">Giovanna</option>
-                <option value="Neudson">Neudson</option>
-                <option value="Rodrigo">Rodrigo</option>
-              </select>
-            </div>
-            <div class="field" style="margin:0;flex:1;min-width:200px">
-              <label style="margin-bottom:6px">Período</label>
-              <select id="stats-period" onchange="renderStats()" style="padding:10px 12px;font-size:14px;border:2px solid #1D9E75;border-radius:10px;background:#fff;font-family:var(--font);outline:none;color:#2d4a44;font-weight:600;cursor:pointer;width:auto;min-width:180px">
-                <option value="todos">Todos os serviços</option>
-                <option value="hoje">Hoje</option>
-                <option value="semana">Esta semana (7 dias)</option>
-                <option value="mes-envio">Desde último relatório</option>
-              </select>
-            </div>
+          <div class="field" style="margin:0">
+            <label style="margin-bottom:6px">Filtrar por responsável</label>
+            <select id="stats-resp-filter" onchange="renderStats()">
+              <option value="">Todos</option>
+              <option value="Ayrton">Ayrton</option>
+              <option value="Giovanna">Giovanna</option>
+              <option value="Neudson">Neudson</option>
+              <option value="Rodrigo">Rodrigo</option>
+            </select>
           </div>
         </div>
       </div>
@@ -705,26 +659,6 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
         <div id="send-history" style="font-size:13px;color:var(--tx2)">Nenhum envio registrado.</div>
       </div>
     </div>
-
-    <!-- TAB: COMISSÕES (admin only) -->
-    <div id="tab-comissoes" style="display:none">
-      <div style="margin-bottom:16px">
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap">
-          <div style="font-size:14px;font-weight:700;color:#2d4a44">Porcentagem de Comissão:</div>
-          <input type="number" id="com-percent" min="0" max="100" value="70" style="width:80px;padding:8px 12px;border:2px solid #b8d4cc;border-radius:10px;font-size:14px;font-family:var(--font)"/>
-          <span style="font-size:14px;font-weight:700;color:#7a9e96">%</span>
-          <button onclick="comSalvarPercent()" style="padding:8px 14px;background:#1D9E75;color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font)">Salvar</button>
-        </div>
-        <div style="font-size:12px;color:#7a9e96">Esta porcentagem será aplicada ao valor total do serviço para calcular a comissão de cada técnico.</div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px" id="com-cards"></div>
-      <div class="card" id="com-detalhes"></div>
-    </div><!-- /tab-comissoes -->
-
-    <!-- TAB: MINHA COMISSÃO -->
-    <div id="tab-minha-comissao" style="display:none">
-      <div id="com-card-tech"></div>
-    </div><!-- /tab-minha-comissao -->
 
     <!-- TAB: GERENCIAR (admin only) -->
     <div id="tab-gerenciar" style="display:none">
@@ -794,212 +728,6 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
       </div>
 
     </div><!-- /tab-gerenciar -->
-    <!-- TAB: ORDEM DE SERVIÇO ARPTECH -->
-    <div id="tab-os" style="display:none">
-
-      <!-- NOVA OS -->
-      <div class="card" id="os-nova-card">
-        <div class="card-title">📋 Abrir Nova Ordem de Serviço</div>
-
-        <!-- Tipo -->
-        <div class="field" style="margin-bottom:12px">
-          <label>Tipo de serviço</label>
-          <div style="display:flex;gap:0;margin-top:6px;border:2px solid #b8d4cc;border-radius:14px;overflow:hidden">
-            <label id="os-tipo-int-label" onclick="osSetTipo('interno')" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:13px 0;flex:1;cursor:pointer;font-weight:700;font-size:15px;background:#1D9E75;color:#fff;transition:.2s">
-              <input type="radio" name="os-tipo" value="interno" id="os-tipo-int" style="display:none"/> 🔧 Interno
-            </label>
-            <label id="os-tipo-ext-label" onclick="osSetTipo('externo')" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:13px 0;flex:1;cursor:pointer;font-weight:700;font-size:15px;background:#fff;color:#7a9e96;transition:.2s">
-              <input type="radio" name="os-tipo" value="externo" id="os-tipo-ext" style="display:none"/> 🚗 Externo
-            </label>
-          </div>
-        </div>
-
-        <!-- Técnico responsável (visível para Admin) -->
-        <div class="field" id="os-tecnico-wrap" style="margin-bottom:12px;display:none">
-          <label>Técnico responsável</label>
-          <select id="os-tecnico" style="width:100%;padding:11px 13px;font-size:15px;border:2px solid #b8d4cc;border-radius:14px;background:#f4f8f6;font-family:var(--font);outline:none;-webkit-appearance:none">
-            <option value="">Sem técnico designado</option>
-          </select>
-          <div style="font-size:12px;color:#7a9e96;margin-top:4px">Como Admin, você pode designar um técnico para esta OS.</div>
-        </div>
-
-        <!-- Dados do cliente -->
-        <div class="card-title" style="margin-top:4px">Dados do Cliente</div>
-        <div class="form-row">
-          <div class="field"><label>Nome / Empresa <span style="color:#dc2626">*</span></label><input type="text" id="os-cliente" placeholder="Nome ou razão social..."/></div>
-          <div class="field"><label>CNPJ / CPF (opcional)</label><input type="text" id="os-cnpj" placeholder="00.000.000/0000-00"/></div>
-        </div>
-        <div class="form-row">
-          <div class="field"><label>Telefone <span style="color:#dc2626">*</span></label><input type="tel" id="os-telefone" placeholder="(00) 00000-0000"/></div>
-          <div class="field"><label>E-mail (opcional)</label><input type="email" id="os-email" placeholder="email@empresa.com"/></div>
-          <div class="field"><label>Endereço (opcional)</label><input type="text" id="os-endereco" placeholder="Rua, número..."/></div>
-        </div>
-
-        <!-- Serviço e relato -->
-        <div class="card-title" style="margin-top:4px">Informações do Serviço</div>
-        <div class="field" style="margin-bottom:12px">
-          <label>Tipo de serviço <span style="color:#dc2626">*</span></label>
-          <select id="os-servico-tipo" onchange="osServicoChange()" style="width:100%;padding:11px 13px;font-size:15px;border:2px solid #b8d4cc;border-radius:14px;background:#f4f8f6;font-family:var(--font);outline:none;-webkit-appearance:none">
-            <option value="">Selecione...</option>
-          </select>
-        </div>
-        
-        <div class="field" id="os-outro-wrap" style="margin-bottom:12px;display:none">
-          <label>Descreva o serviço <span style="color:#dc2626">*</span></label>
-          <input type="text" id="os-outro-desc" placeholder="Ex: Configuração de rede, Instalação de software..."/>
-        </div>
-        <div class="field" style="margin-bottom:12px">
-          <label>Modelo / Equipamento</label>
-          <input type="text" id="os-modelo" placeholder="Ex: Notebook Dell Inspiron, Impressora HP..."/>
-        </div>
-        <div class="field" style="margin-bottom:16px">
-          <label>Relato do cliente <span style="color:#dc2626">*</span></label>
-          <textarea id="os-relato" maxlength="500" placeholder="Descreva o problema relatado pelo cliente..." style="min-height:90px;resize:vertical"></textarea>
-        </div>
-
-        <div class="field" style="margin-bottom:16px">
-          <label>Observações iniciais (opcional)</label>
-          <textarea id="os-obs-abertura" maxlength="300" placeholder="Observações ao abrir a OS..." style="min-height:60px;resize:vertical"></textarea>
-        </div>
-
-        <button class="btn-submit" onclick="osAbrir()">📋 Abrir Ordem de Serviço</button>
-        <div id="os-msg" style="margin-top:10px;font-size:13px;font-weight:600;display:none"></div>
-      </div>
-
-    </div><!-- /tab-os -->
-    <!-- TAB: OS ABERTAS (painel) -->
-    <div id="tab-os-abertas" style="display:none">
-      <!-- Sub-abas -->
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
-        <button id="osp-btn-ativas" onclick="ospShowSub('ativas')" style="padding:8px 14px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);border:2px solid #1D9E75;background:#1D9E75;color:#fff">🔧 Em Andamento</button>
-        <button id="osp-btn-concluidas" onclick="ospShowSub('concluidas')" style="padding:8px 14px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);border:2px solid #b8d4cc;background:#fff;color:#2d4a44">✅ Concluídas/Pend.</button>
-        <button id="osp-btn-stats" onclick="ospShowSub('stats')" style="padding:8px 14px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);border:2px solid #b8d4cc;background:#fff;color:#2d4a44">📊 Estatísticas</button>
-      </div>
-
-      <!-- Filtro mês/ano -->
-      <div style="display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap">
-        <select id="osp-mes" onchange="ospRender()" style="padding:8px 12px;font-size:13px;border:2px solid #b8d4cc;border-radius:10px;background:#fff;font-family:var(--font);outline:none">
-          <option value="99">Todos os meses</option>
-          <option value="0">Janeiro</option><option value="1">Fevereiro</option>
-          <option value="2">Março</option><option value="3">Abril</option>
-          <option value="4">Maio</option><option value="5">Junho</option>
-          <option value="6">Julho</option><option value="7">Agosto</option>
-          <option value="8">Setembro</option><option value="9">Outubro</option>
-          <option value="10">Novembro</option><option value="11">Dezembro</option>
-        </select>
-        <select id="osp-ano" onchange="ospRender()" style="padding:8px 12px;font-size:13px;border:2px solid #b8d4cc;border-radius:10px;background:#fff;font-family:var(--font);outline:none">
-        </select>
-      </div>
-
-      <!-- Sub: Em Andamento/Aberto -->
-      <div id="osp-sub-ativas">
-        <div id="osp-lista" style="max-height:70vh;overflow-y:auto"></div>
-        <div id="osp-pag-ativas" style="display:flex;justify-content:center;gap:8px;margin-top:12px;flex-wrap:wrap"></div>
-      </div>
-
-      <!-- Sub: Concluídas e Pendentes -->
-      <div id="osp-sub-concluidas" style="display:none">
-        <div id="osp-lista-concluidas" style="max-height:70vh;overflow-y:auto"></div>
-        <div id="osp-pag-concluidas" style="display:flex;justify-content:center;gap:8px;margin-top:12px;flex-wrap:wrap"></div>
-      </div>
-
-      <!-- Sub: Estatísticas -->
-      <div id="osp-sub-stats" style="display:none">
-        <div id="osp-stats-content"></div>
-      </div>
-    </div><!-- /tab-os-abertas -->
-
-
-    <!-- MODAL DETALHES / AÇÕES DA OS -->
-    <div class="chpwd-overlay" id="os-modal-overlay" style="z-index:5000">
-      <div class="chpwd-box" style="max-width:500px;max-height:90vh;overflow-y:auto">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-          <div class="chpwd-title" style="margin-bottom:0" id="os-modal-titulo">OS #000</div>
-          <div id="os-modal-badge"></div>
-        </div>
-        <div id="os-modal-content"></div>
-        <div class="chpwd-btns" style="margin-top:16px" id="os-modal-btns"></div>
-      </div>
-    </div>
-
-    <!-- MODAL FINALIZAR OS -->
-    <div class="chpwd-overlay" id="os-fin-overlay" style="z-index:5001">
-      <div class="chpwd-box" style="max-width:500px;max-height:92vh;overflow-y:auto">
-        <div class="chpwd-title">✅ Finalizar Ordem de Serviço</div>
-        <div style="font-size:13px;color:#7a9e96;margin-bottom:14px">Informe o diagnóstico, peças utilizadas e pagamento.</div>
-
-        <div class="field" style="margin-bottom:12px">
-          <label>Diagnóstico / Serviço realizado</label>
-          <textarea id="os-fin-diagnostico" maxlength="500" placeholder="Descreva o serviço realizado..." style="min-height:80px;resize:vertical"></textarea>
-        </div>
-
-        <!-- Peças/produtos -->
-        <div style="margin-bottom:12px">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-            <label style="font-size:13px;font-weight:600;color:#2d4a44">Peças / Produtos utilizados</label>
-            <button onclick="osFinAddItem()" style="background:#1D9E75;color:#fff;border:none;border-radius:8px;padding:5px 11px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font)">+ Adicionar</button>
-          </div>
-          <div id="os-fin-itens"></div>
-          <div id="os-fin-total-bar" style="display:none;background:#0a2e2a;color:#fff;border-radius:10px;padding:10px 14px;display:none;justify-content:space-between;align-items:center">
-            <span style="font-size:12px;opacity:.7">Total peças</span>
-            <span style="font-size:16px;font-weight:700;color:#1D9E75" id="os-fin-total-mat">R$ 0,00</span>
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="field"><label>Valor da mão de obra (R$)</label><input type="number" id="os-fin-mao-obra" min="0" step="0.01" placeholder="0,00" oninput="osFinCalc()"/></div>
-          <div class="field"><label>Garantia</label><input type="text" id="os-fin-garantia" placeholder="Ex: 3 meses"/></div>
-        </div>
-
-        <div style="background:#0a2e2a;color:#fff;border-radius:12px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-          <span style="font-size:13px;opacity:.7">VALOR TOTAL</span>
-          <span style="font-size:22px;font-weight:700;color:#1D9E75" id="os-fin-total-geral">R$ 0,00</span>
-        </div>
-
-        <div class="form-row">
-          <div class="field">
-            <label>Status do pagamento</label>
-            <select id="os-fin-status-pag" style="width:100%;padding:11px 13px;font-size:14px;border:2px solid #b8d4cc;border-radius:12px;background:#f4f8f6;font-family:var(--font);outline:none;-webkit-appearance:none">
-              <option value="pendente">⏳ Pendente</option>
-              <option value="pago">✅ Pago</option>
-              <option value="parcial">📊 Parcial</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Forma de pagamento</label>
-            <select id="os-fin-forma-pag" style="width:100%;padding:11px 13px;font-size:14px;border:2px solid #b8d4cc;border-radius:12px;background:#f4f8f6;font-family:var(--font);outline:none;-webkit-appearance:none">
-              <option value="">Selecione...</option>
-              <option value="dinheiro">💵 Dinheiro</option>
-              <option value="pix">📱 PIX</option>
-              <option value="cartao_credito">💳 Cartão Crédito</option>
-              <option value="cartao_debito">💳 Cartão Débito</option>
-              <option value="boleto">📄 Boleto</option>
-              <option value="prazo">🗓 A prazo</option>
-            </select>
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="field"><label>Parcelas</label><input type="number" id="os-fin-parcelas" min="1" value="1" placeholder="1"/></div>
-          <div class="field"><label>Data do pagamento</label><input type="date" id="os-fin-data-pag"/></div>
-        </div>
-        <div class="field" style="margin-bottom:14px">
-          <label>Observações finais</label>
-          <textarea id="os-fin-obs" maxlength="300" placeholder="Observações, garantia, avisos ao cliente..." style="min-height:60px;resize:vertical"></textarea>
-        </div>
-
-        <div id="os-fin-err" style="background:#FEE2E2;color:#dc2626;border-radius:8px;padding:10px;font-size:13px;margin-bottom:10px;display:none"></div>
-        <div class="chpwd-btns">
-          <button class="btn-chpwd-cancel" onclick="osFecharFin()">Cancelar</button>
-          <button class="btn-chpwd-ok" onclick="osConfirmarFin()">✅ Finalizar OS</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- ÁREA DE IMPRESSÃO DA OS -->
-    <div id="os-print-area" style="display:none">
-      <div id="os-print-content"></div>
-    </div>
-
     <div id="tab-report-tech" style="display:none">
       <div class="report-section">
         <div class="card-title">Visualizar registros por período</div>
@@ -1892,10 +1620,7 @@ function setupAdminTabs(){
     {id:'list',label:'Registros'},
     {id:'stats',label:'Resumo'},
     {id:'sheets',label:'Sheets'},
-    {id:'os',label:'OS / Servicos'},
-    {id:'os-abertas',label:'OS Abertas'},
-    {id:'comissoes',label:'Comissoes'},
-    {id:'gerenciar',label:'Gerenciar'}
+    {id:'gerenciar',label:'⚙ Gerenciar'}
   ];
   buildTabs(tabs);
   document.getElementById('stats-filter').style.display='block';
@@ -1911,6 +1636,7 @@ function setupAdminTabs(){
   acGrupos=getGruposComExtras(['todos']);
   showTab('form');
 }
+
 function showGerTab(t){
   ['usuarios','locais','senhas'].forEach(function(x){
     var el=document.getElementById('ger-tab-'+x);if(el)el.style.display=x===t?'block':'none';
@@ -1936,9 +1662,6 @@ function setupTechTabs(user){
     {id:'form',label:'Novo Registro'},
     {id:'list',label:'Meus Registros'},
     {id:'stats',label:'Resumo'},
-    {id:'os',label:'🔧 OS / Serviços'},
-    {id:'os-abertas',label:'📋 OS Abertas'},
-    {id:'minha-comissao',label:'💰 Minha Comissão'},
     {id:'report-tech',label:'Relatórios'}
   ];
   buildTabs(tabs);
@@ -1972,7 +1695,7 @@ function selRespByName(name){
 }
 
 function showTab(t){
-  ['form','list','stats','sheets','report-tech','gerenciar','os','os-abertas','comissoes','minha-comissao'].forEach(function(x){
+  ['form','list','stats','sheets','report-tech','gerenciar'].forEach(function(x){
     var el=document.getElementById('tab-'+x);if(el)el.style.display='none';
     var btn=document.getElementById('tab-btn-'+x);if(btn)btn.classList.remove('active');
   });
@@ -1983,10 +1706,6 @@ function showTab(t){
   else if(t==='sheets')renderHistory();
   else if(t==='report-tech')renderTechHistory();
   else if(t==='gerenciar'){admRenderUsers();admRenderLocais();}
-  else if(t==='os'){osIniciarTab();}
-  else if(t==='os-abertas'){ospIniciarTab();}
-  else if(t==='comissoes'){comIniciar();}
-  else if(t==='minha-comissao'){tecRenderComissaoTab();}
 }
 
 // ── FORM ─────────────────────────────────────────────────────
@@ -2068,100 +1787,608 @@ function confirmSave(){
 function closeSuccess(){document.getElementById('success-modal').classList.remove('open')}
 
 // ── LIST ─────────────────────────────────────────────────────
-function getRegistrosFiltrados(){
-  var periodoEl=document.getElementById('stats-period')||document.getElementById('list-stats-period');
-  var periodo=periodoEl?periodoEl.value:'todos';
-  var hoje=new Date();
-  var dataHoje=new Date(hoje.getFullYear(),hoje.getMonth(),hoje.getDate());
-  
-  return records.filter(function(r){
-    var parts=r.date.split('/');
-    if(parts.length!==3)return true; // se data inválida, inclui
-    var d=new Date(parseInt(parts[2]),parseInt(parts[1])-1,parseInt(parts[0]));
-    if(isNaN(d))return true;
-    
-    if(periodo==='hoje'){
-      return d.getTime()===dataHoje.getTime();
-    }
-    if(periodo==='semana'){
-      var semAgo=new Date(dataHoje.getTime()-7*86400000);
-      return d>=semAgo&&d<=dataHoje;
-    }
-    if(periodo==='mes-envio'){
-      var lastReportStr=localStorage.getItem('last_report_date');
-      var dataRelatorio=lastReportStr?new Date(lastReportStr):new Date(hoje.getFullYear(),hoje.getMonth(),22);
-      return d>=dataRelatorio&&d<=dataHoje;
-    }
-    return true; // todos
-  });
-}
-
 function renderList(){
-  _listPage=0;
-  var q=(document.getElementById('search-q')||{value:''}).value.toLowerCase();
-  var lista=getRegistrosFiltrados().filter(function(r){
-    var texto=(r.resp+' '+r.local+' '+r.desc).toLowerCase();
-    return q===''||texto.indexOf(q)>=0;
+  var q=(document.getElementById('search-q').value||'').toLowerCase();
+  var el=document.getElementById('rec-list');
+  var base=isAdmin?records:records.filter(function(r){return r.resp===currentUser});
+  var f=base.filter(function(r){return r.resp.toLowerCase().includes(q)||r.local.toLowerCase().includes(q)||r.desc.toLowerCase().includes(q)});
+  f.sort(function(a,b){
+    var da=(a.date||'')+(a.start?'T'+a.start:'T00:00');
+    var db=(b.date||'')+(b.start?'T'+b.start:'T00:00');
+    return db.localeCompare(da);
   });
-  
-  console.log('renderList - lista filtrada:', lista.length);
-  
-  var totalPages=Math.ceil(lista.length/LIST_PER_PAGE);
-  if(_listPage>=totalPages)_listPage=Math.max(0,totalPages-1);
-  
-  var slice=lista.slice(_listPage*LIST_PER_PAGE,(_listPage+1)*LIST_PER_PAGE);
-  var html=slice.map(function(r){
-    // Parse date to DD/MM/YYYY HH:MM
-    var dateParts=r.date.split('/');
-    var dateFormatted=r.date; // DD/MM/YYYY
-    var horario=r.start||'00:00'; // HH:MM 24h
-    
-    // Determine tipo e cor do balão
-    var tipoLocal='';
-    var corBalao='#f0f0f0';
-    if(r.locType==='rural'){tipoLocal='Escola Rural';corBalao='#fff9e6';}
-    else if(r.locType==='urbana'){tipoLocal='Escola Urbana';corBalao='#f3e5ff';}
-    else if(r.locType==='setor'){tipoLocal='Setor';corBalao='#e0f7f6';}
-    
-    return '<div style="background:#fff;border-radius:12px;padding:14px;margin-bottom:8px">'+
-      '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">'+
-        '<div style="flex:1">'+
-          '<div style="font-family:Arial;font-weight:700;font-size:11px;color:#0f1f1c;margin-bottom:4px">'+r.resp+'</div>'+
-          '<div style="font-family:Arial;font-size:11px;color:#2d4a44;line-height:1.4;margin-bottom:10px">'+r.desc+'</div>'+
-          '<div style="display:flex;gap:6px;align-items:center">'+
-            '<span style="background:'+corBalao+';color:#333;padding:4px 10px;border-radius:8px;font-size:10px;font-weight:600;border:none">'+tipoLocal+'</span>'+
-            '<span style="font-size:10px;color:#666;font-weight:500">'+r.local+'</span>'+
-          '</div>'+
-        '</div>'+
-        '<div style="text-align:right;font-size:10px;color:#999">'+
-          '<div>'+dateFormatted+'</div>'+
-          '<div>'+horario+'</div>'+
-        '</div>'+
-      '</div>'+
-    '</div>';
+  if(!f.length){el.innerHTML='<div class="empty-state">Nenhum registro encontrado.</div>';return}
+  var tl={'setor':'Setor','urbana':'Escola Urbana','rural':'Escola Rural'};
+  var showDel=isAdmin;
+  el.className='records-list'+(showDel?' show-del':'');
+  el.innerHTML=f.map(function(r){
+    var tc=r.locType==='urbana'?'blue':r.locType==='rural'?'orange':'';
+    return '<div class="record-item"><div class="record-header"><div class="record-name">'+r.resp+'</div><div style="display:flex;align-items:center;gap:6px"><div class="record-date">'+r.date+(r.start?' · '+r.start:'')+'</div><button class="record-del" onclick="deleteRecord('+r.id+')" title="Apagar">🗑</button></div></div><div class="record-desc">'+r.desc+'</div><div class="record-tags"><span class="tag '+tc+'">'+(tl[r.locType]||'Setor')+'</span><span class="tag">'+r.local+'</span></div></div>';
   }).join('');
-  
-  document.getElementById('list-content').innerHTML=html||'<div style="padding:20px;text-align:center;color:#7a9e96">Nenhum registro encontrado.</div>';
-  
-  // Paginação
-  var pagHtml='';
-  if(totalPages>1){
-    for(var i=0;i<totalPages;i++){
-      var ativo=i===_listPage;
-      var bgColor=ativo?'#1D9E75':'#fff';
-      var textColor=ativo?'#fff':'#2d4a44';
-      var borderColor=ativo?'#1D9E75':'#b8d4cc';
-      pagHtml+='<button style="padding:8px 14px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);border:2px solid '+borderColor+';background:'+bgColor+';color:'+textColor+'" onclick="gotoPage('+i+')">'+(i+1)+'</button>';
-    }
-  }
-  document.getElementById('list-pagination').innerHTML=pagHtml;
 }
 
+function deleteRecord(id){
+  if(!confirm('Apagar este registro?'))return;
+  var gs=getGs();
+  if(gs){
+    showSyncStatus('Apagando...');
+    fetch(gs,{method:'POST',body:JSON.stringify({action:'deleteRecord',id:id})})
+      .then(function(){syncFromSheets(function(){renderList();showSyncStatus('✓ Apagado',2000)})})
+      .catch(function(){records=records.filter(function(r){return r.id!=id});save();renderList();showSyncStatus('')});
+  } else {
+    records=records.filter(function(r){return r.id!=id});save();renderList();
+  }
+}
 
-function gotoPage(page){
-  console.log('gotoPage:', page);
-  _listPage=page;
-  renderList();
+// ── STATS ─────────────────────────────────────────────────────
+function renderStats(){
+  var filterResp=isAdmin?(document.getElementById('stats-resp-filter').value||''):'';
+  // Técnicos veem todos os atendimentos no resumo agora
+  var base=records;
+  if(filterResp)base=base.filter(function(r){return r.resp===filterResp});
+  var today=new Date().toISOString().split('T')[0];
+  var wa=new Date(Date.now()-7*86400000).toISOString().split('T')[0];
+  document.getElementById('st-tot').textContent=base.length;
+  document.getElementById('st-tod').textContent=base.filter(function(r){return r.date===today}).length;
+  document.getElementById('st-wk').textContent=base.filter(function(r){return r.date>=wa}).length;
+  var bR={},bL={};
+  base.forEach(function(r){bR[r.resp]=(bR[r.resp]||0)+1;bL[r.local]=(bL[r.local]||0)+1});
+  function bar(obj,id){
+    var mx=Math.max.apply(null,Object.values(obj).concat([1]));
+    document.getElementById(id).innerHTML=Object.entries(obj).sort(function(a,b){return b[1]-a[1]}).map(function(kv){
+      return '<div style="display:flex;align-items:center;gap:9px;margin-bottom:9px"><div style="font-size:13px;color:var(--tx2);min-width:150px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600">'+kv[0]+'</div><div style="flex:1;background:#f1f5f9;border-radius:5px;height:7px;overflow:hidden"><div style="background:var(--gr);height:100%;width:'+Math.round(kv[1]/mx*100)+'%;border-radius:5px"></div></div><div style="font-size:13px;font-weight:700;color:var(--gr-d);min-width:20px;text-align:right">'+kv[1]+'</div></div>';
+    }).join('')||'<span style="font-size:13px;color:var(--tx3)">Sem dados.</span>';
+  }
+  if(Object.keys(bR).length)bar(bR,'st-resp');else document.getElementById('st-resp').innerHTML='<span style="font-size:13px;color:var(--tx3)">Sem dados.</span>';
+  if(Object.keys(bL).length)bar(bL,'st-loc');else document.getElementById('st-loc').innerHTML='<span style="font-size:13px;color:var(--tx3)">Sem dados.</span>';
+}
+
+// ── SYNC ─────────────────────────────────────────────────────
+function syncFromSheets(cb){
+  var gs=getGs();if(!gs){if(cb)cb();return}
+  showSyncStatus('Sincronizando...');
+  fetch(gs,{method:'POST',body:JSON.stringify({action:'getRecords'})})
+    .then(function(r){return r.json()})
+    .then(function(data){
+      if(data.records&&Array.isArray(data.records)){records=data.records;try{localStorage.setItem('arp_rec',JSON.stringify(records))}catch(e){}}
+      showSyncStatus('✓ Sincronizado',2000);if(cb)cb();
+    })
+    .catch(function(){showSyncStatus('');if(cb)cb()});
+}
+function showSyncStatus(msg,hideAfter){/* sync status hidden */}
+function sendRecord(rec,url){try{fetch(url,{method:'POST',mode:'no-cors',body:JSON.stringify({action:'addRecord',record:rec})})}catch(e){}}
+
+// ── REPORT (ADMIN - SHEETS) ───────────────────────────────────
+function setPeriod(p){
+  currentPeriod=p;
+  ['mensal','quinzenal','semanal','personalizado'].forEach(function(x){
+    document.getElementById('period-'+x).style.display=x===p?'block':'none';
+  });
+  document.querySelectorAll('#tab-sheets .period-tab').forEach(function(el){
+    el.classList.toggle('active',el.getAttribute('onclick').includes("'"+p+"'"));
+  });
+}
+
+function getFilteredRecords(allRecs){
+  var p=currentPeriod,filtered=allRecs;
+  if(p==='mensal'){
+    var m=parseInt(document.getElementById('rep-month').value),y=parseInt(document.getElementById('rep-year').value);
+    filtered=allRecs.filter(function(r){var d=new Date(r.date);return d.getMonth()===m&&d.getFullYear()===y});
+  } else if(p==='quinzenal'){
+    var mq=parseInt(document.getElementById('rep-month-q').value),yq=parseInt(document.getElementById('rep-year-q').value),qn=parseInt(document.getElementById('rep-quinzena').value);
+    filtered=allRecs.filter(function(r){var d=new Date(r.date);if(d.getMonth()!==mq||d.getFullYear()!==yq)return false;var day=d.getDate();return qn===1?day<=15:day>=16});
+  } else if(p==='semanal'){
+    var ini=document.getElementById('rep-sem-ini').value,fim=document.getElementById('rep-sem-fim').value;
+    if(!ini||!fim){alert('Selecione as datas.');return null}
+    filtered=allRecs.filter(function(r){return r.date>=ini&&r.date<=fim});
+  } else {
+    var pini=document.getElementById('rep-per-ini').value,pfim=document.getElementById('rep-per-fim').value,presp=document.getElementById('rep-per-resp').value;
+    if(!pini||!pfim){alert('Selecione as datas.');return null}
+    filtered=allRecs.filter(function(r){return r.date>=pini&&r.date<=pfim&&(!presp||r.resp===presp)});
+  }
+  return filtered;
+}
+
+function getPeriodLabel(){
+  var p=currentPeriod;
+  var ML=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  if(p==='mensal'){var m=parseInt(document.getElementById('rep-month').value),y=parseInt(document.getElementById('rep-year').value);return ML[m]+'/'+y}
+  else if(p==='quinzenal'){var mq=parseInt(document.getElementById('rep-month-q').value),yq=parseInt(document.getElementById('rep-year-q').value),qn=parseInt(document.getElementById('rep-quinzena').value);return(qn===1?'1ª':'2ª')+' quinzena '+ML[mq]+'/'+yq}
+  else if(p==='semanal'){return document.getElementById('rep-sem-ini').value+' a '+document.getElementById('rep-sem-fim').value}
+  else{var pini=document.getElementById('rep-per-ini').value,pfim=document.getElementById('rep-per-fim').value,presp=document.getElementById('rep-per-resp').value;return(presp?presp+' — ':'')+pini+' a '+pfim}
+}
+
+function sendToSheets(){
+  var gs=getGs();if(!gs){alert('Configure a URL do Apps Script no Painel Admin.');return}
+  var msg=document.getElementById('export-msg');msg.style.display='block';msg.textContent='Buscando registros...';
+  var label=getPeriodLabel();
+  fetch(gs,{method:'POST',body:JSON.stringify({action:'getRecords'})})
+    .then(function(r){return r.json()})
+    .then(function(data){
+      var allRecs=(data&&data.records)||records;
+      var recs=getFilteredRecords(allRecs);if(!recs)return;
+      msg.textContent='Enviando '+recs.length+' registro(s)...';
+      var ini=recs.length?recs.reduce(function(a,b){return a.date<b.date?a:b}).date:'';
+      var fim=recs.length?recs.reduce(function(a,b){return a.date>b.date?a:b}).date:'';
+      return fetch(gs,{method:'POST',body:JSON.stringify({action:'monthlyReport',month:0,year:0,records:recs,periodoLabel:label,dataInicio:ini,dataFim:fim})})
+        .then(function(res){return res.text()})
+        .then(function(){msg.textContent='✓ Enviado! '+recs.length+' registro(s) — '+label;logHistory('Relatório '+label+' — '+recs.length+' registros')});
+    })
+    .catch(function(e){msg.textContent='Erro: '+e.message;msg.style.color='#dc2626'});
+}
+
+function exportCSV(){
+  var recs=getFilteredRecords(records);if(!recs)return;
+  if(!recs.length){alert('Nenhum registro para este período.');return}
+  var header='Responsável,Data,Hora,Tipo,Setor,Escola Urbana,Escola Rural,Descrição\n';
+  var rows=recs.map(function(r){
+    var setor=r.locType==='setor'?r.local:'',urb=r.locType==='urbana'?r.local:'',rur=r.locType==='rural'?r.local:'';
+    var tipo=r.locType==='setor'?'Setor':r.locType==='urbana'?'Escola Urbana':'Escola Rural';
+    return '"'+r.resp+'","'+r.date+'","'+(r.start||'')+'","'+tipo+'","'+setor+'","'+urb+'","'+rur+'","'+r.desc.replace(/"/g,'""')+'"';
+  }).join('\n');
+  var blob=new Blob(['\uFEFF'+header+rows],{type:'text/csv;charset=utf-8'});
+  var url=URL.createObjectURL(blob);var a=document.createElement('a');
+  a.href=url;a.download='relatorio_'+getPeriodLabel().replace(/[\/\s]/g,'_')+'.csv';a.click();URL.revokeObjectURL(url);
+  document.getElementById('export-msg').style.display='block';
+  document.getElementById('export-msg').textContent='✓ CSV exportado com '+recs.length+' registro(s).';
+}
+
+function logHistory(msg){
+  var h=[];try{h=JSON.parse(localStorage.getItem('arp_hist')||'[]')}catch(e){}
+  h.unshift({msg:msg,ts:new Date().toISOString()});if(h.length>20)h=h.slice(0,20);
+  try{localStorage.setItem('arp_hist',JSON.stringify(h))}catch(e){}
+  renderHistory();
+}
+function renderHistory(){
+  var h=[];try{h=JSON.parse(localStorage.getItem('arp_hist')||'[]')}catch(e){}
+  var el=document.getElementById('send-history');if(!el)return;
+  if(!h.length){el.innerHTML='<div style="font-size:13px;color:var(--tx3)">Nenhum envio registrado.</div>';return}
+  el.innerHTML='<div style="display:flex;justify-content:flex-end;margin-bottom:8px"><button onclick="clearHistory()" style="background:none;border:none;color:#dc2626;font-size:12px;cursor:pointer;font-family:var(--font);font-weight:600">Apagar histórico</button></div>'+
+    h.map(function(x){return '<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #f1f5f9;font-size:13px"><span>'+x.msg+'</span><span style="color:var(--tx3);font-size:11px;white-space:nowrap;margin-left:8px">'+new Date(x.ts).toLocaleDateString('pt-BR')+'</span></div>'}).join('');
+}
+function clearHistory(){
+  if(!confirm('Apagar todo o histórico de envios?'))return;
+  try{localStorage.removeItem('arp_hist')}catch(e){}
+  renderHistory();
+}
+
+function autoSendReport(m,y){
+  var gs=getGs();if(!gs)return;
+  var recs=records.filter(function(r){var d=new Date(r.date);return d.getMonth()===m-1&&d.getFullYear()===y});
+  try{fetch(gs,{method:'POST',mode:'no-cors',body:JSON.stringify({action:'monthlyReport',month:m,year:y,records:recs,auto:true})})}catch(e){}
+  var ML=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  logHistory('Relatório automático '+ML[m-1]+'/'+y+' — '+recs.length+' registros');
+}
+
+function checkAutoReport(){
+  var today=new Date(),nr=getNextReportDate();
+  if(today.toDateString()===nr.toDateString()){
+    var key='arp_rep_'+today.toISOString().split('T')[0];
+    if(!localStorage.getItem(key)){autoSendReport(today.getMonth()+1,today.getFullYear());localStorage.setItem(key,'sent')}
+  }
+}
+
+function testConnection(){
+  var gs=getGs();if(!gs){alert('Cole a URL primeiro.');return}
+  fetch(gs,{method:'POST',body:JSON.stringify({action:'ping'})}).then(function(r){return r.text()}).then(function(t){alert('✓ Conexão OK! '+t.substring(0,80))}).catch(function(){alert('Erro. Verifique a URL.')});
+}
+
+// ── TECH REPORT (visualização local) ─────────────────────────
+function setTechPeriod(p){
+  techPeriod=p;
+  ['semanal','quinzenal','mensal','personalizado'].forEach(function(x){
+    document.getElementById('tech-period-'+x).style.display=x===p?'block':'none';
+  });
+  document.querySelectorAll('#tab-report-tech .period-tab').forEach(function(el){
+    el.classList.toggle('active',el.getAttribute('onclick').includes("'"+p+"'"));
+  });
+}
+
+function getTechFilteredRecords(){
+  var base=records.filter(function(r){return r.resp===currentUser});
+  var p=techPeriod;
+  if(p==='semanal'){
+    var ini=document.getElementById('tech-sem-ini').value,fim=document.getElementById('tech-sem-fim').value;
+    if(!ini||!fim){alert('Selecione as datas.');return null}
+    return base.filter(function(r){return r.date>=ini&&r.date<=fim});
+  } else if(p==='quinzenal'){
+    var mq=parseInt(document.getElementById('tech-month-q').value),yq=parseInt(document.getElementById('tech-year-q').value),qn=parseInt(document.getElementById('tech-quinzena').value);
+    return base.filter(function(r){var d=new Date(r.date);if(d.getMonth()!==mq||d.getFullYear()!==yq)return false;var day=d.getDate();return qn===1?day<=15:day>=16});
+  } else if(p==='mensal'){
+    var m=parseInt(document.getElementById('tech-month').value),y=parseInt(document.getElementById('tech-year').value);
+    return base.filter(function(r){var d=new Date(r.date);return d.getMonth()===m&&d.getFullYear()===y});
+  } else {
+    var pini=document.getElementById('tech-per-ini').value,pfim=document.getElementById('tech-per-fim').value;
+    if(!pini||!pfim){alert('Selecione as datas.');return null}
+    return base.filter(function(r){return r.date>=pini&&r.date<=pfim});
+  }
+}
+
+function visualizarRelatorioTecnico(){
+  var recs=getTechFilteredRecords();if(!recs)return;
+  recs.sort(function(a,b){
+    var da=(a.date||'')+(a.start?'T'+a.start:'T00:00');
+    var db=(b.date||'')+(b.start?'T'+b.start:'T00:00');
+    return da.localeCompare(db);
+  });
+  var el=document.getElementById('tech-report-result');
+  if(!recs.length){el.innerHTML='<div class="report-viewer"><div class="empty-state">Nenhum registro para este período.</div></div>';return}
+  var tl={'setor':'Setor','urbana':'Escola Urbana','rural':'Escola Rural'};
+  var rows=recs.map(function(r,i){
+    var locLabel=tl[r.locType]||'Setor';
+    var bg=i%2===0?'#fff':'#f8fffe';
+    return '<tr><td style="background:'+bg+'">'+r.date+(r.start?' '+r.start:'')+'</td><td style="background:'+bg+'">'+r.local+'<br><small style="color:var(--tx3)">'+locLabel+'</small></td><td style="background:'+bg+'">'+r.desc+'</td></tr>';
+  }).join('');
+  el.innerHTML='<div class="report-viewer"><div class="report-viewer-title"><span>'+recs.length+' atendimento(s)</span></div><div style="overflow-x:auto"><table class="report-table"><thead><tr><th>Data/Hora</th><th>Local</th><th>Descrição</th></tr></thead><tbody>'+rows+'</tbody></table></div></div>';
+  // Salva no histórico
+  var label=getTechPeriodLabel();
+  addTechHistory(label+' — '+recs.length+' registros');
+}
+
+function getTechPeriodLabel(){
+  var p=techPeriod;
+  var ML=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  if(p==='semanal')return document.getElementById('tech-sem-ini').value+' a '+document.getElementById('tech-sem-fim').value;
+  else if(p==='quinzenal'){var mq=parseInt(document.getElementById('tech-month-q').value),yq=parseInt(document.getElementById('tech-year-q').value),qn=parseInt(document.getElementById('tech-quinzena').value);return(qn===1?'1ª':'2ª')+' quinzena '+ML[mq]+'/'+yq}
+  else if(p==='mensal'){var m=parseInt(document.getElementById('tech-month').value),y=parseInt(document.getElementById('tech-year').value);return ML[m]+'/'+y}
+  else return document.getElementById('tech-per-ini').value+' a '+document.getElementById('tech-per-fim').value;
+}
+
+function addTechHistory(msg){
+  var key='arp_tech_hist_'+currentUser;
+  var h=[];try{h=JSON.parse(localStorage.getItem(key)||'[]')}catch(e){}
+  h.unshift({msg:msg,ts:new Date().toISOString()});if(h.length>30)h=h.slice(0,30);
+  try{localStorage.setItem(key,JSON.stringify(h))}catch(e){}
+  renderTechHistory();
+}
+function renderTechHistory(){
+  var key='arp_tech_hist_'+currentUser;
+  var h=[];try{h=JSON.parse(localStorage.getItem(key)||'[]')}catch(e){}
+  var el=document.getElementById('tech-history');if(!el)return;
+  if(!h.length){el.innerHTML='<div style="font-size:13px;color:var(--tx3)">Nenhum relatório visualizado ainda.</div>';return}
+  el.innerHTML=h.map(function(x){return '<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #f1f5f9;font-size:13px"><span>'+x.msg+'</span><span style="color:var(--tx3);font-size:11px;white-space:nowrap;margin-left:8px">'+new Date(x.ts).toLocaleDateString('pt-BR')+'</span></div>'}).join('');
+}
+function limparHistoricoTecnico(){
+  if(!confirm('Apagar histórico de relatórios?'))return;
+  try{localStorage.removeItem('arp_tech_hist_'+currentUser)}catch(e){}
+  renderTechHistory();
+  document.getElementById('tech-report-result').innerHTML='';
+}
+
+// ── CHANGE PASSWORD ───────────────────────────────────────────
+function openChpwd(){
+  document.getElementById('chpwd-overlay').classList.add('open');
+  document.getElementById('chpwd-current').value='';
+  document.getElementById('chpwd-new').value='';
+  document.getElementById('chpwd-confirm').value='';
+  document.getElementById('chpwd-err').style.display='none';
+}
+function closeChpwd(){document.getElementById('chpwd-overlay').classList.remove('open')}
+function confirmarChpwd(){
+  var cur=document.getElementById('chpwd-current').value;
+  var nw=document.getElementById('chpwd-new').value;
+  var cf=document.getElementById('chpwd-confirm').value;
+  var err=document.getElementById('chpwd-err');
+  err.style.display='none';
+  if(!cur||!nw||!cf){err.textContent='Preencha todos os campos.';err.style.display='block';return}
+  if(cur!==SENHAS[currentUser]){err.textContent='Senha atual incorreta.';err.style.display='block';return}
+  var validacao=validarSenhaForte(nw);
+  if(validacao){err.innerHTML=validacao;err.style.display='block';return}
+  if(nw!==cf){err.textContent='As senhas não coincidem.';err.style.display='block';return}
+  SENHAS[currentUser]=nw;
+  try{localStorage.setItem('arp_senhas',JSON.stringify(SENHAS))}catch(e){}
+  // Remove flag de senha padrão expirada
+  try{localStorage.removeItem('arp_senha_padrao_'+currentUser)}catch(e){}
+  var gs=getGs();
+  if(gs){fetch(gs,{method:'POST',body:JSON.stringify({action:'saveSenhas',senhas:SENHAS})}).catch(function(){})}
+  closeChpwd();
+  showBanner('✓ Senha alterada com sucesso!');
+}
+
+function validarSenhaForte(senha){
+  if(senha.length<8)return 'A senha deve ter pelo menos <strong>8 caracteres</strong>.';
+  if(!/[A-Z]/.test(senha))return 'A senha deve conter pelo menos <strong>1 letra maiúscula</strong>.';
+  if(!/[a-z]/.test(senha))return 'A senha deve conter pelo menos <strong>1 letra minúscula</strong>.';
+  if(!/[0-9]/.test(senha))return 'A senha deve conter pelo menos <strong>1 número</strong>.';
+  if(!/[!@#$%&*]/.test(senha))return 'A senha deve conter pelo menos <strong>1 caractere especial</strong> (! @ # $ % & *).';
+  return null;
+}
+
+function esqueciSenha(){
+  alert('Para redefinir sua senha, entre em contato com o Administrador do sistema.\n\nO Administrador pode alterar sua senha através do Painel Admin.');
+}
+
+function showBanner(msg){
+  var b=document.getElementById('success-banner');b.textContent=msg;b.classList.add('show');
+  setTimeout(function(){b.classList.remove('show')},3000);
+}
+
+// ── ADMIN PANEL ───────────────────────────────────────────────
+function openAdmin(){
+  try {
+    document.getElementById('admin-overlay').classList.add('open');
+    loadAdminFields();
+  } catch(e) {
+    console.error('Erro ao abrir Admin:', e);
+    alert('Erro ao abrir o painel Admin: ' + e.message);
+  }
+}
+function closeAdmin(force){
+  if(force===true||(force&&force.target===document.getElementById('admin-overlay'))){
+    document.getElementById('admin-overlay').classList.remove('open');
+  }
+}
+
+function admLogoUrl(){
+  var url=document.getElementById('adm-logo-url').value.trim();
+  var prev=document.getElementById('adm-logo-preview');
+  if(url){prev.src=url;prev.classList.add('show');document.getElementById('logo-img').src=url;document.getElementById('logo-wrap').classList.add('has-img')}
+  else{prev.classList.remove('show');document.getElementById('logo-wrap').classList.remove('has-img')}
+}
+function admLoginLogoUrl(){
+  var url=document.getElementById('adm-login-logo-url').value.trim();
+  var prev=document.getElementById('adm-login-logo-preview');
+  if(url){prev.src=url;prev.classList.add('show');applyLoginLogo(url)}
+  else{prev.classList.remove('show');applyLoginLogo('')}
+}
+function admLogoUpload(inp){
+  var file=inp.files[0];if(!file)return;
+  var reader=new FileReader();
+  reader.onload=function(e){
+    var data=e.target.result;try{localStorage.setItem('arp_dev_logo',data)}catch(err){}
+    document.getElementById('logo-img').src=data;document.getElementById('logo-wrap').classList.add('has-img');
+  };reader.readAsDataURL(file);
+}
+function admBgUrl(){
+  var url=document.getElementById('adm-bg-url').value.trim();
+  if(url)applyBg(url,parseInt(document.getElementById('adm-bg-op').value));
+  else{document.body.style.backgroundImage='none';document.getElementById('app').style.background='';}
+}
+function admBgUpload(inp){
+  var file=inp.files[0];if(!file)return;
+  var reader=new FileReader();
+  reader.onload=function(e){try{localStorage.setItem('arp_dev_bg',e.target.result)}catch(err){}applyBg(e.target.result,parseInt(document.getElementById('adm-bg-op').value))};
+  reader.readAsDataURL(file);
+}
+function admRemoveBg(){
+  try{localStorage.removeItem('arp_dev_bg')}catch(e){}
+  document.body.style.backgroundImage='none';document.getElementById('app').style.background='';
+  document.getElementById('adm-bg-url').value='';document.getElementById('adm-bg-file').value='';
+}
+
+function setAdmFont(size){document.getElementById('adm-fs').value=size;admPreview()}
+
+function admPreview(){
+  var hc=document.getElementById('adm-hc').value,mc=document.getElementById('adm-mc').value,lc=document.getElementById('adm-lc').value,tc=document.getElementById('adm-tc').value;
+  document.getElementById('adm-hc-v').textContent=hc;document.getElementById('adm-mc-v').textContent=mc;
+  document.getElementById('adm-lc-v').textContent=lc;document.getElementById('adm-tc-v').textContent=tc;
+  var op=document.getElementById('adm-bg-op').value;document.getElementById('adm-bg-op-val').textContent=op+'%';
+  var fs=document.getElementById('adm-fs').value;document.getElementById('adm-fs-val').textContent=fs+'px';
+  document.documentElement.style.setProperty('--header-bg',hc);
+  document.documentElement.style.setProperty('--gr',mc);
+  document.documentElement.style.setProperty('--gr-d',shade(mc,-40));
+  document.documentElement.style.setProperty('--gr-l',shade(mc,80));
+  // logo text cor fixa via CSS (!important)
+  document.documentElement.style.setProperty('--tab-active',tc);
+  document.body.style.fontSize=fs+'px';
+  var l1=document.getElementById('adm-l1').value,l2=document.getElementById('adm-l2').value,sub=document.getElementById('adm-sub').value,ht=document.getElementById('adm-ht').value;
+  document.getElementById('logo-line1').textContent=l1;document.getElementById('logo-line2').textContent=l2;
+  document.getElementById('logo-sub').textContent=sub;document.getElementById('header-title').textContent=ht;
+  document.getElementById('lld-l1').textContent=l1;document.getElementById('lld-l2').textContent=l2;document.getElementById('lld-sub').textContent=sub;
+  // Aplica imagem de fundo da URL se preenchida
+  var bgUrl=document.getElementById('adm-bg-url').value.trim();
+  if(bgUrl){applyBg(bgUrl,parseInt(op))}
+  else{
+    // Sem URL — fundo limpo
+    document.body.style.backgroundImage='none';
+    document.getElementById('app').style.background='';
+  }
+}
+
+function admSalvarSenhas(){
+  var alteradas=0;
+  var todosU=getTodosUsuarios();
+  Object.keys(todosU).forEach(function(user){
+    var inp=document.getElementById('adm-senha-'+user);
+    if(inp&&inp.value.trim()){
+      SENHAS[user]=inp.value.trim();
+      inp.value='';
+      alteradas++;
+      try{localStorage.removeItem('arp_senha_padrao_'+user)}catch(e){}
+    }
+  });
+  if(alteradas>0){
+    try{localStorage.setItem('arp_senhas',JSON.stringify(SENHAS))}catch(e){}
+    var gs=getGs();
+    if(gs){fetch(gs,{method:'POST',body:JSON.stringify({action:'saveSenhas',senhas:SENHAS})}).catch(function(){})}
+    var msg=document.getElementById('adm-senhas-msg');
+    msg.style.display='block';msg.textContent='✓ '+alteradas+' senha(s) atualizada(s)!';
+    setTimeout(function(){msg.style.display='none'},3000);
+  } else {alert('Nenhuma senha foi alterada.')}
+}
+
+function admSave(){
+  var cfg={
+    hc:document.getElementById('adm-hc').value,mc:document.getElementById('adm-mc').value,
+    lc:document.getElementById('adm-lc').value,tc:document.getElementById('adm-tc').value,
+    l1:document.getElementById('adm-l1').value,l2:document.getElementById('adm-l2').value,
+    sub:document.getElementById('adm-sub').value,ht:document.getElementById('adm-ht').value,
+    showBtn:true,
+    bgOp:document.getElementById('adm-bg-op').value,fs:document.getElementById('adm-fs').value,
+    logoUrl:document.getElementById('adm-logo-url').value.trim(),
+    bgUrl:document.getElementById('adm-bg-url').value.trim(),
+    loginLogoUrl:document.getElementById('adm-login-logo-url').value.trim()
+  };
+  try{localStorage.setItem('arp_dev_cfg',JSON.stringify(cfg))}catch(e){}
+  saveConfigSheets(cfg);
+  admPreview();applyLoginLogo(cfg.loginLogoUrl||'');
+  document.getElementById('admin-overlay').classList.remove('open');
+  // Garante que botões permaneçam visíveis após fechar
+  if(isAdmin){
+    document.getElementById('admin-btn').style.display='block';
+    document.getElementById('user-badge').style.display='block';
+    document.getElementById('chpwd-btn').style.display='block';
+    document.getElementById('logout-btn').style.display='block';
+  }
+  showBanner('✓ Configurações salvas e sincronizadas!');
+}
+function admReset(){if(!confirm('Restaurar padrão?'))return;try{localStorage.removeItem('arp_dev_cfg');localStorage.removeItem('arp_dev_logo');localStorage.removeItem('arp_dev_bg')}catch(e){}location.reload()}
+
+function loadAdminFields(){
+  try{
+    var cfg=JSON.parse(localStorage.getItem('arp_dev_cfg')||'null')||{};
+    if(cfg.hc)document.getElementById('adm-hc').value=cfg.hc;
+    if(cfg.mc)document.getElementById('adm-mc').value=cfg.mc;
+    if(cfg.lc)document.getElementById('adm-lc').value=cfg.lc;
+    if(cfg.tc)document.getElementById('adm-tc').value=cfg.tc;
+    if(cfg.l1)document.getElementById('adm-l1').value=cfg.l1;
+    if(cfg.l2)document.getElementById('adm-l2').value=cfg.l2;
+    if(cfg.sub)document.getElementById('adm-sub').value=cfg.sub;
+    if(cfg.ht)document.getElementById('adm-ht').value=cfg.ht;
+    if(cfg.showBtn===false)document.getElementById('adm-show-btn').checked=false;
+    if(cfg.bgOp)document.getElementById('adm-bg-op').value=cfg.bgOp;
+    if(cfg.fs)document.getElementById('adm-fs').value=cfg.fs;
+    if(cfg.logoUrl){document.getElementById('adm-logo-url').value=cfg.logoUrl;var p=document.getElementById('adm-logo-preview');p.src=cfg.logoUrl;p.classList.add('show')}
+    if(cfg.bgUrl)document.getElementById('adm-bg-url').value=cfg.bgUrl;
+    if(cfg.loginLogoUrl){document.getElementById('adm-login-logo-url').value=cfg.loginLogoUrl;var lp=document.getElementById('adm-login-logo-preview');lp.src=cfg.loginLogoUrl;lp.classList.add('show')}
+    admPreview();
+  }catch(e){}
+  // Campos de senhas agora ficam na aba Gerenciar → Senhas
+  // admRenderUsers e admRenderLocais também ficam na aba Gerenciar
+  admPreview();
+}
+
+// ── SETTINGS ─────────────────────────────────────────────────
+function loadSettings(){
+  try{
+    var cfg=JSON.parse(localStorage.getItem('arp_dev_cfg')||'null');if(!cfg)return;
+    if(cfg.hc)document.documentElement.style.setProperty('--header-bg',cfg.hc);
+    if(cfg.mc){document.documentElement.style.setProperty('--gr',cfg.mc);document.documentElement.style.setProperty('--gr-d',shade(cfg.mc,-40));document.documentElement.style.setProperty('--gr-l',shade(cfg.mc,80))}
+    // logo text cor fixa via CSS (!important) - não sobrescreve
+    if(cfg.tc)document.documentElement.style.setProperty('--tab-active',cfg.tc);
+    if(cfg.l1){document.getElementById('logo-line1').textContent=cfg.l1;document.getElementById('lld-l1').textContent=cfg.l1}
+    if(cfg.l2){document.getElementById('logo-line2').textContent=cfg.l2;document.getElementById('lld-l2').textContent=cfg.l2}
+    if(cfg.sub){document.getElementById('logo-sub').textContent=cfg.sub;document.getElementById('lld-sub').textContent=cfg.sub}
+    if(cfg.ht)document.getElementById('header-title').textContent=cfg.ht;
+    if(cfg.fs)document.body.style.fontSize=cfg.fs+'px';
+    // showBtn ignorado - admin sempre tem botão
+    if(cfg.logoUrl){document.getElementById('logo-img').src=cfg.logoUrl;document.getElementById('logo-wrap').classList.add('has-img')}
+    else{var logo=localStorage.getItem('arp_dev_logo');if(logo){document.getElementById('logo-img').src=logo;document.getElementById('logo-wrap').classList.add('has-img')}}
+    // Só aplica fundo se tiver URL EXPLÍCITA configurada
+    if(cfg.bgUrl && cfg.bgUrl.trim()!==''){
+      applyBg(cfg.bgUrl,parseInt(cfg.bgOp||90));
+    }
+    applyLoginLogo(cfg.loginLogoUrl||'');
+  }catch(e){}
+}
+
+function loadConfigSheets(){
+  var gs=getGs();if(!gs)return;
+  fetch(gs,{method:'POST',body:JSON.stringify({action:'loadConfig'})})
+    .then(function(r){return r.json()})
+    .then(function(data){
+      if(data.config){
+        try{
+          var cfg=typeof data.config==='string'?JSON.parse(data.config):data.config;
+          if(cfg&&cfg.hc&&cfg.hc.startsWith('#')){
+            // Sempre sobrescreve localStorage com config do Sheets
+            localStorage.setItem('arp_dev_cfg',JSON.stringify(cfg));
+            loadSettings();
+          }
+        }catch(e){}
+      }
+      // Carrega senhas do Sheets também
+      fetch(gs,{method:'POST',body:JSON.stringify({action:'getSenhas'})})
+        .then(function(r){return r.json()})
+        .then(function(d){
+          if(d.senhas){
+            var s=typeof d.senhas==='string'?JSON.parse(d.senhas):d.senhas;
+            SENHAS=s;
+            try{localStorage.setItem('arp_senhas',JSON.stringify(SENHAS))}catch(e){}
+            popularLoginSelect();
+          }
+        }).catch(function(){});
+      // Carrega usuários extras do Sheets
+      fetch(gs,{method:'POST',body:JSON.stringify({action:'getUsuarios'})})
+        .then(function(r){return r.json()})
+        .then(function(d){
+          if(d.usuarios){
+            var u=typeof d.usuarios==='string'?JSON.parse(d.usuarios):d.usuarios;
+            USUARIOS_EXTRA=u;
+            try{localStorage.setItem('arp_usuarios_extra',JSON.stringify(USUARIOS_EXTRA))}catch(e){}
+            popularLoginSelect();
+          }
+        }).catch(function(){});
+      // Carrega locais extras do Sheets
+      fetch(gs,{method:'POST',body:JSON.stringify({action:'getLocais'})})
+        .then(function(r){return r.json()})
+        .then(function(d){
+          if(d.locais){
+            var l=typeof d.locais==='string'?JSON.parse(d.locais):d.locais;
+            LOCAIS_EXTRA=l;
+            try{localStorage.setItem('arp_locais_extra',JSON.stringify(LOCAIS_EXTRA))}catch(e){}
+            // Atualiza LOCAL_TYPE com novos locais
+            Object.keys(LOCAIS_EXTRA).forEach(function(tipo){
+              (LOCAIS_EXTRA[tipo]||[]).forEach(function(loc){LOCAL_TYPE[loc]=tipo});
+            });
+          }
+        }).catch(function(){});
+    }).catch(function(){});
+}
+
+function saveConfigSheets(cfg){
+  var gs=getGs();if(!gs)return;
+  fetch(gs,{method:'POST',body:JSON.stringify({action:'saveConfig',config:JSON.stringify(cfg)})})
+    .then(function(r){return r.json()})
+    .then(function(d){console.log('Config salva no Sheets:',d)})
+    .catch(function(e){console.error('Erro ao salvar config:',e)});
+}
+
+function applyLoginLogo(url){
+  var img=document.getElementById('login-logo-img');
+  var def=document.getElementById('login-logo-default');
+  if(!url||url===''){
+    img.style.display='none';def.style.display='flex';return;
+  }
+  // Mostra SVG enquanto carrega
+  def.style.display='flex';img.style.display='none';
+  var testImg=new Image();
+  testImg.onload=function(){
+    img.src=url;img.style.display='block';def.style.display='none';
+  };
+  testImg.onerror=function(){
+    // Imagem falhou — mantém SVG
+    img.style.display='none';def.style.display='flex';
+  };
+  testImg.src=url;
+}
+
+function applyBg(src,op){
+  if(!src||src.trim()===''){
+    document.body.style.backgroundImage='none';
+    document.body.style.background='';
+    document.getElementById('app').style.background='';
+    return;
+  }
+  var opNum=parseInt(op)||90;
+  // Aplica imagem no body
+  document.body.style.backgroundImage='url('+src+')';
+  document.body.style.backgroundSize='cover';
+  document.body.style.backgroundPosition='center';
+  document.body.style.backgroundAttachment='fixed';
+  document.body.style.backgroundRepeat='no-repeat';
+  // app fica com overlay branco semi-transparente por cima
+  // op=0 → imagem totalmente visível; op=100 → tudo branco
+  var alpha=(100-opNum)/100; // inverte: op alto = menos imagem visível
+  document.getElementById('app').style.background='rgba(238,241,246,'+Math.max(0.7,1-alpha)+')';
+}
+
+function shade(hex,pct){
+  var n=parseInt(hex.replace('#',''),16);
+  var r=Math.min(255,Math.max(0,(n>>16)+Math.round(255*pct/100)));
+  var g=Math.min(255,Math.max(0,((n>>8)&0xff)+Math.round(255*pct/100)));
+  var b=Math.min(255,Math.max(0,(n&0xff)+Math.round(255*pct/100)));
+  return '#'+[r,g,b].map(function(x){return x.toString(16).padStart(2,'0')}).join('');
 }
 
 
