@@ -241,7 +241,33 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
   .header-title{display:none}
 }
 
+/* ARPTECH OS */
+.os-card{background:#fff;border:2px solid #b8d4cc;border-radius:18px;padding:16px;margin-bottom:14px}
+.os-badge{display:inline-block;font-size:11px;padding:3px 9px;border-radius:10px;font-weight:700;white-space:nowrap;margin-right:4px}
+.os-badge.interno{background:#DBEAFE;color:#1e40af}
+.os-badge.externo{background:#FEF3C7;color:#92400e}
+.os-badge.pago{background:#d4f0e5;color:#0d6b4f}
+.os-badge.pendente{background:#FEE2E2;color:#dc2626}
+.item-row{display:grid;grid-template-columns:1fr 70px 90px 30px;gap:8px;align-items:end;margin-bottom:8px;background:#f4f8f6;border-radius:12px;padding:11px}
+.item-del{background:none;border:none;color:#dc2626;font-size:20px;cursor:pointer;padding:0;line-height:1}
+.total-bar{background:#0a2e2a;color:#fff;border-radius:12px;padding:13px 16px;display:flex;justify-content:space-between;align-items:center;margin-top:10px}
+.total-bar .tl{font-size:13px;opacity:.7}
+.total-bar .tv{font-size:20px;font-weight:700;color:#1D9E75}
+.os-list-item{background:#fff;border:2px solid #b8d4cc;border-radius:14px;padding:14px;margin-bottom:10px}
+.os-cliente{font-size:15px;font-weight:700;color:#0f1f1c}
+.os-total-v{font-size:15px;font-weight:700;color:#0d6b4f}
+.resumo-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px}
+.resumo-item{background:#fff;border:2px solid #b8d4cc;border-radius:12px;padding:11px;text-align:center}
+.resumo-item .ri-label{font-size:10px;color:#7a9e96;font-weight:700;text-transform:uppercase;margin-bottom:3px}
+.resumo-item .ri-val{font-size:16px;font-weight:700;color:#0a2e2a}
+@media(max-width:480px){.item-row{grid-template-columns:1fr 60px 80px 26px}}
 @media print{.header,.tabs,.no-print{display:none!important}body{background:#fff!important;font-size:13px}}
+
+@media print {
+  body > *:not(#os-print-area) { display: none !important; }
+  #os-print-area { display: block !important; }
+  #os-print-content { display: block; }
+}
 </style>
 </head>
 <body>
@@ -575,8 +601,17 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
 
     <!-- TAB: REGISTROS -->
     <div id="tab-list" style="display:none">
-      <div class="search-bar"><input type="text" id="search-q" placeholder="🔍  Buscar por responsável, local ou descrição..." oninput="renderList()"/></div>
-      <div id="rec-list" class="records-list"></div>
+      <div style="display:flex;gap:12px;align-items:flex-end;margin-bottom:12px;flex-wrap:wrap">
+        <div class="search-bar" style="flex:1;min-width:200px"><input type="text" id="search-q" placeholder="🔍  Buscar por responsável, local ou descrição..." oninput="renderList()"/></div>
+        <select id="list-stats-period" onchange="renderList()" style="padding:8px 12px;font-size:13px;border:2px solid #b8d4cc;border-radius:10px;background:#fff;font-family:var(--font);outline:none;-webkit-appearance:none;min-width:150px">
+          <option value="todos">Todos os registros</option>
+          <option value="hoje">Hoje</option>
+          <option value="semana">Esta semana</option>
+          <option value="mes-envio">Desde último relatório</option>
+        </select>
+      </div>
+      <div id="list-content" style="max-height:65vh;overflow-y:auto;margin-bottom:12px;border:2px solid #b8d4cc;border-radius:14px;background:#fff"></div>
+      <div id="list-pagination" style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap"></div>
     </div>
 
     <!-- TAB: RESUMO -->
@@ -584,15 +619,26 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
       <!-- ADMIN: filtro por responsável -->
       <div id="stats-filter" style="display:none;margin-bottom:13px">
         <div class="card" style="padding:12px 15px">
-          <div class="field" style="margin:0">
-            <label style="margin-bottom:6px">Filtrar por responsável</label>
-            <select id="stats-resp-filter" onchange="renderStats()">
-              <option value="">Todos</option>
-              <option value="Ayrton">Ayrton</option>
-              <option value="Giovanna">Giovanna</option>
-              <option value="Neudson">Neudson</option>
-              <option value="Rodrigo">Rodrigo</option>
-            </select>
+          <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end">
+            <div class="field" style="margin:0;flex:1;min-width:200px">
+              <label style="margin-bottom:6px">Filtrar por responsável</label>
+              <select id="stats-resp-filter" onchange="renderStats()">
+                <option value="">Todos</option>
+                <option value="Ayrton">Ayrton</option>
+                <option value="Giovanna">Giovanna</option>
+                <option value="Neudson">Neudson</option>
+                <option value="Rodrigo">Rodrigo</option>
+              </select>
+            </div>
+            <div class="field" style="margin:0;flex:1;min-width:200px">
+              <label style="margin-bottom:6px">Período</label>
+              <select id="stats-period" onchange="renderStats()" style="padding:8px 12px;font-size:13px;border:2px solid #b8d4cc;border-radius:10px;background:#fff;font-family:var(--font);outline:none;-webkit-appearance:none">
+                <option value="todos">Todos os serviços</option>
+                <option value="hoje">Hoje</option>
+                <option value="semana">Esta semana (7 dias)</option>
+                <option value="mes-envio">Desde último relatório</option>
+              </select>
+            </div>
           </div>
         </div>
       </div>
@@ -659,6 +705,26 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
         <div id="send-history" style="font-size:13px;color:var(--tx2)">Nenhum envio registrado.</div>
       </div>
     </div>
+
+    <!-- TAB: COMISSÕES (admin only) -->
+    <div id="tab-comissoes" style="display:none">
+      <div style="margin-bottom:16px">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap">
+          <div style="font-size:14px;font-weight:700;color:#2d4a44">Porcentagem de Comissão:</div>
+          <input type="number" id="com-percent" min="0" max="100" value="70" style="width:80px;padding:8px 12px;border:2px solid #b8d4cc;border-radius:10px;font-size:14px;font-family:var(--font)"/>
+          <span style="font-size:14px;font-weight:700;color:#7a9e96">%</span>
+          <button onclick="comSalvarPercent()" style="padding:8px 14px;background:#1D9E75;color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font)">Salvar</button>
+        </div>
+        <div style="font-size:12px;color:#7a9e96">Esta porcentagem será aplicada ao valor total do serviço para calcular a comissão de cada técnico.</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px" id="com-cards"></div>
+      <div class="card" id="com-detalhes"></div>
+    </div><!-- /tab-comissoes -->
+
+    <!-- TAB: MINHA COMISSÃO -->
+    <div id="tab-minha-comissao" style="display:none">
+      <div id="com-card-tech"></div>
+    </div><!-- /tab-minha-comissao -->
 
     <!-- TAB: GERENCIAR (admin only) -->
     <div id="tab-gerenciar" style="display:none">
@@ -728,6 +794,212 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
       </div>
 
     </div><!-- /tab-gerenciar -->
+    <!-- TAB: ORDEM DE SERVIÇO ARPTECH -->
+    <div id="tab-os" style="display:none">
+
+      <!-- NOVA OS -->
+      <div class="card" id="os-nova-card">
+        <div class="card-title">📋 Abrir Nova Ordem de Serviço</div>
+
+        <!-- Tipo -->
+        <div class="field" style="margin-bottom:12px">
+          <label>Tipo de serviço</label>
+          <div style="display:flex;gap:0;margin-top:6px;border:2px solid #b8d4cc;border-radius:14px;overflow:hidden">
+            <label id="os-tipo-int-label" onclick="osSetTipo('interno')" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:13px 0;flex:1;cursor:pointer;font-weight:700;font-size:15px;background:#1D9E75;color:#fff;transition:.2s">
+              <input type="radio" name="os-tipo" value="interno" id="os-tipo-int" style="display:none"/> 🔧 Interno
+            </label>
+            <label id="os-tipo-ext-label" onclick="osSetTipo('externo')" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:13px 0;flex:1;cursor:pointer;font-weight:700;font-size:15px;background:#fff;color:#7a9e96;transition:.2s">
+              <input type="radio" name="os-tipo" value="externo" id="os-tipo-ext" style="display:none"/> 🚗 Externo
+            </label>
+          </div>
+        </div>
+
+        <!-- Técnico responsável (visível para Admin) -->
+        <div class="field" id="os-tecnico-wrap" style="margin-bottom:12px;display:none">
+          <label>Técnico responsável</label>
+          <select id="os-tecnico" style="width:100%;padding:11px 13px;font-size:15px;border:2px solid #b8d4cc;border-radius:14px;background:#f4f8f6;font-family:var(--font);outline:none;-webkit-appearance:none">
+            <option value="">Sem técnico designado</option>
+          </select>
+          <div style="font-size:12px;color:#7a9e96;margin-top:4px">Como Admin, você pode designar um técnico para esta OS.</div>
+        </div>
+
+        <!-- Dados do cliente -->
+        <div class="card-title" style="margin-top:4px">Dados do Cliente</div>
+        <div class="form-row">
+          <div class="field"><label>Nome / Empresa <span style="color:#dc2626">*</span></label><input type="text" id="os-cliente" placeholder="Nome ou razão social..."/></div>
+          <div class="field"><label>CNPJ / CPF (opcional)</label><input type="text" id="os-cnpj" placeholder="00.000.000/0000-00"/></div>
+        </div>
+        <div class="form-row">
+          <div class="field"><label>Telefone <span style="color:#dc2626">*</span></label><input type="tel" id="os-telefone" placeholder="(00) 00000-0000"/></div>
+          <div class="field"><label>E-mail (opcional)</label><input type="email" id="os-email" placeholder="email@empresa.com"/></div>
+          <div class="field"><label>Endereço (opcional)</label><input type="text" id="os-endereco" placeholder="Rua, número..."/></div>
+        </div>
+
+        <!-- Serviço e relato -->
+        <div class="card-title" style="margin-top:4px">Informações do Serviço</div>
+        <div class="field" style="margin-bottom:12px">
+          <label>Tipo de serviço <span style="color:#dc2626">*</span></label>
+          <select id="os-servico-tipo" onchange="osServicoChange()" style="width:100%;padding:11px 13px;font-size:15px;border:2px solid #b8d4cc;border-radius:14px;background:#f4f8f6;font-family:var(--font);outline:none;-webkit-appearance:none">
+            <option value="">Selecione...</option>
+          </select>
+        </div>
+        
+        <div class="field" id="os-outro-wrap" style="margin-bottom:12px;display:none">
+          <label>Descreva o serviço <span style="color:#dc2626">*</span></label>
+          <input type="text" id="os-outro-desc" placeholder="Ex: Configuração de rede, Instalação de software..."/>
+        </div>
+        <div class="field" style="margin-bottom:12px">
+          <label>Modelo / Equipamento</label>
+          <input type="text" id="os-modelo" placeholder="Ex: Notebook Dell Inspiron, Impressora HP..."/>
+        </div>
+        <div class="field" style="margin-bottom:16px">
+          <label>Relato do cliente <span style="color:#dc2626">*</span></label>
+          <textarea id="os-relato" maxlength="500" placeholder="Descreva o problema relatado pelo cliente..." style="min-height:90px;resize:vertical"></textarea>
+        </div>
+
+        <div class="field" style="margin-bottom:16px">
+          <label>Observações iniciais (opcional)</label>
+          <textarea id="os-obs-abertura" maxlength="300" placeholder="Observações ao abrir a OS..." style="min-height:60px;resize:vertical"></textarea>
+        </div>
+
+        <button class="btn-submit" onclick="osAbrir()">📋 Abrir Ordem de Serviço</button>
+        <div id="os-msg" style="margin-top:10px;font-size:13px;font-weight:600;display:none"></div>
+      </div>
+
+    </div><!-- /tab-os -->
+    <!-- TAB: OS ABERTAS (painel) -->
+    <div id="tab-os-abertas" style="display:none">
+      <!-- Sub-abas -->
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
+        <button id="osp-btn-ativas" onclick="ospShowSub('ativas')" style="padding:8px 14px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);border:2px solid #1D9E75;background:#1D9E75;color:#fff">🔧 Em Andamento</button>
+        <button id="osp-btn-concluidas" onclick="ospShowSub('concluidas')" style="padding:8px 14px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);border:2px solid #b8d4cc;background:#fff;color:#2d4a44">✅ Concluídas/Pend.</button>
+        <button id="osp-btn-stats" onclick="ospShowSub('stats')" style="padding:8px 14px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);border:2px solid #b8d4cc;background:#fff;color:#2d4a44">📊 Estatísticas</button>
+      </div>
+
+      <!-- Filtro mês/ano -->
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap">
+        <select id="osp-mes" onchange="ospRender()" style="padding:8px 12px;font-size:13px;border:2px solid #b8d4cc;border-radius:10px;background:#fff;font-family:var(--font);outline:none">
+          <option value="99">Todos os meses</option>
+          <option value="0">Janeiro</option><option value="1">Fevereiro</option>
+          <option value="2">Março</option><option value="3">Abril</option>
+          <option value="4">Maio</option><option value="5">Junho</option>
+          <option value="6">Julho</option><option value="7">Agosto</option>
+          <option value="8">Setembro</option><option value="9">Outubro</option>
+          <option value="10">Novembro</option><option value="11">Dezembro</option>
+        </select>
+        <select id="osp-ano" onchange="ospRender()" style="padding:8px 12px;font-size:13px;border:2px solid #b8d4cc;border-radius:10px;background:#fff;font-family:var(--font);outline:none">
+        </select>
+      </div>
+
+      <!-- Sub: Em Andamento/Aberto -->
+      <div id="osp-sub-ativas">
+        <div id="osp-lista" style="max-height:70vh;overflow-y:auto"></div>
+        <div id="osp-pag-ativas" style="display:flex;justify-content:center;gap:8px;margin-top:12px;flex-wrap:wrap"></div>
+      </div>
+
+      <!-- Sub: Concluídas e Pendentes -->
+      <div id="osp-sub-concluidas" style="display:none">
+        <div id="osp-lista-concluidas" style="max-height:70vh;overflow-y:auto"></div>
+        <div id="osp-pag-concluidas" style="display:flex;justify-content:center;gap:8px;margin-top:12px;flex-wrap:wrap"></div>
+      </div>
+
+      <!-- Sub: Estatísticas -->
+      <div id="osp-sub-stats" style="display:none">
+        <div id="osp-stats-content"></div>
+      </div>
+    </div><!-- /tab-os-abertas -->
+
+
+    <!-- MODAL DETALHES / AÇÕES DA OS -->
+    <div class="chpwd-overlay" id="os-modal-overlay" style="z-index:5000">
+      <div class="chpwd-box" style="max-width:500px;max-height:90vh;overflow-y:auto">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+          <div class="chpwd-title" style="margin-bottom:0" id="os-modal-titulo">OS #000</div>
+          <div id="os-modal-badge"></div>
+        </div>
+        <div id="os-modal-content"></div>
+        <div class="chpwd-btns" style="margin-top:16px" id="os-modal-btns"></div>
+      </div>
+    </div>
+
+    <!-- MODAL FINALIZAR OS -->
+    <div class="chpwd-overlay" id="os-fin-overlay" style="z-index:5001">
+      <div class="chpwd-box" style="max-width:500px;max-height:92vh;overflow-y:auto">
+        <div class="chpwd-title">✅ Finalizar Ordem de Serviço</div>
+        <div style="font-size:13px;color:#7a9e96;margin-bottom:14px">Informe o diagnóstico, peças utilizadas e pagamento.</div>
+
+        <div class="field" style="margin-bottom:12px">
+          <label>Diagnóstico / Serviço realizado</label>
+          <textarea id="os-fin-diagnostico" maxlength="500" placeholder="Descreva o serviço realizado..." style="min-height:80px;resize:vertical"></textarea>
+        </div>
+
+        <!-- Peças/produtos -->
+        <div style="margin-bottom:12px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <label style="font-size:13px;font-weight:600;color:#2d4a44">Peças / Produtos utilizados</label>
+            <button onclick="osFinAddItem()" style="background:#1D9E75;color:#fff;border:none;border-radius:8px;padding:5px 11px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font)">+ Adicionar</button>
+          </div>
+          <div id="os-fin-itens"></div>
+          <div id="os-fin-total-bar" style="display:none;background:#0a2e2a;color:#fff;border-radius:10px;padding:10px 14px;display:none;justify-content:space-between;align-items:center">
+            <span style="font-size:12px;opacity:.7">Total peças</span>
+            <span style="font-size:16px;font-weight:700;color:#1D9E75" id="os-fin-total-mat">R$ 0,00</span>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="field"><label>Valor da mão de obra (R$)</label><input type="number" id="os-fin-mao-obra" min="0" step="0.01" placeholder="0,00" oninput="osFinCalc()"/></div>
+          <div class="field"><label>Garantia</label><input type="text" id="os-fin-garantia" placeholder="Ex: 3 meses"/></div>
+        </div>
+
+        <div style="background:#0a2e2a;color:#fff;border-radius:12px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <span style="font-size:13px;opacity:.7">VALOR TOTAL</span>
+          <span style="font-size:22px;font-weight:700;color:#1D9E75" id="os-fin-total-geral">R$ 0,00</span>
+        </div>
+
+        <div class="form-row">
+          <div class="field">
+            <label>Status do pagamento</label>
+            <select id="os-fin-status-pag" style="width:100%;padding:11px 13px;font-size:14px;border:2px solid #b8d4cc;border-radius:12px;background:#f4f8f6;font-family:var(--font);outline:none;-webkit-appearance:none">
+              <option value="pendente">⏳ Pendente</option>
+              <option value="pago">✅ Pago</option>
+              <option value="parcial">📊 Parcial</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Forma de pagamento</label>
+            <select id="os-fin-forma-pag" style="width:100%;padding:11px 13px;font-size:14px;border:2px solid #b8d4cc;border-radius:12px;background:#f4f8f6;font-family:var(--font);outline:none;-webkit-appearance:none">
+              <option value="">Selecione...</option>
+              <option value="dinheiro">💵 Dinheiro</option>
+              <option value="pix">📱 PIX</option>
+              <option value="cartao_credito">💳 Cartão Crédito</option>
+              <option value="cartao_debito">💳 Cartão Débito</option>
+              <option value="boleto">📄 Boleto</option>
+              <option value="prazo">🗓 A prazo</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="field"><label>Parcelas</label><input type="number" id="os-fin-parcelas" min="1" value="1" placeholder="1"/></div>
+          <div class="field"><label>Data do pagamento</label><input type="date" id="os-fin-data-pag"/></div>
+        </div>
+        <div class="field" style="margin-bottom:14px">
+          <label>Observações finais</label>
+          <textarea id="os-fin-obs" maxlength="300" placeholder="Observações, garantia, avisos ao cliente..." style="min-height:60px;resize:vertical"></textarea>
+        </div>
+
+        <div id="os-fin-err" style="background:#FEE2E2;color:#dc2626;border-radius:8px;padding:10px;font-size:13px;margin-bottom:10px;display:none"></div>
+        <div class="chpwd-btns">
+          <button class="btn-chpwd-cancel" onclick="osFecharFin()">Cancelar</button>
+          <button class="btn-chpwd-ok" onclick="osConfirmarFin()">✅ Finalizar OS</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ÁREA DE IMPRESSÃO DA OS -->
+    <div id="os-print-area" style="display:none">
+      <div id="os-print-content"></div>
+    </div>
+
     <div id="tab-report-tech" style="display:none">
       <div class="report-section">
         <div class="card-title">Visualizar registros por período</div>
@@ -1620,7 +1892,10 @@ function setupAdminTabs(){
     {id:'list',label:'Registros'},
     {id:'stats',label:'Resumo'},
     {id:'sheets',label:'Sheets'},
-    {id:'gerenciar',label:'⚙ Gerenciar'}
+    {id:'os',label:'OS / Servicos'},
+    {id:'os-abertas',label:'OS Abertas'},
+    {id:'comissoes',label:'Comissoes'},
+    {id:'gerenciar',label:'Gerenciar'}
   ];
   buildTabs(tabs);
   document.getElementById('stats-filter').style.display='block';
@@ -1636,7 +1911,6 @@ function setupAdminTabs(){
   acGrupos=getGruposComExtras(['todos']);
   showTab('form');
 }
-
 function showGerTab(t){
   ['usuarios','locais','senhas'].forEach(function(x){
     var el=document.getElementById('ger-tab-'+x);if(el)el.style.display=x===t?'block':'none';
@@ -1662,6 +1936,9 @@ function setupTechTabs(user){
     {id:'form',label:'Novo Registro'},
     {id:'list',label:'Meus Registros'},
     {id:'stats',label:'Resumo'},
+    {id:'os',label:'🔧 OS / Serviços'},
+    {id:'os-abertas',label:'📋 OS Abertas'},
+    {id:'minha-comissao',label:'💰 Minha Comissão'},
     {id:'report-tech',label:'Relatórios'}
   ];
   buildTabs(tabs);
@@ -1695,7 +1972,7 @@ function selRespByName(name){
 }
 
 function showTab(t){
-  ['form','list','stats','sheets','report-tech','gerenciar'].forEach(function(x){
+  ['form','list','stats','sheets','report-tech','gerenciar','os','os-abertas','comissoes','minha-comissao'].forEach(function(x){
     var el=document.getElementById('tab-'+x);if(el)el.style.display='none';
     var btn=document.getElementById('tab-btn-'+x);if(btn)btn.classList.remove('active');
   });
@@ -1706,6 +1983,10 @@ function showTab(t){
   else if(t==='sheets')renderHistory();
   else if(t==='report-tech')renderTechHistory();
   else if(t==='gerenciar'){admRenderUsers();admRenderLocais();}
+  else if(t==='os'){osIniciarTab();}
+  else if(t==='os-abertas'){ospIniciarTab();}
+  else if(t==='comissoes'){comIniciar();}
+  else if(t==='minha-comissao'){tecRenderComissaoTab();}
 }
 
 // ── FORM ─────────────────────────────────────────────────────
@@ -1788,24 +2069,45 @@ function closeSuccess(){document.getElementById('success-modal').classList.remov
 
 // ── LIST ─────────────────────────────────────────────────────
 function renderList(){
-  var q=(document.getElementById('search-q').value||'').toLowerCase();
-  var el=document.getElementById('rec-list');
-  var base=isAdmin?records:records.filter(function(r){return r.resp===currentUser});
-  var f=base.filter(function(r){return r.resp.toLowerCase().includes(q)||r.local.toLowerCase().includes(q)||r.desc.toLowerCase().includes(q)});
-  f.sort(function(a,b){
-    var da=(a.date||'')+(a.start?'T'+a.start:'T00:00');
-    var db=(b.date||'')+(b.start?'T'+b.start:'T00:00');
-    return db.localeCompare(da);
+  _listPage=0;
+  var q=(document.getElementById('search-q')||{value:''}).value.toLowerCase();
+  var lista=getRegistrosFiltrados().filter(function(r){
+    var texto=(r.resp+' '+r.local+' '+r.desc).toLowerCase();
+    return q===''||texto.indexOf(q)>=0;
   });
-  if(!f.length){el.innerHTML='<div class="empty-state">Nenhum registro encontrado.</div>';return}
-  var tl={'setor':'Setor','urbana':'Escola Urbana','rural':'Escola Rural'};
-  var showDel=isAdmin;
-  el.className='records-list'+(showDel?' show-del':'');
-  el.innerHTML=f.map(function(r){
-    var tc=r.locType==='urbana'?'blue':r.locType==='rural'?'orange':'';
-    return '<div class="record-item"><div class="record-header"><div class="record-name">'+r.resp+'</div><div style="display:flex;align-items:center;gap:6px"><div class="record-date">'+r.date+(r.start?' · '+r.start:'')+'</div><button class="record-del" onclick="deleteRecord('+r.id+')" title="Apagar">🗑</button></div></div><div class="record-desc">'+r.desc+'</div><div class="record-tags"><span class="tag '+tc+'">'+(tl[r.locType]||'Setor')+'</span><span class="tag">'+r.local+'</span></div></div>';
+  
+  var totalPages=Math.ceil(lista.length/LIST_PER_PAGE);
+  if(_listPage>=totalPages)_listPage=Math.max(0,totalPages-1);
+  
+  var slice=lista.slice(_listPage*LIST_PER_PAGE,(_listPage+1)*LIST_PER_PAGE);
+  var html=slice.map(function(r){
+    return '<div style="padding:12px;border-bottom:1px solid #e2e8e0;display:flex;justify-content:space-between;align-items:center;cursor:pointer;hover:background:#f9faf8" onclick="selRespByName(\''+r.resp+'\')">'+
+      '<div>'+
+        '<div style="font-size:13px;font-weight:700;color:#0f1f1c">'+r.desc+' <span style="color:#7a9e96;font-weight:400;">'+r.local+'</span></div>'+
+        '<div style="font-size:12px;color:#7a9e96">'+r.resp+' · '+r.date+(r.start?' às '+r.start:'')+'</div>'+
+      '</div>'+
+      '<div style="text-align:right">'+
+        '<span style="font-size:14px;font-weight:700;color:#0d6b4f">1</span>'+
+      '</div>'+
+    '</div>';
   }).join('');
+  
+  document.getElementById('list-content').innerHTML=html||'<div style="padding:20px;text-align:center;color:#7a9e96">Nenhum registro encontrado.</div>';
+  
+  // Paginação
+  var pagHtml='';
+  if(totalPages>1){
+    for(var i=0;i<totalPages;i++){
+      var ativo=i===_listPage;
+      var bgColor=ativo?'#1D9E75':'#fff';
+      var textColor=ativo?'#fff':'#2d4a44';
+      var borderColor=ativo?'#1D9E75':'#b8d4cc';
+      pagHtml+='<button style="padding:7px 13px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);border:2px solid '+borderColor+';background:'+bgColor+';color:'+textColor+'" onclick="gotoPage('+i+')">'+(i+1)+'</button>';
+    }
+  }
+  document.getElementById('list-pagination').innerHTML=pagHtml;
 }
+
 
 function deleteRecord(id){
   if(!confirm('Apagar este registro?'))return;
@@ -1912,7 +2214,7 @@ function sendToSheets(){
       var fim=recs.length?recs.reduce(function(a,b){return a.date>b.date?a:b}).date:'';
       return fetch(gs,{method:'POST',body:JSON.stringify({action:'monthlyReport',month:0,year:0,records:recs,periodoLabel:label,dataInicio:ini,dataFim:fim})})
         .then(function(res){return res.text()})
-        .then(function(){msg.textContent='✓ Enviado! '+recs.length+' registro(s) — '+label;logHistory('Relatório '+label+' — '+recs.length+' registros')});
+        .then(function(){msg.textContent='✓ Enviado! '+recs.length+' registro(s) — '+label;logHistory('Relatório '+label+' — '+recs.length+' registros');localStorage.setItem('last_report_date',new Date().toISOString().split('T')[0])});
     })
     .catch(function(e){msg.textContent='Erro: '+e.message;msg.style.color='#dc2626'});
 }
@@ -2389,6 +2691,1149 @@ function shade(hex,pct){
   var g=Math.min(255,Math.max(0,((n>>8)&0xff)+Math.round(255*pct/100)));
   var b=Math.min(255,Math.max(0,(n&0xff)+Math.round(255*pct/100)));
   return '#'+[r,g,b].map(function(x){return x.toString(16).padStart(2,'0')}).join('');
+}
+
+// ── MÓDULO ARPTECH — ORDEM DE SERVIÇO ───────────────────────
+
+var OS_SERVICOS_INTERNO = [
+  'Manutenção de impressora','Manutenção de computador','Manutenção de notebook',
+  'Manutenção de aparelho eletrônico','Manutenção de câmera de vigilância',
+  'Formatação / Reinstalação','Troca de peça / componente','Outro (interno)'
+];
+var OS_SERVICOS_EXTERNO = [
+  'Instalação de câmera de vigilância','Manutenção de câmera de vigilância',
+  'Instalação de portão eletrônico','Instalação de impressora',
+  'Instalação de cabeamento de rede','Instalação de computador',
+  'Suporte ao usuário','Outro (externo)'
+];
+var OS_STATUS = {
+  aberto:    {label:'Em Aberto',    bg:'#DBEAFE',color:'#1e40af',emoji:'📋'},
+  andamento: {label:'Em Andamento', bg:'#FEF3C7',color:'#92400e',emoji:'🔧'},
+  pendente:  {label:'Pendente',     bg:'#FEE2E2',color:'#dc2626',emoji:'⏳'},
+  concluido: {label:'Concluída',    bg:'#d4f0e5',color:'#0d6b4f',emoji:'✅'}
+};
+var FORMA_PAG_LABEL = {dinheiro:'Dinheiro',pix:'PIX',cartao_credito:'Cartão Crédito',cartao_debito:'Cartão Débito',boleto:'Boleto',prazo:'A prazo'};
+
+var osOrdens = [];
+var _osTipoAtual = "interno";
+var COMISSAO_PERCENT = 70;
+try{var saved=localStorage.getItem('comissao_percent');if(saved)COMISSAO_PERCENT=parseInt(saved);}catch(e){} // porcentagem padrão de comissão // rastreia tipo selecionado sem depender de :checked
+try{osOrdens=JSON.parse(localStorage.getItem('arp_os')||'[]')}catch(e){}
+var osNumSeq = 0;
+try{osNumSeq=parseInt(localStorage.getItem('arp_os_seq')||'0')}catch(e){}
+var osModalId = null;
+var osFinId = null;
+var osFinItemCount = 0;
+
+function osSalvarStorage(){
+  try{
+    localStorage.setItem('arp_os',JSON.stringify(osOrdens));
+    localStorage.setItem('arp_os_seq',String(osNumSeq));
+  }catch(e){}
+}
+
+function osFmtNum(n){return String(n).padStart(5,'0')}
+function osFmtMoeda(v){return'R$ '+parseFloat(v||0).toFixed(2).replace('.',',')}
+
+function osServicoChange(){
+  var sel=document.getElementById('os-servico-tipo');
+  var wrap=document.getElementById('os-outro-wrap');
+  if(!sel||!wrap)return;
+  var isOutro=sel.value&&sel.value.toLowerCase().indexOf('outro')>=0;
+  wrap.style.display=isOutro?'block':'none';
+  if(!isOutro){var el=document.getElementById('os-outro-desc');if(el)el.value='';}
+}
+
+function osTipoChange(){
+  var r={value:_osTipoAtual||'interno'}; // usa variavel de estado
+  var il=document.getElementById('os-tipo-int-label');
+  var el=document.getElementById('os-tipo-ext-label');
+  il.style.borderColor=r.value==='interno'?'#1D9E75':'#b8d4cc';
+  il.style.background=r.value==='interno'?'#d4f0e5':'#fff';
+  el.style.borderColor=r.value==='externo'?'#1D9E75':'#b8d4cc';
+  el.style.background=r.value==='externo'?'#d4f0e5':'#fff';
+  var sel=document.getElementById('os-servico-tipo');
+  var svcs=r.value==='interno'?OS_SERVICOS_INTERNO:OS_SERVICOS_EXTERNO;
+  sel.innerHTML='<option value="">Selecione...</option>';
+  svcs.forEach(function(s){sel.innerHTML+='<option value="'+s+'">'+s+'</option>'});
+}
+
+function osAbrir(){
+  try{
+  var tipoVal=_osTipoAtual||'interno'; // usa variavel de estado (Safari-safe)
+  var cliente=document.getElementById('os-cliente').value.trim();
+  if(!cliente){alert('Informe o nome do cliente.');return}
+  var telefone=document.getElementById('os-telefone').value.trim();
+  if(!telefone){alert('Informe o telefone.');return}
+  var servico=document.getElementById('os-servico-tipo').value;
+  if(!servico){alert('Selecione o tipo de servico realizado.');return}
+  // Se "Outro", usa a descrição personalizada
+  if(servico.toLowerCase().indexOf('outro')>=0){
+    var outroDesc=(document.getElementById('os-outro-desc')||{value:''}).value.trim();
+    if(!outroDesc){alert('Descreva o servico personalizado.');return}
+    servico=outroDesc;
+  }
+  var relato=document.getElementById('os-relato').value.trim();
+  if(!relato){alert('Preencha o relato do cliente.');return}
+
+  osNumSeq++;
+  var os={
+    id:Date.now(),
+    numero:osNumSeq,
+    status:'aberto',
+    tipo:tipoVal,
+    tecnico:(function(){
+      if(currentUser==='Admin'){
+        var tEl=document.getElementById('os-tecnico');
+        return tEl?tEl.value||'':'';
+      }
+      return currentUser;
+    })(),
+    // Cliente
+    cliente:cliente,
+    cnpj:document.getElementById('os-cnpj').value.trim(),
+    telefone:telefone,
+    email:(document.getElementById('os-email')||{value:''}).value.trim(),
+    endereco:document.getElementById('os-endereco').value.trim(),
+    // Serviço
+    servico:servico,
+    modelo:document.getElementById('os-modelo').value.trim(),
+    relato:relato,
+    obsAbertura:document.getElementById('os-obs-abertura').value.trim(),
+    // Finalização (vazio)
+    diagnostico:'',itens:[],valorMaoObra:0,totalPecas:0,total:0,
+    statusPag:'',formaPag:'',parcelas:1,dataPag:'',garantia:'',obsFin:'',
+    // Datas
+    criadoPor:currentUser,
+    dataAbertura:new Date().toLocaleDateString('pt-BR'),
+    dataFinalizacao:'',
+    ts:new Date().toISOString()
+  };
+
+  osOrdens.unshift(os);
+  osSalvarStorage();
+  osLimparForm();
+  osRenderLista();
+  var msg=document.getElementById('os-msg');
+  msg.style.display='block';msg.style.color='#0d6b4f';
+  msg.textContent='✓ OS #'+osFmtNum(os.numero)+' aberta com sucesso!';
+  setTimeout(function(){msg.style.display='none'},4000);
+  showBanner('OS #'+osFmtNum(os.numero)+' aberta — '+cliente);
+  }catch(err){alert('Erro ao abrir OS: '+err.message);}
+}
+
+function osLimparForm(){
+  ['os-cliente','os-cnpj','os-telefone','os-email','os-endereco','os-modelo','os-relato','os-obs-abertura','os-outro-desc'].forEach(function(id){
+    var el=document.getElementById(id);if(el)el.value='';
+  });
+  osSetTipo('interno');
+  var ow=document.getElementById('os-outro-wrap');if(ow)ow.style.display='none';
+}
+
+function osGetFiltradas(){
+  var s=document.getElementById('os-filtro-status').value;
+  var t=document.getElementById('os-filtro-tipo').value;
+  var p=document.getElementById('os-filtro-periodo').value;
+  var hoje=new Date().toLocaleDateString('pt-BR');
+  var semAgo=new Date(Date.now()-7*86400000);
+  var mesAgo=new Date(new Date().getFullYear(),new Date().getMonth(),1);
+  return osOrdens.filter(function(os){
+    if(s!=='todos'&&os.status!==s)return false;
+    if(t!=='todos'&&os.tipo!==t)return false;
+    if(p==='hoje'&&os.dataAbertura!==hoje)return false;
+    if(p==='semana'){var d=new Date(os.ts);if(d<semAgo)return false;}
+    if(p==='mes'){var d2=new Date(os.ts);if(d2<mesAgo)return false;}
+    return true;
+  });
+}
+
+function osRenderLista(){
+  var el=document.getElementById('os-lista');if(!el)return;
+  var lista=osGetFiltradas();
+  if(!lista.length){el.innerHTML='<div class="empty-state">Nenhuma OS encontrada.</div>';return}
+  el.innerHTML=lista.map(function(os){
+    var st=OS_STATUS[os.status]||OS_STATUS.aberto;
+    var badge='<span style="font-size:11px;padding:3px 9px;border-radius:10px;font-weight:700;background:'+st.bg+';color:'+st.color+'">'+st.emoji+' '+st.label+'</span>';
+    var tecBadge=os.status==='andamento'&&os.tecnico?'<span style="font-size:11px;background:#f4f8f6;color:#2d4a44;padding:2px 8px;border-radius:8px;font-weight:600">👤 '+os.tecnico+'</span>':'';
+    return '<div style="background:#fff;border:2px solid #b8d4cc;border-radius:16px;padding:14px;margin-bottom:10px;cursor:pointer" onclick="osAbrirModal('+os.id+')">'+
+      '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">'+
+        '<div>'+
+          '<div style="font-size:12px;color:#7a9e96;font-weight:600;margin-bottom:3px">OS #'+osFmtNum(os.numero)+' · '+os.dataAbertura+'</div>'+
+          '<div style="font-size:16px;font-weight:700;color:#0f1f1c">'+os.cliente+'</div>'+
+          (os.cnpj?'<div style="font-size:12px;color:#7a9e96">'+os.cnpj+'</div>':'')+
+        '</div>'+
+        '<div style="text-align:right">'+badge+'</div>'+
+      '</div>'+
+      '<div style="font-size:13px;color:#2d4a44;margin-bottom:6px"><strong>'+os.servico+'</strong>'+(os.modelo?' — '+os.modelo:'')+'</div>'+
+      '<div style="font-size:13px;color:#7a9e96;font-style:italic;margin-bottom:8px">'+os.relato.substring(0,100)+(os.relato.length>100?'...':'')+'</div>'+
+      '<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">'+
+        '<span style="font-size:11px;padding:2px 8px;border-radius:8px;font-weight:700;background:'+(os.tipo==='interno'?'#DBEAFE':'#FEF3C7')+';color:'+(os.tipo==='interno'?'#1e40af':'#92400e')+'">'+
+          (os.tipo==='interno'?'🔧 Interno':'🚗 Externo')+'</span>'+
+        tecBadge+
+        (os.total>0?'<span style="font-size:12px;font-weight:700;color:#0d6b4f;margin-left:auto">'+osFmtMoeda(os.total)+'</span>':'')+
+      '</div>'+
+    '</div>';
+  }).join('');
+}
+
+function osAbrirModal(id){
+  var os=osOrdens.find(function(o){return o.id===id});
+  if(!os)return;
+  osModalId=id;
+  var st=OS_STATUS[os.status]||OS_STATUS.aberto;
+  document.getElementById('os-modal-titulo').textContent='OS #'+osFmtNum(os.numero);
+  document.getElementById('os-modal-badge').innerHTML='<span style="font-size:12px;padding:4px 11px;border-radius:10px;font-weight:700;background:'+st.bg+';color:'+st.color+'">'+st.emoji+' '+st.label+'</span>';
+
+  var html='<div style="font-size:13px;line-height:1.8;color:#2d4a44">';
+  html+='<div style="background:#f4f8f6;border-radius:10px;padding:12px;margin-bottom:10px">';
+  html+='<strong>Cliente:</strong> '+os.cliente+'<br>';
+  if(os.cnpj)html+='<strong>CNPJ/CPF:</strong> '+os.cnpj+'<br>';
+  html+='<strong>Telefone:</strong> '+os.telefone+'<br>';
+  if(os.endereco)html+='<strong>Endereço:</strong> '+os.endereco+'<br>';
+  html+='</div>';
+  html+='<div style="background:#f4f8f6;border-radius:10px;padding:12px;margin-bottom:10px">';
+  html+='<strong>Serviço:</strong> '+os.servico+'<br>';
+  if(os.modelo)html+='<strong>Equipamento:</strong> '+os.modelo+'<br>';
+  html+='<strong>Tipo:</strong> '+(os.tipo==='interno'?'Interno':'Externo')+'<br>';
+  html+='<strong>Aberta em:</strong> '+os.dataAbertura+'<br>';
+  if(os.tecnico)html+='<strong>Técnico:</strong> '+os.tecnico+'<br>';
+  html+='</div>';
+  html+='<div style="background:#f4f8f6;border-radius:10px;padding:12px;margin-bottom:10px">';
+  html+='<strong>Relato do cliente:</strong><br><span style="color:#0f1f1c">'+os.relato+'</span>';
+  if(os.obsAbertura)html+='<br><br><strong>Obs. abertura:</strong> '+os.obsAbertura;
+  html+='</div>';
+  if(os.status==='concluido'){
+    html+='<div style="background:#d4f0e5;border-radius:10px;padding:12px;margin-bottom:10px">';
+    html+='<strong>Diagnóstico:</strong> '+os.diagnostico+'<br>';
+    if(os.itens&&os.itens.length){
+      html+='<strong>Peças:</strong><br>';
+      os.itens.forEach(function(it){html+='&nbsp;&nbsp;• '+it.nome+' × '+it.qtd+' = '+osFmtMoeda(it.subtotal)+'<br>'});
+    }
+    html+='<strong>Mão de obra:</strong> '+osFmtMoeda(os.valorMaoObra)+'<br>';
+    html+='<strong>Total:</strong> <span style="font-size:16px;font-weight:700;color:#0d6b4f">'+osFmtMoeda(os.total)+'</span><br>';
+    if(os.garantia)html+='<strong>Garantia:</strong> '+os.garantia+'<br>';
+    html+='<strong>Pagamento:</strong> '+(OS_STATUS[os.statusPag]?OS_STATUS[os.statusPag].label:os.statusPag)+(os.formaPag?' — '+(FORMA_PAG_LABEL[os.formaPag]||os.formaPag):'')+(os.parcelas>1?' ('+os.parcelas+'x)':'')+'<br>';
+    if(os.dataFinalizacao)html+='<strong>Finalizada em:</strong> '+os.dataFinalizacao+'<br>';
+    html+='</div>';
+  }
+  html+='</div>';
+  document.getElementById('os-modal-content').innerHTML=html;
+
+  // Botões de ação conforme status e permissão
+  var btns='';
+  var isAdmin=(currentUser==='Admin'||getPerfilUsuario(currentUser)==='ADMIN');
+  var isARPTECH=getPerfilUsuario(currentUser)==='ARPTECH';
+  // Pode alterar status: admin, ARPTECH ou técnico responsável pela OS
+  var podeAlterar=isAdmin||isARPTECH||(os.tecnico&&os.tecnico===currentUser)||os.status==='aberto';
+  if(podeAlterar){
+    if(os.status==='aberto'){
+      btns+='<button class="btn-chpwd-ok" style="background:#F59E0B;color:#fff;border:none" onclick="osIniciarAtendimento('+id+')">🔧 Iniciar Atendimento</button>';
+    }
+    if(os.status==='andamento'||os.status==='aberto'){
+      btns+='<button class="btn-chpwd-ok" style="background:#dc2626;color:#fff;border:none" onclick="osMudarPendente('+id+')">⏳ Pendente</button>';
+    }
+    if(os.status==='andamento'||os.status==='pendente'){
+      btns+='<button class="btn-chpwd-ok" onclick="osAbrirFin('+id+')">✅ Finalizar OS</button>';
+    }
+  } else {
+    btns+='<div style="font-size:12px;color:#7a9e96;padding:8px;background:#f4f8f6;border-radius:8px;width:100%">👀 Somente visualização — apenas o técnico responsável ou admin pode alterar esta OS</div>';
+  }
+  btns+='<button class="btn-chpwd-ok" style="background:#0a2e2a;color:#fff;border:none" onclick="osImprimirOS('+id+')">🖨 Imprimir</button>';
+  if(isAdmin||isARPTECH){
+    btns+='<button class="btn-chpwd-cancel" style="background:#FEE2E2;color:#dc2626;border:none" onclick="osDeletar('+id+')">🗑 Excluir</button>';
+  }
+  btns='<div style="display:flex;flex-wrap:wrap;gap:7px;width:100%">'+btns+'</div>';
+  btns+='<button class="btn-chpwd-cancel" style="width:100%;margin-top:8px" onclick="osFecharModal()">Fechar</button>';
+  document.getElementById('os-modal-btns').innerHTML=btns;
+  document.getElementById('os-modal-overlay').classList.add('open');
+}
+
+function osFecharModal(){document.getElementById('os-modal-overlay').classList.remove('open');osModalId=null;}
+
+function osCanEdit(os){
+  // Admin ou técnico ARPTECH podem editar qualquer OS
+  // Técnico SEMED só pode editar se for o responsável ou se a OS não tiver técnico
+  var perfil=getPerfilUsuario(currentUser);
+  if(currentUser==='Admin'||perfil==='ARPTECH')return true;
+  if(!os.tecnico||os.tecnico===currentUser)return true;
+  return false;
+}
+
+function osIniciarAtendimento(id){
+  var os=osOrdens.find(function(o){return o.id===id});if(!os)return;
+  if(!osCanEdit(os)){alert('Apenas o técnico responsável ou o administrador pode alterar esta OS.');return}
+  // Técnico pode assumir ou indicar outro
+  var todosU=getTodosUsuarios();
+  var nomes=Object.keys(todosU).filter(function(n){return n!=='Admin'}).sort();
+  var tecnico=currentUser;
+  // Mostra modal interno de seleção de técnico
+  osSelecionarTecnico(id, nomes, function(tec){
+    os.status='andamento';
+    os.tecnico=tec;
+    osSalvarStorage();
+    osFecharModal();
+    osRenderLista();
+    if(document.getElementById('tab-os-abertas').style.display!=='none')ospRender();
+    showBanner('OS #'+osFmtNum(os.numero)+' em andamento — '+tec);
+  });
+}
+
+function osSelecionarTecnico(osId, nomes, callback){
+  // Cria mini modal de seleção
+  var overlay=document.createElement('div');
+  overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px';
+  var box=document.createElement('div');
+  box.style.cssText='background:#fff;border-radius:20px;padding:24px;width:100%;max-width:380px';
+  var opts=nomes.map(function(n){return'<option value="'+n+'"'+(n===currentUser?' selected':'')+'>'+n+'</option>'}).join('');
+  box.innerHTML='<div style="font-size:16px;font-weight:700;color:#0a2e2a;margin-bottom:14px">Técnico responsável</div>'+
+    '<select id="tec-sel-opt" style="width:100%;padding:11px 13px;font-size:15px;border:2px solid #b8d4cc;border-radius:12px;background:#f4f8f6;font-family:var(--font);outline:none;margin-bottom:16px">'+opts+'</select>'+
+    '<div style="display:flex;gap:8px">'+
+    '<button id="tec-sel-cancel" style="flex:1;padding:11px;background:#f4f8f6;color:#2d4a44;border:2px solid #b8d4cc;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font)">Cancelar</button>'+
+    '<button id="tec-sel-ok" style="flex:1;padding:11px;background:#1D9E75;color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font)">Confirmar</button>'+
+    '</div>';
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+  box.querySelector('#tec-sel-cancel').onclick=function(){document.body.removeChild(overlay)};
+  box.querySelector('#tec-sel-ok').onclick=function(){
+    var tec=box.querySelector('#tec-sel-opt').value;
+    document.body.removeChild(overlay);
+    if(tec)callback(tec);
+  };
+}
+
+function osMudarPendente(id){
+  var os=osOrdens.find(function(o){return o.id===id});if(!os)return;
+  if(!osCanEdit(os)){alert('Apenas o técnico responsável ou o administrador pode alterar esta OS.');return}
+  var motivo=prompt('Motivo da pendência (peça, pagamento, etc):');
+  if(motivo===null)return;
+  os.status='pendente';
+  if(motivo)os.obsPendente=motivo;
+  osSalvarStorage();
+  osFecharModal();
+  osRenderLista();
+  if(document.getElementById('tab-os-abertas').style.display!=='none')ospRender();
+  showBanner('OS #'+osFmtNum(os.numero)+' marcada como Pendente');
+}
+
+function osAbrirFin(id){
+  var osCheck=osOrdens.find(function(o){return o.id===id});
+  if(osCheck&&!osCanEdit(osCheck)){alert('Apenas o técnico responsável ou o administrador pode finalizar esta OS.');return}
+  osFinId=id;
+  osFinItemCount=0;
+  document.getElementById('os-fin-itens').innerHTML='';
+  document.getElementById('os-fin-total-bar').style.display='none';
+  ['os-fin-diagnostico','os-fin-garantia','os-fin-obs'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('os-fin-mao-obra').value='';
+  document.getElementById('os-fin-parcelas').value='1';
+  document.getElementById('os-fin-data-pag').value=new Date().toISOString().split('T')[0];
+  document.getElementById('os-fin-total-geral').textContent='R$ 0,00';
+  document.getElementById('os-fin-err').style.display='none';
+  osFecharModal();
+  document.getElementById('os-fin-overlay').classList.add('open');
+}
+
+function osFecharFin(){document.getElementById('os-fin-overlay').classList.remove('open');osFinId=null;}
+
+function osFinAddItem(){
+  osFinItemCount++;
+  var id='fin-item-'+osFinItemCount;
+  var div=document.createElement('div');
+  div.id=id;
+  div.style.cssText='display:grid;grid-template-columns:1fr 60px 80px 28px;gap:6px;align-items:end;margin-bottom:8px;background:#f4f8f6;border-radius:10px;padding:10px';
+  div.innerHTML=
+    '<div><label style="font-size:11px;font-weight:600;color:#7a9e96;display:block;margin-bottom:3px">Peça / Produto</label>'+
+    '<input type="text" placeholder="Ex: Toner HP..." oninput="osFinCalc()" style="width:100%;padding:7px 9px;font-size:13px;border:2px solid #b8d4cc;border-radius:8px;background:#fff;font-family:var(--font);outline:none"/></div>'+
+    '<div><label style="font-size:11px;font-weight:600;color:#7a9e96;display:block;margin-bottom:3px">Qtd</label>'+
+    '<input type="number" value="1" min="1" oninput="osFinCalc()" style="width:100%;padding:7px 9px;font-size:13px;border:2px solid #b8d4cc;border-radius:8px;background:#fff;font-family:var(--font);outline:none;text-align:center"/></div>'+
+    '<div><label style="font-size:11px;font-weight:600;color:#7a9e96;display:block;margin-bottom:3px">Valor R$</label>'+
+    '<input type="number" min="0" step="0.01" placeholder="0,00" oninput="osFinCalc()" style="width:100%;padding:7px 9px;font-size:13px;border:2px solid #b8d4cc;border-radius:8px;background:#fff;font-family:var(--font);outline:none"/></div>'+
+    '<button onclick="document.getElementById(\''+id+'\').remove();osFinCalc()" style="background:#FEE2E2;color:#dc2626;border:none;border-radius:7px;padding:7px 6px;cursor:pointer;font-size:16px;align-self:flex-end">×</button>';
+  document.getElementById('os-fin-itens').appendChild(div);
+  document.getElementById('os-fin-total-bar').style.display='flex';
+  osFinCalc();
+}
+
+function osFinCalc(){
+  var totalMat=0;
+  document.querySelectorAll('[id^="fin-item-"]').forEach(function(row){
+    var ins=row.querySelectorAll('input');
+    var qtd=parseFloat(ins[1]&&ins[1].value||1)||1;
+    var val=parseFloat(ins[2]&&ins[2].value||0)||0;
+    totalMat+=qtd*val;
+  });
+  var mao=parseFloat(document.getElementById('os-fin-mao-obra').value||0)||0;
+  var total=totalMat+mao;
+  var matEl=document.getElementById('os-fin-total-mat');
+  if(matEl)matEl.textContent=osFmtMoeda(totalMat);
+  document.getElementById('os-fin-total-geral').textContent=osFmtMoeda(total);
+  return{totalMat:totalMat,total:total};
+}
+
+function osConfirmarFin(){
+  var diag=document.getElementById('os-fin-diagnostico').value.trim();
+  var err=document.getElementById('os-fin-err');
+  if(!diag){err.textContent='Informe o diagnóstico / serviço realizado.';err.style.display='block';return}
+  err.style.display='none';
+  var os=osOrdens.find(function(o){return o.id===osFinId});if(!os)return;
+
+  var itens=[];
+  document.querySelectorAll('[id^="fin-item-"]').forEach(function(row){
+    var ins=row.querySelectorAll('input');
+    var nome=(ins[0]&&ins[0].value.trim())||'';
+    var qtd=parseFloat(ins[1]&&ins[1].value||1)||1;
+    var val=parseFloat(ins[2]&&ins[2].value||0)||0;
+    if(nome)itens.push({nome:nome,qtd:qtd,valor:val,subtotal:qtd*val});
+  });
+
+  var calc=osFinCalc();
+  os.status='concluido';
+  os.diagnostico=diag;
+  os.itens=itens;
+  os.totalPecas=calc.totalMat;
+  os.valorMaoObra=parseFloat(document.getElementById('os-fin-mao-obra').value||0)||0;
+  os.total=calc.total;
+  os.garantia=document.getElementById('os-fin-garantia').value.trim();
+  os.statusPag=document.getElementById('os-fin-status-pag').value;
+  os.formaPag=document.getElementById('os-fin-forma-pag').value;
+  os.parcelas=parseInt(document.getElementById('os-fin-parcelas').value||1);
+  os.dataPag=document.getElementById('os-fin-data-pag').value;
+  os.obsFin=document.getElementById('os-fin-obs').value.trim();
+  os.dataFinalizacao=new Date().toLocaleDateString('pt-BR');
+
+  osSalvarStorage();
+  osFecharFin();
+  osRenderLista();
+  if(document.getElementById('tab-os-abertas').style.display!=='none')ospRender();
+  showBanner('OS #'+osFmtNum(os.numero)+' finalizada — '+osFmtMoeda(os.total));
+}
+
+function osDeletar(id){
+  if(!confirm('Excluir esta OS permanentemente?'))return;
+  osOrdens=osOrdens.filter(function(o){return o.id!==id});
+  osSalvarStorage();
+  osFecharModal();
+  osRenderLista();
+}
+
+function osImprimirOS(id){
+  var os=osOrdens.find(function(o){return o.id===id});if(!os)return;
+  var itensHtml='';
+  if(os.itens&&os.itens.length){
+    itensHtml='<table style="width:100%;border-collapse:collapse;margin-bottom:8px">'+
+      '<tr style="background:#e8f5f0"><th style="padding:6px 8px;text-align:left;font-size:12px">Peça/Produto</th>'+
+      '<th style="padding:6px 8px;text-align:center;font-size:12px">Qtd</th>'+
+      '<th style="padding:6px 8px;text-align:right;font-size:12px">Unitário</th>'+
+      '<th style="padding:6px 8px;text-align:right;font-size:12px">Total</th></tr>'+
+      os.itens.map(function(it){
+        return '<tr style="border-bottom:1px solid #e2e8e0">'+
+          '<td style="padding:5px 8px;font-size:12px">'+it.nome+'</td>'+
+          '<td style="padding:5px 8px;text-align:center;font-size:12px">'+it.qtd+'</td>'+
+          '<td style="padding:5px 8px;text-align:right;font-size:12px">'+osFmtMoeda(it.valor)+'</td>'+
+          '<td style="padding:5px 8px;text-align:right;font-size:12px;font-weight:600">'+osFmtMoeda(it.subtotal)+'</td>'+
+        '</tr>';
+      }).join('')+'</table>';
+  }
+  var st=OS_STATUS[os.status]||OS_STATUS.aberto;
+  var html='<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"/>'+
+    '<title>OS #'+osFmtNum(os.numero)+'</title>'+
+    '<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;font-size:13px;color:#222;padding:24px;max-width:750px;margin:0 auto}'+
+    '.sec{background:#f7faf9;border:1px solid #c8ddd8;border-radius:6px;padding:12px 14px;margin-bottom:10px}'+
+    '.sec-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#1D9E75;margin-bottom:8px}'+
+    '.row{display:flex;gap:24px;margin-bottom:4px}.row .col{flex:1}'+
+    'table{width:100%;border-collapse:collapse}th,td{padding:6px 8px}'+
+    '.total-row td{font-weight:700;font-size:15px;border-top:2px solid #0a2e2a;padding-top:10px}'+
+    '.badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:8px;font-weight:700}'+
+    '.sig{display:flex;justify-content:space-between;margin-top:40px;padding-top:16px;border-top:1px solid #ccc}'+
+    '.sig div{width:45%;text-align:center;padding-top:8px;border-top:1.5px solid #333;font-size:12px;color:#666}'+
+    '.footer{text-align:center;margin-top:16px;font-size:11px;color:#999;border-top:1px solid #eee;padding-top:10px}'+
+    '@media print{@page{margin:15mm}button{display:none!important}}'+
+    '</style></head><body>'+
+    // Header
+    '<div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #1D9E75;padding-bottom:14px;margin-bottom:14px">'+
+      '<div style="display:flex;align-items:flex-start;gap:14px">'+
+        '<img src=\'https://tisemed406-a11y.github.io/registro-arptech/Sem%20t%C3%ADtulo-1.png\'  style=\'max-height:70px;max-width:160px;object-fit:contain\' />'+
+        '<div>'+
+          '<div style="font-size:11px;color:#7a9e96;margin-top:4px">CNPJ: 11.615.138/0001-11 · IE: 04.227.027-8</div>'+
+          '<div style="font-size:11px;color:#7a9e96">Rua 5 de Setembro, 384 — Centro — Humaitá/AM</div>'+
+          '<div style="font-size:11px;color:#7a9e96">(97) 98429-4519 · suporte.arptech@gmail.com</div>'+
+        '</div>'+
+      '</div>'+
+      '<div style="text-align:right;background:#f7faf9;border:1.5px solid #b8d4cc;border-radius:10px;padding:12px 18px">'+
+        '<div style="font-size:18px;font-weight:700;color:#0a2e2a">O.S. Nº: <span style="color:#1D9E75">'+osFmtNum(os.numero)+'</span></div>'+
+        '<div style="font-size:12px;color:#7a9e96;margin-top:3px">Abertura: '+os.dataAbertura+'</div>'+
+        (os.dataFinalizacao?'<div style="font-size:12px;color:#7a9e96">Finalizada: '+os.dataFinalizacao+'</div>':'')+
+        '<div style="margin-top:6px"><span class="badge" style="background:'+st.bg+';color:'+st.color+'">'+st.label+'</span></div>'+
+      '</div>'+
+    '</div>'+
+    // Dados do cliente
+    '<div class="sec"><div class="sec-title">Dados do Cliente</div>'+
+    '<div class="row">'+
+      '<div class="col"><strong>Nome/Empresa:</strong> '+os.cliente+'</div>'+
+      '<div class="col">'+(os.cnpj?'<strong>CNPJ/CPF:</strong> '+os.cnpj:'')+'</div>'+
+    '</div>'+
+    '<div class="row">'+
+      '<div class="col"><strong>Telefone:</strong> '+os.telefone+'</div>'+
+      '<div class="col">'+(os.endereco?'<strong>Endereço:</strong> '+os.endereco:'')+'</div>'+
+    '</div></div>'+
+    // Produto/serviço
+    '<div class="sec"><div class="sec-title">Informações do Produto</div>'+
+    '<strong>Serviço:</strong> '+os.servico+'<br>'+
+    (os.modelo?'<strong>Modelo/Equipamento:</strong> '+os.modelo+'<br>':'')+
+    (os.tecnico?'<strong>Técnico responsável:</strong> '+os.tecnico+'<br>':'')+
+    '</div>'+
+    // Relato
+    '<div class="sec"><div class="sec-title">Relato do Cliente</div>'+os.relato+
+    (os.obsAbertura?'<br><br><em>Obs.: '+os.obsAbertura+'</em>':'')+
+    '</div>'+
+    // Diagnóstico
+    (os.diagnostico?'<div class="sec"><div class="sec-title">Diagnóstico e Serviço Realizado</div>'+os.diagnostico+'</div>':'')+
+    // Garantia
+    (os.garantia?'<div class="sec"><div class="sec-title">Garantia e Observações</div>'+os.garantia+(os.obsFin?'<br>'+os.obsFin:'')+'</div>':'')+
+    // Orçamento
+    (os.total>0?
+      '<div class="sec"><div class="sec-title">Orçamento</div>'+
+      itensHtml+
+      '<table>'+
+      (os.totalPecas?'<tr><td>Valor das peças/produtos:</td><td style="text-align:right">'+osFmtMoeda(os.totalPecas)+'</td></tr>':'')+
+      '<tr><td>Valor dos serviços (mão de obra):</td><td style="text-align:right">'+osFmtMoeda(os.valorMaoObra)+'</td></tr>'+
+      '<tr class="total-row"><td><strong>Valor total:</strong></td><td style="text-align:right"><strong>'+osFmtMoeda(os.total)+'</strong></td></tr>'+
+      '</table>'+
+      (os.formaPag?'<div style="margin-top:8px;font-size:12px;color:#555">Pagamento: '+(FORMA_PAG_LABEL[os.formaPag]||os.formaPag)+(os.parcelas>1?' em '+os.parcelas+'x':'')+(os.dataPag?' — '+os.dataPag:'')+'</div>':'')+
+      '</div>':'')+
+    // Assinaturas
+    '<div class="sig"><div>Assinatura do Cliente</div><div>Assinatura do Técnico Responsável</div></div>'+
+    '<div class="footer">ARP TECH da Amazônia — CNPJ: 11.615.138/0001-11 — Rua 5 de Setembro, 384 — Humaitá/AM — (97) 98429-4519</div>'+
+    '<div style="text-align:center;margin-top:16px"><button onclick="window.print()" style="padding:12px 30px;background:#1D9E75;color:#fff;border:none;border-radius:8px;font-size:15px;cursor:pointer;font-family:Arial">🖨 Imprimir</button></div>'+
+  '</body></html>';
+
+  var w=window.open('','_blank','width=800,height=900');
+  if(w){w.document.write(html);w.document.close();}
+  else{alert('Permita pop-ups para imprimir a OS.');}
+  osFecharModal();
+}
+
+
+function osIniciarTab(){
+  // Admin pode designar tecnico; outros tecnicos sao automaticamente o responsavel
+  var isAdmin=(currentUser==='Admin'||getPerfilUsuario(currentUser)==='ADMIN');
+  var wrap=document.getElementById('os-tecnico-wrap');
+  if(wrap){
+    if(isAdmin){
+      wrap.style.display='block';
+      var sel=document.getElementById('os-tecnico');
+      var todosU=getTodosUsuarios();
+      sel.innerHTML='<option value="">Sem tecnico designado</option>';
+      Object.keys(todosU).filter(function(n){return n!=='Admin'}).sort().forEach(function(n){
+        sel.innerHTML+='<option value="'+n+'">'+n+'</option>';
+      });
+    } else {
+      wrap.style.display='none';
+    }
+  }
+  osSetTipo('interno');
+}
+
+// Aliases
+function osRenderLista(){
+  var el=document.getElementById('os-lista');if(!el)return;
+  var lista=osGetFiltradas();
+  if(!lista.length){el.innerHTML='<div class="empty-state">Nenhuma OS encontrada.</div>';return}
+  el.innerHTML=lista.map(function(os){
+    var st=OS_STATUS[os.status]||OS_STATUS.aberto;
+    var badge='<span style="font-size:11px;padding:3px 9px;border-radius:10px;font-weight:700;background:'+st.bg+';color:'+st.color+'">'+st.emoji+' '+st.label+'</span>';
+    var tecBadge=os.status==='andamento'&&os.tecnico?'<span style="font-size:11px;background:#f4f8f6;color:#2d4a44;padding:2px 8px;border-radius:8px;font-weight:600">👤 '+os.tecnico+'</span>':'';
+    return '<div style="background:#fff;border:2px solid #b8d4cc;border-radius:16px;padding:14px;margin-bottom:10px;cursor:pointer" onclick="osAbrirModal('+os.id+')">'+
+      '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">'+
+        '<div>'+
+          '<div style="font-size:12px;color:#7a9e96;font-weight:600;margin-bottom:3px">OS #'+osFmtNum(os.numero)+' · '+os.dataAbertura+'</div>'+
+          '<div style="font-size:16px;font-weight:700;color:#0f1f1c">'+os.cliente+'</div>'+
+          (os.cnpj?'<div style="font-size:12px;color:#7a9e96">'+os.cnpj+'</div>':'')+
+        '</div>'+
+        '<div style="text-align:right">'+badge+'</div>'+
+      '</div>'+
+      '<div style="font-size:13px;color:#2d4a44;margin-bottom:6px"><strong>'+os.servico+'</strong>'+(os.modelo?' — '+os.modelo:'')+'</div>'+
+      '<div style="font-size:13px;color:#7a9e96;font-style:italic;margin-bottom:8px">'+os.relato.substring(0,100)+(os.relato.length>100?'...':'')+'</div>'+
+      '<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">'+
+        '<span style="font-size:11px;padding:2px 8px;border-radius:8px;font-weight:700;background:'+(os.tipo==='interno'?'#DBEAFE':'#FEF3C7')+';color:'+(os.tipo==='interno'?'#1e40af':'#92400e')+'">'+
+          (os.tipo==='interno'?'🔧 Interno':'🚗 Externo')+'</span>'+
+        tecBadge+
+        (os.total>0?'<span style="font-size:12px;font-weight:700;color:#0d6b4f;margin-left:auto">'+osFmtMoeda(os.total)+'</span>':'')+
+      '</div>'+
+    '</div>';
+  }).join('');
+}
+
+
+// ── PAINEL OS ABERTAS ────────────────────────────────────────
+
+function ospIniciarTab(){
+  var anos=new Set();
+  var anoAtual=new Date().getFullYear();
+  anos.add(anoAtual);
+  osOrdens.forEach(function(o){
+    var y=new Date(o.ts).getFullYear();
+    if(!isNaN(y))anos.add(y);
+  });
+  var selAno=document.getElementById('osp-ano');
+  if(selAno){
+    selAno.innerHTML='<option value="99">Todos os anos</option>';
+    Array.from(anos).sort(function(a,b){return b-a}).forEach(function(a){
+      selAno.innerHTML+='<option value="'+a+'"'+(a===anoAtual?' selected':'')+'>'+a+'</option>';
+    });
+  }
+  // Seta mês atual (0=Jan...11=Dez)
+  var selMes=document.getElementById('osp-mes');
+  if(selMes)selMes.value=String(new Date().getMonth());
+  _ospPageAtivas=0;_ospPageConcluidas=0;
+  _ospSub='ativas';
+  ospShowSub('ativas');
+}
+
+function ospShowSub(sub){
+  _ospSub=sub;
+  ['ativas','concluidas','stats'].forEach(function(s){
+    var el=document.getElementById('osp-sub-'+s);if(el)el.style.display=s===sub?'block':'none';
+    var btn=document.getElementById('osp-btn-'+s);
+    if(btn){
+      if(s===sub){btn.style.background='#1D9E75';btn.style.color='#fff';btn.style.borderColor='#1D9E75';}
+      else{btn.style.background='#fff';btn.style.color='#2d4a44';btn.style.borderColor='#b8d4cc';}
+    }
+  });
+  ospRender();
+}
+
+function ospGetFiltradas(){
+  var mes=parseInt(document.getElementById('osp-mes').value);
+  var ano=parseInt(document.getElementById('osp-ano').value);
+  return osOrdens.filter(function(o){
+    var d=new Date(o.ts);
+    if(isNaN(d))return false;
+    if(mes!==99&&d.getMonth()!==mes)return false;
+    if(ano!==99&&d.getFullYear()!==ano)return false;
+    return true;
+  });
+}
+
+function ospRender(){
+  var lista=ospGetFiltradas();
+  var ativas=lista.filter(function(o){return o.status==='aberto'||o.status==='andamento';});
+  var concluidas=lista.filter(function(o){return o.status==='concluido'||o.status==='pendente';});
+
+  if(_ospSub==='ativas'){
+    var elA=document.getElementById('osp-lista');if(!elA)return;
+    if(!ativas.length){
+      elA.innerHTML='<div class="empty-state">Nenhuma OS em aberto ou andamento neste periodo.</div>';
+      var pA=document.getElementById('osp-pag-ativas');if(pA)pA.innerHTML='';
+      return;
+    }
+    var sliceA=ativas.slice(_ospPageAtivas*OSP_PER_PAGE,(_ospPageAtivas+1)*OSP_PER_PAGE);
+    elA.innerHTML=sliceA.map(function(os){return ospRenderCard(os,true);}).join('');
+    ospRenderPaginacao(ativas.length,_ospPageAtivas,'osp-pag-ativas','ospSetPageAtivas');
+  }
+  else if(_ospSub==='concluidas'){
+    var elC=document.getElementById('osp-lista-concluidas');if(!elC)return;
+    if(!concluidas.length){
+      elC.innerHTML='<div class="empty-state">Nenhuma OS concluida ou pendente neste periodo.</div>';
+      var pC=document.getElementById('osp-pag-concluidas');if(pC)pC.innerHTML='';
+      return;
+    }
+    var sliceC=concluidas.slice(_ospPageConcluidas*OSP_PER_PAGE,(_ospPageConcluidas+1)*OSP_PER_PAGE);
+    elC.innerHTML=sliceC.map(function(os){return ospRenderCard(os,true);}).join('');
+    ospRenderPaginacao(concluidas.length,_ospPageConcluidas,'osp-pag-concluidas','ospSetPageConcluidas');
+  }
+  else if(_ospSub==='stats'){
+    var tot=lista.length;
+    var aberto=lista.filter(function(o){return o.status==='aberto'}).length;
+    var andamento=lista.filter(function(o){return o.status==='andamento'}).length;
+    var pendente=lista.filter(function(o){return o.status==='pendente'}).length;
+    var concluido=lista.filter(function(o){return o.status==='concluido'}).length;
+    var totalFat=lista.filter(function(o){return o.status==='concluido'&&o.statusPag==='pago'}).reduce(function(s,o){return s+(o.total||0)},0);
+    var totalARec=lista.filter(function(o){return o.status==='concluido'&&o.statusPag!=='pago'&&o.total>0}).reduce(function(s,o){return s+(o.total||0)},0);
+    var MESES_N=['Janeiro','Fevereiro','Marco','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+    var mesV=parseInt(document.getElementById('osp-mes').value);
+    var anoEl=document.getElementById('osp-ano');
+    var anoV=anoEl?anoEl.value:'';
+    var tituloP=(mesV!==99?MESES_N[mesV]+' / ':'')+anoV;
+
+    var html='<div style="text-align:center;font-size:14px;font-weight:700;color:#0a2e2a;margin-bottom:14px">'+tituloP+'</div>';
+    html+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">';
+    html+=ospStatCard('Total','',tot,'#0a2e2a','#f4f8f6');
+    html+=ospStatCard('Concluidas','',concluido,'#0d6b4f','#d4f0e5');
+    html+=ospStatCard('Andamento','',andamento,'#92400e','#FEF3C7');
+    html+=ospStatCard('Pendentes','',pendente,'#dc2626','#FEE2E2');
+    html+=ospStatCard('Em Aberto','',aberto,'#1e40af','#DBEAFE');
+    html+='</div>';
+    html+='<div style="background:#0a2e2a;color:#fff;border-radius:14px;padding:16px;margin-bottom:14px">';
+    html+='<div style="font-size:11px;opacity:.6;margin-bottom:4px;text-transform:uppercase;letter-spacing:.8px">Faturamento confirmado</div>';
+    html+='<div style="font-size:26px;font-weight:700;color:#1D9E75">'+osFmtMoeda(totalFat)+'</div>';
+    if(totalARec>0)html+='<div style="font-size:12px;color:#FCA5A5;margin-top:4px">'+osFmtMoeda(totalARec)+' a receber</div>';
+    html+='</div>';
+    // Por tecnico
+    var porTec={};
+    lista.forEach(function(o){
+      var t=o.tecnico||'Sem tecnico';
+      if(!porTec[t])porTec[t]={total:0,aberto:0,andamento:0,pendente:0,concluido:0,fat:0};
+      porTec[t].total++;
+      porTec[t][o.status]=(porTec[t][o.status]||0)+1;
+      if(o.status==='concluido'&&o.statusPag==='pago')porTec[t].fat+=(o.total||0);
+    });
+    if(Object.keys(porTec).length){
+      html+='<div class="card"><div class="card-title">Por Tecnico</div>';
+      Object.keys(porTec).sort().forEach(function(tec){
+        var t=porTec[tec];
+        html+='<div style="background:#f4f8f6;border-radius:12px;padding:12px;margin-bottom:10px">'+
+          '<div style="font-size:14px;font-weight:700;color:#0f1f1c;margin-bottom:7px">'+tec+
+          ' <span style="font-size:12px;color:#7a9e96">('+t.total+' OS)</span></div>'+
+          '<div style="display:flex;flex-wrap:wrap;gap:6px">'+
+            (t.concluido?'<span style="font-size:12px;padding:3px 9px;border-radius:8px;background:#d4f0e5;color:#0d6b4f;font-weight:600">'+t.concluido+' conc.</span>':'')+
+            (t.andamento?'<span style="font-size:12px;padding:3px 9px;border-radius:8px;background:#FEF3C7;color:#92400e;font-weight:600">'+t.andamento+' and.</span>':'')+
+            (t.pendente?'<span style="font-size:12px;padding:3px 9px;border-radius:8px;background:#FEE2E2;color:#dc2626;font-weight:600">'+t.pendente+' pend.</span>':'')+
+            (t.aberto?'<span style="font-size:12px;padding:3px 9px;border-radius:8px;background:#DBEAFE;color:#1e40af;font-weight:600">'+t.aberto+' aberto</span>':'')+
+            (t.fat?'<span style="font-size:12px;padding:3px 9px;border-radius:8px;background:#d4f0e5;color:#0d6b4f;font-weight:700">'+osFmtMoeda(t.fat)+'</span>':'')+
+          '</div>'+
+        '</div>';
+      });
+      html+='</div>';
+    }
+    document.getElementById('osp-stats-content').innerHTML=html;
+  }
+}
+
+
+function ospStatCard(label,emoji,val,color,bg){
+  return '<div style="background:'+bg+';border-radius:12px;padding:14px;text-align:center">'+
+    '<div style="font-size:22px;margin-bottom:4px">'+emoji+'</div>'+
+    '<div style="font-size:26px;font-weight:700;color:'+color+'">'+val+'</div>'+
+    '<div style="font-size:12px;font-weight:600;color:'+color+';opacity:.8">'+label+'</div>'+
+  '</div>';
+}
+
+
+// ── ABA OS ABERTAS ────────────────────────────────────────────
+
+var _osaTab = 'lista';
+
+function osAbertasIniciar(){
+  // Popula anos disponíveis
+  var anos=new Set();
+  var anoAtual=new Date().getFullYear();
+  anos.add(anoAtual);
+  osOrdens.forEach(function(os){
+    var d=new Date(os.ts);
+    if(!isNaN(d))anos.add(d.getFullYear());
+  });
+  var selAno=document.getElementById('osa-ano');
+  selAno.innerHTML='<option value="0">Todos os anos</option>';
+  Array.from(anos).sort().reverse().forEach(function(a){
+    selAno.innerHTML+='<option value="'+a+'"'+(a===anoAtual?' selected':'')+'>'+a+'</option>';
+  });
+  // Mês atual
+  document.getElementById('osa-mes').value=new Date().getMonth()+1;
+  _osaTab='lista';
+  osAbertasTab('lista');
+}
+
+function osAbertasTab(tab){
+  _osaTab=tab;
+  var btnL=document.getElementById('osa-btn-lista');
+  var btnS=document.getElementById('osa-btn-stats');
+  var cL=document.getElementById('osa-content-lista');
+  var cS=document.getElementById('osa-content-stats');
+  if(tab==='lista'){
+    btnL.style.background='#1D9E75';btnL.style.color='#fff';btnL.style.borderColor='#1D9E75';
+    btnS.style.background='#fff';btnS.style.color='#2d4a44';btnS.style.borderColor='#b8d4cc';
+    cL.style.display='block';cS.style.display='none';
+  } else {
+    btnS.style.background='#1D9E75';btnS.style.color='#fff';btnS.style.borderColor='#1D9E75';
+    btnL.style.background='#fff';btnL.style.color='#2d4a44';btnL.style.borderColor='#b8d4cc';
+    cL.style.display='none';cS.style.display='block';
+  }
+  osAbertasRender();
+}
+
+function osAbertasFiltrar(){
+  var mes=parseInt(document.getElementById('osa-mes').value);
+  var ano=parseInt(document.getElementById('osa-ano').value);
+  return osOrdens.filter(function(os){
+    var d=new Date(os.ts);
+    if(isNaN(d))return false;
+    if(mes>0&&d.getMonth()+1!==mes)return false;
+    if(ano>0&&d.getFullYear()!==ano)return false;
+    return true;
+  });
+}
+
+function osAbertasRender(){
+  if(_osaTab==='lista') osAbertasRenderLista();
+  else osAbertasRenderStats();
+}
+
+var MESES_PT=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+
+function osAbertasRenderLista(){
+  var el=document.getElementById('osa-lista');if(!el)return;
+  var lista=osAbertasFiltrar();
+  var mes=parseInt(document.getElementById('osa-mes').value);
+  var ano=parseInt(document.getElementById('osa-ano').value);
+  var titulo=(mes>0?MESES_PT[mes-1]+' ':'')+(ano>0?ano:'');
+
+  if(!lista.length){
+    el.innerHTML='<div class="empty-state">Nenhuma OS encontrada'+(titulo?' em '+titulo:'')+'.</div>';
+    return;
+  }
+
+  // Agrupa por status na ordem: aberto → andamento → pendente → concluido
+  var ordem=['aberto','andamento','pendente','concluido'];
+  var grupos={aberto:[],andamento:[],pendente:[],concluido:[]};
+  lista.forEach(function(os){grupos[os.status]&&grupos[os.status].push(os)});
+
+  var html='';
+  if(titulo)html+='<div style="font-size:14px;font-weight:700;color:#2d4a44;margin-bottom:12px">'+titulo+' — '+lista.length+' OS</div>';
+
+  ordem.forEach(function(status){
+    var group=grupos[status];
+    if(!group||!group.length)return;
+    var st=OS_STATUS[status];
+    html+='<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:'+st.color+';margin:14px 0 8px;padding:6px 10px;background:'+st.bg+';border-radius:8px;display:inline-block">'+st.emoji+' '+st.label+' ('+group.length+')</div>';
+    html+=group.map(function(os){
+      var tecBadge=os.status==='andamento'&&os.tecnico?
+        '<span style="font-size:11px;background:#f4f8f6;color:#2d4a44;padding:2px 8px;border-radius:8px;font-weight:600">👤 '+os.tecnico+'</span>':'';
+      return '<div style="background:#fff;border:2px solid #b8d4cc;border-radius:14px;padding:13px;margin-bottom:8px;cursor:pointer" onclick="osAbrirModal('+os.id+')">'+
+        '<div style="display:flex;justify-content:space-between;align-items:flex-start">'+
+          '<div>'+
+            '<div style="font-size:11px;color:#7a9e96;font-weight:600">OS #'+osFmtNum(os.numero)+' · '+os.dataAbertura+'</div>'+
+            '<div style="font-size:15px;font-weight:700;color:#0f1f1c">'+os.cliente+'</div>'+
+          '</div>'+
+          '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">'+
+            (os.total>0?'<span style="font-size:13px;font-weight:700;color:#0d6b4f">'+osFmtMoeda(os.total)+'</span>':'')+
+            tecBadge+
+          '</div>'+
+        '</div>'+
+        '<div style="font-size:12px;color:#2d4a44;margin-top:5px">'+os.servico+(os.modelo?' — <em>'+os.modelo+'</em>':'')+'</div>'+
+      '</div>';
+    }).join('');
+  });
+
+  el.innerHTML=html;
+}
+
+function osAbertasRenderStats(){
+  var lista=osAbertasFiltrar();
+  var mes=parseInt(document.getElementById('osa-mes').value);
+  var ano=parseInt(document.getElementById('osa-ano').value);
+  var titulo=(mes>0?MESES_PT[mes-1]+' ':'')+(ano>0?ano:'Todos os anos');
+
+  var counts={aberto:0,andamento:0,pendente:0,concluido:0,total:0};
+  var totalFaturado=0;var totalPendente=0;
+  lista.forEach(function(os){
+    counts[os.status]=(counts[os.status]||0)+1;
+    counts.total++;
+    if(os.status==='concluido'){
+      if(os.statusPag==='pago')totalFaturado+=os.total||0;
+      else totalPendente+=os.total||0;
+    }
+  });
+
+  // Cards
+  var cardsHtml=[
+    {label:'Total de OS',val:counts.total,bg:'#f4f8f6',cor:'#0a2e2a',icone:'📋'},
+    {label:'Concluídas',val:counts.concluido,bg:'#d4f0e5',cor:'#0d6b4f',icone:'✅'},
+    {label:'Em Andamento',val:counts.andamento,bg:'#FEF3C7',cor:'#92400e',icone:'🔧'},
+    {label:'Pendentes',val:counts.pendente,bg:'#FEE2E2',cor:'#dc2626',icone:'⏳'},
+    {label:'Em Aberto',val:counts.aberto,bg:'#DBEAFE',cor:'#1e40af',icone:'📂'},
+    {label:'Faturado',val:osFmtMoeda(totalFaturado),bg:'#d4f0e5',cor:'#0d6b4f',icone:'💰'},
+  ].map(function(card){
+    return '<div style="background:'+card.bg+';border-radius:14px;padding:14px;text-align:center">'+
+      '<div style="font-size:22px;margin-bottom:4px">'+card.icone+'</div>'+
+      '<div style="font-size:22px;font-weight:700;color:'+card.cor+'">'+card.val+'</div>'+
+      '<div style="font-size:11px;color:#7a9e96;font-weight:600;text-transform:uppercase;letter-spacing:.5px">'+card.label+'</div>'+
+    '</div>';
+  }).join('');
+
+  document.getElementById('osa-cards').innerHTML=cardsHtml;
+
+  // Detalhe: lista de técnicos
+  var porTecnico={};
+  lista.forEach(function(os){
+    var tec=os.tecnico||'Sem técnico';
+    if(!porTecnico[tec])porTecnico[tec]={total:0,concluido:0,andamento:0,pendente:0,aberto:0,faturado:0};
+    porTecnico[tec].total++;
+    porTecnico[tec][os.status]=(porTecnico[tec][os.status]||0)+1;
+    if(os.status==='concluido'&&os.statusPag==='pago')porTecnico[tec].faturado+=os.total||0;
+  });
+
+  var detailHtml='<div class="card"><div class="card-title">Por técnico — '+titulo+'</div>';
+  if(!Object.keys(porTecnico).length){
+    detailHtml+='<div style="color:#7a9e96;font-size:13px">Nenhuma OS neste período.</div>';
+  } else {
+    detailHtml+=Object.keys(porTecnico).sort().map(function(tec){
+      var t=porTecnico[tec];
+      return '<div style="background:#f4f8f6;border-radius:12px;padding:12px;margin-bottom:10px">'+
+        '<div style="font-size:14px;font-weight:700;color:#0f1f1c;margin-bottom:8px">👤 '+tec+' <span style="font-size:12px;color:#7a9e96;font-weight:500">('+t.total+' OS)</span></div>'+
+        '<div style="display:flex;flex-wrap:wrap;gap:7px">'+
+          '<span style="font-size:12px;padding:3px 9px;border-radius:8px;background:#d4f0e5;color:#0d6b4f;font-weight:600">✅ '+t.concluido+' concluídas</span>'+
+          (t.andamento?'<span style="font-size:12px;padding:3px 9px;border-radius:8px;background:#FEF3C7;color:#92400e;font-weight:600">🔧 '+t.andamento+' em andamento</span>':'')+
+          (t.pendente?'<span style="font-size:12px;padding:3px 9px;border-radius:8px;background:#FEE2E2;color:#dc2626;font-weight:600">⏳ '+t.pendente+' pendentes</span>':'')+
+          (t.aberto?'<span style="font-size:12px;padding:3px 9px;border-radius:8px;background:#DBEAFE;color:#1e40af;font-weight:600">📂 '+t.aberto+' em aberto</span>':'')+
+          (t.faturado?'<span style="font-size:12px;padding:3px 9px;border-radius:8px;background:#d4f0e5;color:#0d6b4f;font-weight:600">💰 '+osFmtMoeda(t.faturado)+'</span>':'')+
+        '</div>'+
+      '</div>';
+    }).join('');
+  }
+  detailHtml+='</div>';
+  document.getElementById('osa-stats-detail').innerHTML=detailHtml;
+}
+
+
+// ── FUNÇÕES COMPLEMENTARES OSP ────────────────────────────────
+
+var _ospSub = 'ativas';
+var _listPage = 0;
+var LIST_PER_PAGE = 30;
+var _ospPageAtivas = 0;
+var _ospPageConcluidas = 0;
+var OSP_PER_PAGE = 30;
+
+function osSetTipo(tipo){
+  _osTipoAtual=tipo; // guarda estado
+  var intR=document.getElementById('os-tipo-int');
+  var extR=document.getElementById('os-tipo-ext');
+  var intL=document.getElementById('os-tipo-int-label');
+  var extL=document.getElementById('os-tipo-ext-label');
+  if(!intL||!extL)return;
+  if(tipo==='interno'){
+    if(intR)intR.checked=true;
+    intL.style.background='#1D9E75';intL.style.color='#fff';
+    extL.style.background='#fff';extL.style.color='#7a9e96';
+  } else {
+    if(extR)extR.checked=true;
+    extL.style.background='#1D9E75';extL.style.color='#fff';
+    intL.style.background='#fff';intL.style.color='#7a9e96';
+  }
+  osTipoChange();
+}
+
+function ospRenderCard(os,showDel){
+  var st=OS_STATUS[os.status]||OS_STATUS.aberto;
+  var isAdmin=currentUser==='Admin'||getPerfilUsuario(currentUser)==='ADMIN';
+  var isARPTECH=getPerfilUsuario(currentUser)==='ARPTECH';
+  var podeDelete=isAdmin||isARPTECH||(os.criadoPor&&os.criadoPor===currentUser);
+  var delBtn=(showDel&&podeDelete)?
+    '<button onclick="event.stopPropagation();ospDeletar('+os.id+')" style="background:#FEE2E2;color:#dc2626;border:none;border-radius:7px;padding:4px 9px;font-size:12px;cursor:pointer;font-weight:700">Del</button>':'';
+  var tecBadge=os.tecnico?'<span style="font-size:11px;background:#f4f8f6;color:#2d4a44;padding:2px 8px;border-radius:8px;font-weight:600">'+os.tecnico+'</span>':'';
+  return '<div style="background:#fff;border:2px solid #b8d4cc;border-radius:16px;padding:14px;margin-bottom:10px;cursor:pointer" onclick="osAbrirModal('+os.id+')">'+
+    '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">'+
+      '<div style="flex:1">'+
+        '<div style="font-size:12px;color:#7a9e96;font-weight:600">OS #'+osFmtNum(os.numero)+' - '+os.dataAbertura+'</div>'+
+        '<div style="font-size:15px;font-weight:700;color:#0f1f1c">'+os.cliente+'</div>'+
+      '</div>'+
+      '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">'+
+        '<span style="font-size:11px;padding:3px 9px;border-radius:10px;font-weight:700;background:'+st.bg+';color:'+st.color+'">'+st.label+'</span>'+
+        delBtn+
+      '</div>'+
+    '</div>'+
+    '<div style="font-size:13px;color:#2d4a44;margin-bottom:4px">'+os.servico+(os.modelo?' - '+os.modelo:'')+'</div>'+
+    '<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">'+
+      tecBadge+
+      (os.total>0?'<span style="font-size:12px;font-weight:700;color:#0d6b4f;margin-left:auto">'+osFmtMoeda(os.total)+'</span>':'')+
+    '</div>'+
+  '</div>';
+}
+
+function ospDeletar(id){
+  if(!confirm('Excluir esta OS permanentemente?'))return;
+  osOrdens=osOrdens.filter(function(o){return o.id!==id});
+  osSalvarStorage();ospRender();showBanner('OS excluida.');
+}
+
+function ospRenderPaginacao(total,pagAtual,elId,onPageFn){
+  var totalPags=Math.ceil(total/OSP_PER_PAGE);
+  var el=document.getElementById(elId);if(!el)return;
+  if(totalPags<=1){el.innerHTML='';return;}
+  var html='';
+  for(var i=0;i<totalPags;i++){
+    var ativo=i===pagAtual;
+    html+='<button onclick="'+onPageFn+'('+i+')" style="padding:7px 13px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);border:2px solid '+(ativo?'#1D9E75':'#b8d4cc')+';background:'+(ativo?'#1D9E75':'#fff')+';color:'+(ativo?'#fff':'#2d4a44')+'">'+(i+1)+'</button>';
+  }
+  el.innerHTML=html;
+}
+
+function ospSetPageAtivas(p){_ospPageAtivas=p;ospRender();}
+function ospSetPageConcluidas(p){_ospPageConcluidas=p;ospRender();}
+
+
+// ── COMISSÕES ────────────────────────────────────────────────────
+
+function comIniciar(){
+  document.getElementById('com-percent').value=COMISSAO_PERCENT;
+  comRender();
+}
+
+function comSalvarPercent(){
+  var val=parseInt(document.getElementById('com-percent').value||70);
+  if(val<0||val>100){alert('Porcentagem deve ser entre 0 e 100.');return}
+  COMISSAO_PERCENT=val;
+  localStorage.setItem('comissao_percent',String(val));
+  comRender();
+  showBanner('Porcentagem de comissao atualizada: '+val+'%');
+}
+
+function comRender(){
+  var porcentagem=COMISSAO_PERCENT;
+  var todosU=getTodosUsuarios();
+  var tecnicos=Object.keys(todosU).filter(function(n){
+    var perfil=todosU[n].perfil;
+    return perfil==='ARPTECH'||perfil==='SEMED';
+  }).sort();
+
+  // Cards por tecnico
+  var cardsHtml='';
+  var porTecnico={};
+  
+  tecnicos.forEach(function(tec){
+    var totalFat=osOrdens.filter(function(o){
+      return o.tecnico===tec&&o.status==='concluido'&&o.statusPag==='pago'&&o.total>0;
+    }).reduce(function(s,o){return s+(o.total||0)},0);
+    var comissao=totalFat*(porcentagem/100);
+    porTecnico[tec]={totalFat:totalFat,comissao:comissao};
+    
+    cardsHtml+='<div style="background:#f4f8f6;border-radius:12px;padding:14px">'+
+      '<div style="font-size:13px;color:#7a9e96;font-weight:600;margin-bottom:3px">'+tec+'</div>'+
+      '<div style="font-size:18px;font-weight:700;color:#0d6b4f;margin-bottom:8px">'+osFmtMoeda(comissao)+'</div>'+
+      '<div style="font-size:12px;color:#7a9e96">Faturado: '+osFmtMoeda(totalFat)+'</div>'+
+      '<div style="font-size:11px;color:#7a9e96;margin-top:4px">'+porcentagem+'% de comissao</div>'+
+    '</div>';
+  });
+  
+  document.getElementById('com-cards').innerHTML=cardsHtml;
+  
+  // Detalhes por tecnico
+  var detalheHtml='<div class="card-title">Detalhes por Tecnico</div>';
+  var totalGeral=0;
+  var totalComissao=0;
+  
+  tecnicos.forEach(function(tec){
+    var t=porTecnico[tec];
+    totalGeral+=t.totalFat;
+    totalComissao+=t.comissao;
+    
+    var osDoTecnico=osOrdens.filter(function(o){return o.tecnico===tec&&o.status==='concluido'&&o.statusPag==='pago'});
+    detalheHtml+='<div style="background:#f4f8f6;border-radius:12px;padding:12px;margin-bottom:10px">'+
+      '<div style="font-size:13px;font-weight:700;color:#0f1f1c;margin-bottom:8px">'+tec+' ('+osDoTecnico.length+' OS)</div>'+
+      '<table style="width:100%;font-size:12px;color:#2d4a44">'+
+        '<tr><td>Faturado:</td><td style="text-align:right;font-weight:600">'+osFmtMoeda(t.totalFat)+'</td></tr>'+
+        '<tr><td>Comissao ('+porcentagem+'%):</td><td style="text-align:right;font-weight:700;color:#0d6b4f">'+osFmtMoeda(t.comissao)+'</td></tr>'+
+      '</table>'+
+    '</div>';
+  });
+  
+  detalheHtml+='<div style="background:#0a2e2a;color:#fff;border-radius:12px;padding:12px;margin-top:12px">'+
+    '<table style="width:100%;font-size:13px;font-weight:700">'+
+      '<tr><td>TOTAL FATURADO:</td><td style="text-align:right">'+osFmtMoeda(totalGeral)+'</td></tr>'+
+      '<tr><td>TOTAL COMISSOES:</td><td style="text-align:right;color:#1D9E75">'+osFmtMoeda(totalComissao)+'</td></tr>'+
+    '</table>'+
+  '</div>';
+  
+  document.getElementById('com-detalhes').innerHTML=detalheHtml;
+}
+
+function tecRenderComissao(){
+  // Para tecnico visualizar sua comissao
+  var porcentagem=COMISSAO_PERCENT;
+  var tec=currentUser;
+  var totalFat=osOrdens.filter(function(o){
+    return o.tecnico===tec&&o.status==='concluido'&&o.statusPag==='pago'&&o.total>0;
+  }).reduce(function(s,o){return s+(o.total||0)},0);
+  var comissao=totalFat*(porcentagem/100);
+  var osDoTecnico=osOrdens.filter(function(o){return o.tecnico===tec&&o.status==='concluido'&&o.statusPag==='pago'});
+
+  var html='<div class="card" style="text-align:center;padding:20px">'+
+    '<div style="font-size:13px;color:#7a9e96;font-weight:600;margin-bottom:8px">Sua Comissao</div>'+
+    '<div style="font-size:32px;font-weight:700;color:#0d6b4f;margin-bottom:12px">'+osFmtMoeda(comissao)+'</div>'+
+    '<div style="display:flex;justify-content:space-around;margin-bottom:12px">'+
+      '<div><span style="font-size:12px;color:#7a9e96">Faturado</span><div style="font-size:18px;font-weight:700;color:#2d4a44">'+osFmtMoeda(totalFat)+'</div></div>'+
+      '<div><span style="font-size:12px;color:#7a9e96">Taxa</span><div style="font-size:18px;font-weight:700;color:#2d4a44">'+porcentagem+'%</div></div>'+
+      '<div><span style="font-size:12px;color:#7a9e96">OS Pagas</span><div style="font-size:18px;font-weight:700;color:#2d4a44">'+osDoTecnico.length+'</div></div>'+
+    '</div>'+
+    '<div style="background:#f4f8f6;border-radius:10px;padding:12px;font-size:12px;color:#2d4a44;text-align:left">'+
+      '<strong>Detalhamento:</strong><br>Soma de todas as OS finalizadas com pagamento confirmado neste mes.'+
+    '</div>'+
+  '</div>';
+  
+  return html;
+}
+
+
+function tecRenderComissaoTab(){
+  var el=document.getElementById('com-card-tech');
+  if(!el)return;
+  el.innerHTML=tecRenderComissao();
+}
+
+
+function getRegistrosFiltrados(){
+  // Verifica ambos os selects (admin tem stats-period, tech tem list-stats-period)
+  var periodoEl=document.getElementById('stats-period')||document.getElementById('list-stats-period');
+  var periodo=periodoEl?periodoEl.value:'todos'; // default 'todos' se nenhum elemento existir
+  var hoje=new Date();
+  var dataHoje=new Date(hoje.getFullYear(),hoje.getMonth(),hoje.getDate());
+  
+  return records.filter(function(r){
+    var d=new Date(r.date.split('/').reverse().join('-'));
+    if(isNaN(d))return false;
+    
+    if(periodo==='hoje'){
+      return d.getTime()===dataHoje.getTime();
+    }
+    if(periodo==='semana'){
+      var semAgo=new Date(dataHoje.getTime()-7*86400000);
+      return d>=semAgo&&d<=dataHoje;
+    }
+    if(periodo==='mes-envio'){
+      // Usa a data do último relatório enviado ao Sheets
+      var lastReportStr=localStorage.getItem('last_report_date');
+      var dataRelatorio=lastReportStr?new Date(lastReportStr+' 00:00:00'):new Date(hoje.getFullYear(),hoje.getMonth(),22);
+      return d>=dataRelatorio&&d<=dataHoje;
+    }
+    return true; // todos
+  });
+}
+
+function renderListWithPagination(){
+  var lista=getRegistrosFiltrados();
+  var totalPages=Math.ceil(lista.length/LIST_PER_PAGE);
+  if(_listPage>=totalPages)_listPage=Math.max(0,totalPages-1);
+  
+  var slice=lista.slice(_listPage*LIST_PER_PAGE,(_listPage+1)*LIST_PER_PAGE);
+  var html=slice.map(function(r){
+    return '<div style="padding:10px;border-bottom:1px solid #e2e8e0;display:flex;justify-content:space-between;align-items:center">'+
+      '<div>'+
+        '<div style="font-size:13px;font-weight:700;color:#0f1f1c">'+r.desc+'</div>'+
+        '<div style="font-size:12px;color:#7a9e96">'+r.resp+' · '+r.date+(r.start?' às '+r.start:'')+'</div>'+
+      '</div>'+
+      '<div style="text-align:right">'+
+        '<span style="font-size:13px;font-weight:700;color:#0d6b4f">1</span>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+  
+  document.getElementById('list-content').innerHTML=html||'<div style="padding:20px;text-align:center;color:#7a9e96">Nenhum registro encontrado.</div>';
+  
+  // Paginação
+  var pagHtml='';
+  if(totalPages>1){
+    for(var i=0;i<totalPages;i++){
+      var ativo=i===_listPage;
+      pagHtml+='<button onclick="_listPage='+i+';renderListWithPagination()" style="padding:7px 13px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);border:2px solid '+(ativo?'#1D9E75':'#b8d4cc')+';background:'+(ativo?'#1D9E75':'#fff')+';color:'+(ativo?'#fff':'#2d4a44')+'">'+(i+1)+'</button>';
+    }
+  }
+  document.getElementById('list-pagination').innerHTML=pagHtml;
+}
+
+
+function gotoPage(page){
+  _listPage=page;
+  renderList();
 }
 
 
