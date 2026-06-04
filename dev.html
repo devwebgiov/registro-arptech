@@ -2069,43 +2069,39 @@ function closeSuccess(){document.getElementById('success-modal').classList.remov
 
 // ── LIST ─────────────────────────────────────────────────────
 function renderList(){
-  _listPage=0;
   var q=(document.getElementById('search-q')||{value:''}).value.toLowerCase();
-  var lista=getRegistrosFiltrados().filter(function(r){
+  var lista=records.filter(function(r){
     var texto=(r.resp+' '+r.local+' '+r.desc).toLowerCase();
     return q===''||texto.indexOf(q)>=0;
   });
   
-  var totalPages=Math.ceil(lista.length/LIST_PER_PAGE);
-  if(_listPage>=totalPages)_listPage=Math.max(0,totalPages-1);
-  
-  var slice=lista.slice(_listPage*LIST_PER_PAGE,(_listPage+1)*LIST_PER_PAGE);
-  var html=slice.map(function(r){
-    return '<div style="padding:12px;border-bottom:1px solid #e2e8e0;display:flex;justify-content:space-between;align-items:center;cursor:pointer;hover:background:#f9faf8" onclick="selRespByName(\''+r.resp+'\')">'+
-      '<div>'+
-        '<div style="font-size:13px;font-weight:700;color:#0f1f1c">'+r.desc+' <span style="color:#7a9e96;font-weight:400;">'+r.local+'</span></div>'+
-        '<div style="font-size:12px;color:#7a9e96">'+r.resp+' · '+r.date+(r.start?' às '+r.start:'')+'</div>'+
-      '</div>'+
-      '<div style="text-align:right">'+
-        '<span style="font-size:14px;font-weight:700;color:#0d6b4f">1</span>'+
+  var html=lista.map(function(r){
+    // Determine tipo e cor do balão
+    var tipoLocal='';
+    var corBalao='#f0f0f0';
+    if(r.locType==='rural'){tipoLocal='Escola Rural';corBalao='#fff9e6';}
+    else if(r.locType==='urbana'){tipoLocal='Escola Urbana';corBalao='#f3e5ff';}
+    else if(r.locType==='setor'){tipoLocal='Setor';corBalao='#e0f7f6';}
+    
+    return '<div style="background:#fff;padding:14px;margin-bottom:8px;border-radius:8px">'+
+      '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">'+
+        '<div style="flex:1">'+
+          '<div style="font-family:Arial;font-weight:700;font-size:11px;color:#0f1f1c;margin-bottom:4px">'+r.resp+'</div>'+
+          '<div style="font-family:Arial;font-size:11px;color:#2d4a44;line-height:1.4;margin-bottom:10px">'+r.desc+'</div>'+
+          '<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">'+
+            '<span style="background:'+corBalao+';color:#333;padding:4px 10px;border-radius:8px;font-size:10px;font-weight:600">'+tipoLocal+'</span>'+
+            '<span style="font-size:10px;color:#666;font-weight:500">'+r.local+'</span>'+
+          '</div>'+
+        '</div>'+
+        '<div style="text-align:right;font-size:9px;color:#999;white-space:nowrap;margin-left:10px">'+
+          '<div>'+r.date+'</div>'+
+          '<div>'+(r.start||'--:--')+'</div>'+
+        '</div>'+
       '</div>'+
     '</div>';
   }).join('');
   
   document.getElementById('list-content').innerHTML=html||'<div style="padding:20px;text-align:center;color:#7a9e96">Nenhum registro encontrado.</div>';
-  
-  // Paginação
-  var pagHtml='';
-  if(totalPages>1){
-    for(var i=0;i<totalPages;i++){
-      var ativo=i===_listPage;
-      var bgColor=ativo?'#1D9E75':'#fff';
-      var textColor=ativo?'#fff':'#2d4a44';
-      var borderColor=ativo?'#1D9E75':'#b8d4cc';
-      pagHtml+='<button style="padding:7px 13px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);border:2px solid '+borderColor+';background:'+bgColor+';color:'+textColor+'" onclick="gotoPage('+i+')">'+(i+1)+'</button>';
-    }
-  }
-  document.getElementById('list-pagination').innerHTML=pagHtml;
 }
 
 
