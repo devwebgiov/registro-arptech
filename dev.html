@@ -1051,6 +1051,20 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
 </div><!-- /app -->
 
 <script>
+
+window.onerror = function(msg, url, line, col, error) {
+  console.error('❌ ERRO:', msg);
+  console.error('Linha:', line);
+  return false;
+};
+
+window.onerror = function(msg, url, line, col, error) {
+  console.error('❌ ERRO:', msg);
+  console.error('Linha:', line);
+  console.error('Detalhes:', error);
+  alert('Erro no sistema: ' + msg + ' (linha ' + line + ')');
+  return true;
+};
 // ── DATA ─────────────────────────────────────────────────────
 var GRUPOS=[
   ["Setores",["Administrativo","Almoxarifado","Atendimento Educacional Especializado (AEE)","Alimentação Escolar","Alfabetiza","Biblioteca Municipal","Coordenação Educação Escolar Indígena (CEEI)","Coordenação Pedagógica","Coordenação Urbana","Coordenação do Campo","Coordenação Pedagógica do Campo","Conselho Municipal de Educação","CIAC","Comissão PAD","Departamento de Infraestrutura e Logística","Divisão de Tecnologia da Informação - DTI","Gabinete da Secretária","Gestão para Resultados","Jurídico","Multiprofissional","Núcleo de informações educacionais","Projeto Tempo Integral","Prestação de contas - PDDE","Planejamento","Recepção","Recursos Humanos","Sala de Reunião","Transporte Escolar"],"setor"],
