@@ -610,7 +610,7 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;font-size:16p
           <option value="mes-envio">Desde último relatório</option>
         </select>
       </div>
-      <div id="list-content" style="max-height:65vh;overflow-y:auto;margin-bottom:12px;border:2px solid #b8d4cc;border-radius:14px;background:#fff"></div>
+      <div id="list-content" style="max-height:65vh;overflow-y:auto;margin-bottom:12px;border-radius:14px;background:transparent"></div>
       <div id="list-pagination" style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap"></div>
     </div>
 
@@ -2088,6 +2088,8 @@ function renderList(){
     var texto=(r.resp+' '+r.local+' '+r.desc).toLowerCase();
     return q===''||texto.indexOf(q)>=0;
   });
+  
+  lista.reverse();
   
   var totalPages=Math.ceil(lista.length/30);
   if(!_listPage)_listPage=0;
