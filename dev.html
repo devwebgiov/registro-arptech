@@ -1,732 +1,574 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ARP TECH Amazônia - Sistema de Atendimento</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-      background: #f3f2f1;
-    }
-    
-    .login-screen {
-      background: linear-gradient(135deg, #0d3b5c 0%, #1a5276 100%);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    
-    .login-container {
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-      overflow: hidden;
-      width: 100%;
-      max-width: 900px;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-    }
-    
-    .login-brand {
-      background: linear-gradient(135deg, #1a5276 0%, #0d3b5c 100%);
-      color: #fff;
-      padding: 60px 40px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-    
-    .brand-logo {
-      font-size: 48px;
-      font-weight: 700;
-      margin-bottom: 20px;
-      letter-spacing: 2px;
-    }
-    
-    .login-form {
-      padding: 60px 40px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-    
-    .form-title {
-      font-size: 24px;
-      font-weight: 700;
-      color: #0d3b5c;
-      margin-bottom: 30px;
-    }
-    
-    .form-group {
-      margin-bottom: 20px;
-    }
-    
-    .form-label {
-      font-size: 12px;
-      font-weight: 600;
-      color: #0d3b5c;
-      display: block;
-      margin-bottom: 8px;
-      text-transform: uppercase;
-    }
-    
-    .form-input {
-      width: 100%;
-      padding: 12px 16px;
-      border: 2px solid #e1dfdd;
-      border-radius: 6px;
-      font-size: 13px;
-      font-family: inherit;
-    }
-    
-    .form-input:focus {
-      outline: none;
-      border-color: #2d7a4a;
-      box-shadow: 0 0 0 3px rgba(45,122,74,0.1);
-    }
-    
-    .btn-login {
-      width: 100%;
-      padding: 12px 24px;
-      background: linear-gradient(135deg, #2d7a4a 0%, #1a5276 100%);
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      text-transform: uppercase;
-    }
-    
-    .btn-login:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(45,122,74,0.3);
-    }
-    
-    .system-wrapper {
-      display: none;
-      height: 100vh;
-    }
-    
-    .system-wrapper.active {
-      display: flex;
-    }
-    
-    .sidebar {
-      width: 260px;
-      background: #0d3b5c;
-      color: #fff;
-      padding: 20px 0;
-      overflow-y: auto;
-      box-shadow: 2px 0 8px rgba(0,0,0,0.1);
-      height: 100vh;
-    }
-    
-    .sidebar-header {
-      padding: 0 20px 30px;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-      margin-bottom: 20px;
-    }
-    
-    .logo-text {
-      font-weight: 700;
-      font-size: 14px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-    
-    .menu-item {
-      padding: 12px 20px;
-      cursor: pointer;
-      transition: all 0.2s;
-      border-left: 4px solid transparent;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 13px;
-      user-select: none;
-    }
-    
-    .menu-item:hover {
-      background: rgba(255,255,255,0.1);
-      border-left-color: #2d7a4a;
-    }
-    
-    .menu-item.active {
-      background: rgba(45,122,74,0.2);
-      border-left-color: #2d7a4a;
-      color: #2d7a4a;
-    }
-    
-    .menu-arrow {
-      margin-left: auto;
-      font-size: 10px;
-      transition: transform 0.2s;
-    }
-    
-    .menu-arrow.open {
-      transform: rotate(180deg);
-    }
-    
-    .submenu {
-      display: none;
-      padding-left: 40px;
-      font-size: 12px;
-      color: #bbb;
-      background: rgba(0,0,0,0.2);
-    }
-    
-    .submenu.open {
-      display: block;
-    }
-    
-    .main {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-    }
-    
-    .header {
-      background: #fff;
-      padding: 16px 24px;
-      border-bottom: 1px solid #e1dfdd;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    
-    .header-title {
-      font-size: 16px;
-      font-weight: 600;
-      color: #0d3b5c;
-    }
-    
-    .btn-primary {
-      background: #2d7a4a;
-      color: #fff;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 600;
-    }
-    
-    .btn-primary:hover {
-      background: #1a5276;
-    }
-    
-    .content {
-      flex: 1;
-      padding: 24px;
-      overflow-y: auto;
-    }
-    
-    .tab-content {
-      display: none;
-    }
-    
-    .tab-content.active {
-      display: block;
-    }
-    
-    .card {
-      background: #fff;
-      border-radius: 8px;
-      padding: 20px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-      margin-bottom: 16px;
-    }
-    
-    .card-title {
-      font-size: 15px;
-      font-weight: 600;
-      color: #0d3b5c;
-      margin-bottom: 16px;
-    }
-    
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 16px;
-      margin-bottom: 24px;
-    }
-    
-    .stat-card {
-      background: #fff;
-      border-radius: 8px;
-      padding: 20px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-    }
-    
-    .stat-label {
-      font-size: 12px;
-      color: #666;
-      margin-bottom: 8px;
-    }
-    
-    .stat-value {
-      font-size: 28px;
-      font-weight: 700;
-      color: #0d3b5c;
-    }
-    
-    .record-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 14px;
-      background: #fff;
-      border: 2px solid #d0e8e5;
-      border-radius: 8px;
-      margin-bottom: 10px;
-    }
-    
-    .record-left {
-      flex: 1;
-    }
-    
-    .record-name {
-      font-weight: 600;
-      color: #0d3b5c;
-      font-size: 14px;
-    }
-    
-    .record-desc {
-      font-size: 13px;
-      color: #626262;
-      margin-top: 4px;
-    }
-    
-    .badge {
-      display: inline-block;
-      padding: 6px 12px;
-      border-radius: 6px;
-      font-size: 10px;
-      font-weight: 700;
-      margin-right: 6px;
-      margin-top: 6px;
-    }
-    
-    .badge-rural { background: #fff9e1; color: #b8860b; }
-    .badge-urbana { background: #f3e5ff; color: #6a1b9a; }
-    .badge-setor { background: #c5eae8; color: #333; }
-    
-    .btn-logout {
-      background: #dc2626;
-      color: #fff;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 12px;
-      font-weight: 600;
-      width: 100%;
-    }
-    
-    .color-picker {
-      display: flex;
-      gap: 10px;
-      margin: 10px 0;
-    }
-    
-    .color-option {
-      width: 40px;
-      height: 40px;
-      border-radius: 4px;
-      cursor: pointer;
-      border: 3px solid transparent;
-      transition: all 0.2s;
-    }
-    
-    .color-option:hover {
-      transform: scale(1.1);
-    }
-    
-    .color-option.selected {
-      border-color: #000;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ARP TECH Amazônia - Sistema de Atendimento</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Roboto',sans-serif; background:#f3f2f1; }
+
+.login-screen { background:linear-gradient(135deg,#0d3b5c 0%,#1a5276 100%); min-height:100vh; display:flex; align-items:center; justify-content:center; padding:16px; }
+.login-container { background:#fff; border-radius:12px; box-shadow:0 10px 40px rgba(0,0,0,0.2); overflow:hidden; width:100%; max-width:900px; display:grid; grid-template-columns:1fr 1fr; }
+.login-brand { background:linear-gradient(135deg,#1a5276 0%,#0d3b5c 100%); color:#fff; padding:60px 40px; display:flex; flex-direction:column; justify-content:center; }
+.brand-logo { font-size:42px; font-weight:700; margin-bottom:12px; letter-spacing:2px; }
+.feature { display:flex; gap:12px; align-items:flex-start; font-size:13px; margin-bottom:14px; }
+.feature-icon { width:20px; height:20px; background:#2d7a4a; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; color:#fff; font-size:11px; font-weight:700; }
+.login-form { padding:60px 40px; display:flex; flex-direction:column; justify-content:center; }
+.form-title { font-size:24px; font-weight:700; color:#0d3b5c; margin-bottom:30px; }
+.form-group { margin-bottom:18px; }
+.form-label { font-size:12px; font-weight:600; color:#0d3b5c; display:block; margin-bottom:8px; text-transform:uppercase; }
+.form-input { width:100%; padding:12px 16px; border:2px solid #e1dfdd; border-radius:6px; font-size:13px; font-family:inherit; background:#fff; }
+.form-input:focus { outline:none; border-color:#2d7a4a; box-shadow:0 0 0 3px rgba(45,122,74,0.1); }
+.btn-login { width:100%; padding:12px 24px; background:linear-gradient(135deg,#2d7a4a 0%,#1a5276 100%); color:#fff; border:none; border-radius:6px; font-size:14px; font-weight:600; cursor:pointer; text-transform:uppercase; }
+
+.system-wrapper { display:none; height:100vh; }
+.system-wrapper.active { display:flex; }
+
+.sidebar { width:250px; background:#0d3b5c; color:#fff; padding:20px 0 0; overflow-y:auto; height:100vh; display:flex; flex-direction:column; flex-shrink:0; }
+.sidebar-header { padding:0 20px 20px; border-bottom:1px solid rgba(255,255,255,0.1); margin-bottom:14px; }
+.logo-text { font-weight:700; font-size:14px; text-transform:uppercase; letter-spacing:1px; }
+.menu-item { padding:12px 20px; cursor:pointer; transition:all .2s; border-left:4px solid transparent; display:flex; align-items:center; gap:10px; font-size:13px; user-select:none; }
+.menu-item:hover { background:rgba(255,255,255,0.1); border-left-color:#2d7a4a; }
+.menu-item.active { background:rgba(45,122,74,0.25); border-left-color:#2d7a4a; color:#7be3a8; }
+.menu-arrow { margin-left:auto; font-size:10px; transition:transform .2s; }
+.menu-arrow.open { transform:rotate(180deg); }
+.submenu { display:none; background:rgba(0,0,0,0.2); }
+.submenu.open { display:block; }
+.submenu .menu-item { padding-left:40px; font-size:12px; }
+
+.main { flex:1; display:flex; flex-direction:column; min-width:0; }
+.header { background:#fff; padding:14px 24px; border-bottom:1px solid #e1dfdd; display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; }
+.header-title { font-size:16px; font-weight:600; color:#0d3b5c; }
+.btn-primary { background:#2d7a4a; color:#fff; border:none; padding:10px 18px; border-radius:6px; cursor:pointer; font-size:13px; font-weight:600; }
+.btn-primary:hover { background:#1a5276; }
+.btn-danger { background:#dc2626; color:#fff; border:none; padding:8px 14px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:600; }
+.btn-small { padding:6px 12px; font-size:12px; border-radius:6px; border:none; cursor:pointer; font-weight:600; }
+
+.content { flex:1; padding:20px; overflow-y:auto; }
+.tab-content { display:none; }
+.tab-content.active { display:block; }
+.card { background:#fff; border-radius:8px; padding:20px; box-shadow:0 1px 3px rgba(0,0,0,0.08); margin-bottom:16px; }
+.card-title { font-size:15px; font-weight:600; color:#0d3b5c; margin-bottom:16px; }
+
+.stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:20px; }
+.stat-card { background:#fff; border-radius:8px; padding:18px; box-shadow:0 1px 3px rgba(0,0,0,0.08); }
+.stat-label { font-size:12px; color:#666; margin-bottom:8px; }
+.stat-value { font-size:26px; font-weight:700; color:#0d3b5c; }
+
+.scroll-list { max-height:55vh; overflow-y:auto; direction:rtl; padding-left:8px; }
+.scroll-list > * { direction:ltr; }
+
+.record-item { display:flex; justify-content:space-between; align-items:flex-start; padding:14px; background:#fff; border:2px solid #d0e8e5; border-radius:10px; margin-bottom:10px; }
+.record-left { flex:1; min-width:0; }
+.record-name { font-family:Arial; font-weight:700; font-size:12px; color:#0d3b5c; }
+.record-desc { font-family:Arial; font-size:12px; color:#2d4a44; margin-top:4px; line-height:1.5; }
+.record-meta { text-align:right; font-size:10px; color:#999; white-space:nowrap; margin-left:12px; }
+.badge { display:inline-block; padding:5px 11px; border-radius:8px; font-size:10px; font-weight:700; margin-right:6px; margin-top:8px; }
+.badge-rural { background:#fff9e1; color:#8a6d00; }
+.badge-urbana { background:#e8d9f5; color:#5e2e8c; }
+.badge-setor { background:#c5eae8; color:#155e63; }
+.badge-loc { background:#c5eae8; color:#155e63; }
+
+.pagination { display:flex; gap:6px; margin-top:14px; justify-content:center; flex-wrap:wrap; }
+.page-btn { padding:8px 12px; border-radius:8px; font-size:12px; font-weight:700; cursor:pointer; border:2px solid #b8d4cc; background:#fff; color:#2d4a44; }
+.page-btn.active { background:#2d7a4a; border-color:#2d7a4a; color:#fff; }
+
+.btn-logout { background:#dc2626; color:#fff; border:none; padding:8px 16px; border-radius:4px; cursor:pointer; font-size:12px; font-weight:600; width:100%; }
+
+table.users { width:100%; border-collapse:collapse; font-size:13px; }
+table.users th { text-align:left; padding:10px 8px; background:#eef4f2; color:#0d3b5c; font-size:12px; text-transform:uppercase; }
+table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
+
+.com-card { background:linear-gradient(135deg,#1a5276,#0d3b5c); color:#fff; border-radius:10px; padding:20px; margin-bottom:14px; }
+.com-value { font-size:30px; font-weight:700; margin:6px 0; }
+.com-sub { font-size:12px; opacity:.85; }
+
+@media (max-width:768px){
+  .login-container { grid-template-columns:1fr; }
+  .login-brand { display:none; }
+  .system-wrapper.active { flex-direction:column; }
+  .sidebar { width:100%; height:auto; max-height:45vh; }
+  .stats-grid { grid-template-columns:repeat(2,1fr); }
+}
+</style>
 </head>
 <body>
 
-<!-- LOGIN -->
 <div id="loginScreen" class="login-screen">
   <div class="login-container">
     <div class="login-brand">
       <div class="brand-logo">ARP TECH</div>
-      <div style="font-size:14px;color:rgba(255,255,255,0.8);margin-bottom:40px;">Amazônia</div>
+      <div style="font-size:14px;color:rgba(255,255,255,0.8);margin-bottom:36px;">Amaz&ocirc;nia</div>
+      <div class="feature"><div class="feature-icon">&#10003;</div><div>Gerenciamento de Ordens de Servi&ccedil;o</div></div>
+      <div class="feature"><div class="feature-icon">&#10003;</div><div>Registro de Atendimento em Tempo Real</div></div>
+      <div class="feature"><div class="feature-icon">&#10003;</div><div>Controle de Comiss&otilde;es e Relat&oacute;rios</div></div>
     </div>
-    
     <div class="login-form">
       <div class="form-title">Bem-vindo</div>
-      
-      <div class="form-group">
-        <label class="form-label">Usuário</label>
-        <input type="text" id="loginUser" class="form-input" placeholder="Digite seu usuário">
-      </div>
-      
-      <div class="form-group">
-        <label class="form-label">Senha</label>
-        <input type="password" id="loginPass" class="form-input" placeholder="Digite sua senha">
-      </div>
-      
+      <div class="form-group"><label class="form-label">Usu&aacute;rio</label><input type="text" id="loginUser" class="form-input" autocapitalize="none"></div>
+      <div class="form-group"><label class="form-label">Senha</label><input type="password" id="loginPass" class="form-input"></div>
       <button class="btn-login" onclick="login()">Entrar</button>
     </div>
   </div>
 </div>
 
-<!-- SISTEMA -->
 <div id="systemWrapper" class="system-wrapper">
-  <!-- SIDEBAR -->
   <div class="sidebar">
     <div class="sidebar-header">
       <div class="logo-text">ARP TECH</div>
-      <div style="font-size:11px;color:#999;margin-top:4px;">Amazônia</div>
+      <div style="font-size:11px;color:#9fb6c6;margin-top:4px;">Amaz&ocirc;nia</div>
     </div>
-    
-    <div class="menu-item active" onclick="switchTab('dashboard'); setActive(this)">
-      Dashboard
-    </div>
-    
-    <div class="menu-item" onclick="toggleSubmenu(this, 'registrosSubmenu')">
-      Registros
-      <div class="menu-arrow">▼</div>
-    </div>
+
+    <div class="menu-item" id="m-dashboard" onclick="goTab('dashboard',this,'Dashboard')">Dashboard</div>
+
+    <div class="menu-item" id="m-registros" onclick="toggleSubmenu(this,'registrosSubmenu')">Registros<div class="menu-arrow">&#9660;</div></div>
     <div id="registrosSubmenu" class="submenu">
-      <div class="menu-item" onclick="switchTab('registrosList'); setActive(this)">Listar</div>
-      <div class="menu-item" onclick="switchTab('novoRegistro'); setActive(this)">Novo</div>
+      <div class="menu-item" onclick="goTab('registrosList',this,'Registros / Listar')">Listar</div>
+      <div class="menu-item" onclick="goTab('novoRegistro',this,'Registros / Novo')">Novo</div>
     </div>
-    
-    <div class="menu-item" onclick="toggleSubmenu(this, 'osSubmenu')">
-      Ordens de Serviço
-      <div class="menu-arrow">▼</div>
-    </div>
+
+    <div class="menu-item" id="m-os" onclick="toggleSubmenu(this,'osSubmenu')">Ordens de Servi&ccedil;o<div class="menu-arrow">&#9660;</div></div>
     <div id="osSubmenu" class="submenu">
-      <div class="menu-item" onclick="switchTab('osAbrir'); setActive(this)">Abrir Nova</div>
-      <div class="menu-item" onclick="switchTab('osAbertas'); setActive(this)">Em Andamento</div>
-      <div class="menu-item" onclick="switchTab('osConcluidas'); setActive(this)">Concluídas</div>
+      <div class="menu-item" onclick="goTab('osAbrir',this,'OS / Abrir Nova')">Abrir Nova</div>
+      <div class="menu-item" onclick="goTab('osAbertas',this,'OS / Em Andamento')">Em Andamento</div>
+      <div class="menu-item" onclick="goTab('osConcluidas',this,'OS / Conclu\u00eddas')">Conclu&iacute;das</div>
     </div>
-    
-    <div class="menu-item" onclick="switchTab('comissoes'); setActive(this)">
-      Comissões
-    </div>
-    
-    <div id="gerenciarMenu" class="menu-item" onclick="switchTab('gerenciar'); setActive(this)" style="display:none;">
-      Gerenciar
-    </div>
-    
-    <div id="customizarMenu" class="menu-item" onclick="switchTab('customizar'); setActive(this)" style="display:none;">
-      Customizar Sistema
-    </div>
-    
-    <div style="margin-top:auto;padding:20px;border-top:1px solid rgba(255,255,255,0.1);font-size:12px;">
-      <div id="userInfo" style="color:#fff;margin-bottom:12px;">Usuário</div>
+
+    <div class="menu-item" id="m-comissoes" onclick="goTab('comissoes',this,'Comiss\u00f5es')">Comiss&otilde;es</div>
+    <div class="menu-item" id="m-gerenciar" onclick="goTab('gerenciar',this,'Gerenciar')" style="display:none;">Gerenciar</div>
+    <div class="menu-item" id="m-customizar" onclick="goTab('customizar',this,'Customizar Sistema')" style="display:none;">Customizar Sistema</div>
+
+    <div style="margin-top:auto;padding:18px;border-top:1px solid rgba(255,255,255,0.1);font-size:12px;">
+      <div id="userInfo" style="color:#fff;margin-bottom:12px;"></div>
       <button class="btn-logout" onclick="logout()">Sair</button>
     </div>
   </div>
-  
-  <!-- MAIN -->
+
   <div class="main">
     <div class="header">
       <div class="header-title" id="pageTitle">Dashboard</div>
-      <button class="btn-primary" onclick="switchTab('novoRegistro')">+ Novo Registro</button>
+      <button class="btn-primary" id="btnNovoTop" onclick="goTab('novoRegistro',null,'Registros / Novo')">+ Novo Registro</button>
     </div>
-    
+
     <div class="content">
-      <!-- DASHBOARD -->
+
       <div id="dashboard" class="tab-content active">
         <div class="stats-grid">
-          <div class="stat-card">
-            <div class="stat-label">Total Registros</div>
-            <div class="stat-value" id="totalReg">0</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">Hoje</div>
-            <div class="stat-value" id="todayReg">0</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">OS Abertas</div>
-            <div class="stat-value" id="osAbertaCount">0</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">Técnicos</div>
-            <div class="stat-value">4</div>
-          </div>
+          <div class="stat-card"><div class="stat-label">Total Registros</div><div class="stat-value" id="totalReg">0</div></div>
+          <div class="stat-card"><div class="stat-label">Hoje</div><div class="stat-value" id="todayReg">0</div></div>
+          <div class="stat-card"><div class="stat-label">OS Abertas</div><div class="stat-value" id="osAbertaCount">0</div></div>
+          <div class="stat-card"><div class="stat-label">T&eacute;cnicos</div><div class="stat-value" id="tecCount">0</div></div>
         </div>
-        
         <div class="card">
-          <div class="card-title">Últimos Registros</div>
-          <div id="dashboardRegistros"></div>
+          <div class="card-title">&Uacute;ltimos Registros</div>
+          <div id="dashList" class="scroll-list"></div>
+          <div id="dashPag" class="pagination"></div>
         </div>
       </div>
-      
-      <!-- REGISTROS LIST -->
+
       <div id="registrosList" class="tab-content">
         <div class="card">
           <div class="card-title">Registros de Atendimento</div>
-          <div id="registrosListContent"></div>
+          <input type="text" id="searchReg" class="form-input" placeholder="Buscar por respons&aacute;vel, local ou descri&ccedil;&atilde;o..." style="margin-bottom:14px;" oninput="LIST_PAGE=0;renderListTab()">
+          <div id="listContent" class="scroll-list"></div>
+          <div id="listPag" class="pagination"></div>
         </div>
       </div>
-      
-      <!-- NOVO REGISTRO -->
+
       <div id="novoRegistro" class="tab-content">
         <div class="card">
           <div class="card-title">Novo Registro</div>
-          <div class="form-group">
-            <label class="form-label">Responsável</label>
-            <input type="text" id="newRegResp" class="form-input" placeholder="Nome">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Local</label>
-            <input type="text" id="newRegLocal" class="form-input" placeholder="Local">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Tipo</label>
+          <div class="form-group"><label class="form-label">Respons&aacute;vel</label><input type="text" id="newRegResp" class="form-input" readonly style="background:#eef4f2;"></div>
+          <div class="form-group"><label class="form-label">Local</label><input type="text" id="newRegLocal" class="form-input"></div>
+          <div class="form-group"><label class="form-label">Tipo</label>
             <select id="newRegType" class="form-input">
               <option value="rural">Escola Rural</option>
               <option value="urbana">Escola Urbana</option>
               <option value="setor">Setor</option>
             </select>
           </div>
-          <div class="form-group">
-            <label class="form-label">Descrição</label>
-            <textarea id="newRegDesc" class="form-input" style="min-height:100px;"></textarea>
-          </div>
+          <div class="form-group"><label class="form-label">Descri&ccedil;&atilde;o</label><textarea id="newRegDesc" class="form-input" style="min-height:100px;resize:vertical;"></textarea></div>
           <button class="btn-primary" onclick="salvarRegistro()">Salvar</button>
         </div>
       </div>
-      
-      <!-- OS ABRIR -->
+
       <div id="osAbrir" class="tab-content">
         <div class="card">
-          <div class="card-title">Abrir Ordem de Serviço</div>
-          <div class="form-group">
-            <label class="form-label">Cliente</label>
-            <input type="text" id="osCliente" class="form-input">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Telefone</label>
-            <input type="tel" id="osTelefone" class="form-input">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Email</label>
-            <input type="email" id="osEmail" class="form-input">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Descrição</label>
-            <textarea id="osDesc" class="form-input" style="min-height:100px;"></textarea>
-          </div>
+          <div class="card-title">Abrir Ordem de Servi&ccedil;o</div>
+          <div class="form-group"><label class="form-label">Cliente</label><input type="text" id="osCliente" class="form-input"></div>
+          <div class="form-group"><label class="form-label">Telefone</label><input type="tel" id="osTelefone" class="form-input"></div>
+          <div class="form-group"><label class="form-label">E-mail (opcional)</label><input type="email" id="osEmail" class="form-input"></div>
+          <div class="form-group"><label class="form-label">Descri&ccedil;&atilde;o do problema</label><textarea id="osDesc" class="form-input" style="min-height:100px;resize:vertical;"></textarea></div>
+          <div class="form-group"><label class="form-label">Valor (R$)</label><input type="number" id="osValor" class="form-input" step="0.01" min="0" placeholder="0,00"></div>
           <button class="btn-primary" onclick="abrirOS()">Abrir OS</button>
         </div>
       </div>
-      
-      <!-- OS ABERTAS -->
+
       <div id="osAbertas" class="tab-content">
         <div class="card">
           <div class="card-title">Ordens em Andamento</div>
           <div id="osAbertasContent"></div>
         </div>
       </div>
-      
-      <!-- OS CONCLUIDAS -->
+
       <div id="osConcluidas" class="tab-content">
         <div class="card">
-          <div class="card-title">Ordens Concluídas</div>
+          <div class="card-title">Ordens Conclu&iacute;das</div>
           <div id="osConcluiContent"></div>
         </div>
       </div>
-      
-      <!-- COMISSOES -->
+
       <div id="comissoes" class="tab-content">
+        <div class="card" id="comAdminCard" style="display:none;">
+          <div class="card-title">Percentual de Comiss&atilde;o</div>
+          <div class="form-group" style="max-width:220px;"><label class="form-label">Percentual (%)</label><input type="number" id="comPercent" class="form-input" min="0" max="100"></div>
+          <button class="btn-primary" onclick="salvarComissao()">Salvar Percentual</button>
+        </div>
         <div class="card">
-          <div class="card-title">Comissões</div>
+          <div class="card-title" id="comTitle">Comiss&otilde;es</div>
           <div id="comissaoContent"></div>
         </div>
       </div>
-      
-      <!-- GERENCIAR -->
+
       <div id="gerenciar" class="tab-content">
         <div class="card">
-          <div class="card-title">Gerenciar Usuários</div>
-          <div id="gerenciarContent"></div>
+          <div class="card-title">Cadastrar Usu&aacute;rio</div>
+          <div class="form-group"><label class="form-label">Nome</label><input type="text" id="gNome" class="form-input"></div>
+          <div class="form-group"><label class="form-label">Usu&aacute;rio (login)</label><input type="text" id="gLogin" class="form-input" autocapitalize="none"></div>
+          <div class="form-group"><label class="form-label">Senha</label><input type="text" id="gSenha" class="form-input"></div>
+          <div class="form-group"><label class="form-label">Perfil / &Oacute;rg&atilde;o</label>
+            <div style="display:flex;gap:8px;">
+              <select id="gPerfil" class="form-input" style="flex:1;"></select>
+              <button class="btn-small" style="background:#1a5276;color:#fff;" onclick="novoOrgao()">+ &Oacute;rg&atilde;o</button>
+            </div>
+          </div>
+          <button class="btn-primary" onclick="cadastrarUsuario()">Cadastrar</button>
+        </div>
+        <div class="card">
+          <div class="card-title">Usu&aacute;rios Cadastrados</div>
+          <div style="overflow-x:auto;">
+            <table class="users">
+              <thead><tr><th>Nome</th><th>Login</th><th>Perfil</th><th>A&ccedil;&otilde;es</th></tr></thead>
+              <tbody id="usersTable"></tbody>
+            </table>
+          </div>
         </div>
       </div>
-      
-      <!-- CUSTOMIZAR -->
+
       <div id="customizar" class="tab-content">
         <div class="card">
           <div class="card-title">Customizar Sistema</div>
-          <div class="form-group">
-            <label class="form-label">Cor Primária</label>
-            <div class="color-picker">
-              <div class="color-option selected" style="background:#0d3b5c;" onclick="mudarCor('#0d3b5c', this)"></div>
-              <div class="color-option" style="background:#1a5276;" onclick="mudarCor('#1a5276', this)"></div>
-              <div class="color-option" style="background:#2d7a4a;" onclick="mudarCor('#2d7a4a', this)"></div>
-              <div class="color-option" style="background:#1e40af;" onclick="mudarCor('#1e40af', this)"></div>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Logo (URL)</label>
-            <input type="text" id="logoUrl" class="form-input" placeholder="https://...">
-            <button class="btn-primary" style="margin-top:10px;" onclick="atualizarLogo()">Atualizar</button>
-          </div>
+          <div class="form-group"><label class="form-label">Logo (URL)</label><input type="text" id="logoUrl" class="form-input" placeholder="https://..."></div>
+          <button class="btn-primary" onclick="atualizarLogo()">Salvar Logo</button>
         </div>
       </div>
+
     </div>
   </div>
 </div>
 
 <script>
+var PER_PAGE = 50;
+var DASH_PAGE = 0;
+var LIST_PAGE = 0;
 var currentUser = null;
-var currentProfile = null;
+
 var records = JSON.parse(localStorage.getItem('arp_rec') || '[]');
 var osOrdens = JSON.parse(localStorage.getItem('arp_os') || '[]');
-var usuarios = {
-  'ayrton': {name: 'Ayrton', pass: 'ayrton123', profile: 'SEMED'},
-  'giovanna': {name: 'Giovanna', pass: 'giovanna123', profile: 'SEMED'},
-  'neudson': {name: 'Neudson', pass: 'neudson123', profile: 'ARPTECH'},
-  'rodrigo': {name: 'Rodrigo', pass: 'rodrigo123', profile: 'ARPTECH'},
-  'admin': {name: 'Administrador', pass: 'admin@arptech', profile: 'ADMIN'}
-};
+var COMISSAO_PERCENT = parseFloat(localStorage.getItem('comissao_percent') || '70');
+
+var DEFAULT_USERS = [
+  {login:'ayrton',   name:'Ayrton',        pass:'ayrton123',    profile:'SEMED'},
+  {login:'giovanna', name:'Giovanna',      pass:'giovanna123',  profile:'SEMED'},
+  {login:'neudson',  name:'Neudson',       pass:'neudson123',   profile:'ARPTECH'},
+  {login:'rodrigo',  name:'Rodrigo',       pass:'rodrigo123',   profile:'ARPTECH'},
+  {login:'admin',    name:'Administrador', pass:'admin@arptech',profile:'ADMIN'}
+];
+var usuarios = JSON.parse(localStorage.getItem('arp_users') || 'null') || DEFAULT_USERS;
+var orgaos = JSON.parse(localStorage.getItem('arp_orgaos') || 'null') || ['SEMED','ARPTECH'];
+
+function saveUsers(){ localStorage.setItem('arp_users', JSON.stringify(usuarios)); }
+function saveOrgaos(){ localStorage.setItem('arp_orgaos', JSON.stringify(orgaos)); }
 
 function login(){
-  var user = document.getElementById('loginUser').value;
-  var pass = document.getElementById('loginPass').value;
-  
-  if(!user || !pass){
-    alert('Preencha usuário e senha!');
-    return;
-  }
-  
-  if(!usuarios[user] || usuarios[user].pass !== pass){
-    alert('Usuário ou senha incorretos!');
-    return;
-  }
-  
-  currentUser = usuarios[user];
-  currentProfile = currentUser.profile;
-  
-  document.getElementById('loginScreen').style.display = 'none';
+  var u = (document.getElementById('loginUser').value||'').trim().toLowerCase();
+  var p = document.getElementById('loginPass').value;
+  if(!u || !p){ alert('Preencha usu\u00e1rio e senha!'); return; }
+  var found = null;
+  for(var i=0;i<usuarios.length;i++){ if(usuarios[i].login.toLowerCase()===u && usuarios[i].pass===p){ found=usuarios[i]; break; } }
+  if(!found){ alert('Usu\u00e1rio ou senha incorretos!'); return; }
+  currentUser = found;
+  document.getElementById('loginScreen').style.display='none';
   document.getElementById('systemWrapper').classList.add('active');
-  document.getElementById('userInfo').innerHTML = currentUser.name + '<br><small>' + currentProfile + '</small>';
-  
-  // Mostrar menus baseado no perfil
-  if(currentProfile === 'ADMIN'){
-    document.getElementById('gerenciarMenu').style.display = 'flex';
-    document.getElementById('customizarMenu').style.display = 'flex';
-  }
-  
+  document.getElementById('userInfo').innerHTML = found.name + '<br><small style="color:#9fb6c6">' + found.profile + '</small>';
+  applyPermissions();
   loadDashboard();
 }
 
 function logout(){
-  document.getElementById('loginScreen').style.display = 'flex';
+  currentUser=null;
+  document.getElementById('loginScreen').style.display='flex';
   document.getElementById('systemWrapper').classList.remove('active');
-  document.getElementById('loginUser').value = '';
-  document.getElementById('loginPass').value = '';
-  currentUser = null;
+  document.getElementById('loginUser').value='';
+  document.getElementById('loginPass').value='';
 }
 
-function switchTab(tabName){
-  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-  document.getElementById(tabName).classList.add('active');
-  document.getElementById('pageTitle').innerHTML = tabName.replace(/([A-Z])/g, ' $1').trim();
+function applyPermissions(){
+  var p = currentUser.profile;
+  var show = function(id,on){ document.getElementById(id).style.display = on ? 'flex' : 'none'; };
+  // padrao: esconde tudo, mostra por perfil
+  show('m-dashboard', true);
+  show('m-registros', p==='SEMED' || p==='ADMIN');
+  show('m-os', p==='ARPTECH' || p==='ADMIN');
+  show('m-comissoes', p==='ARPTECH' || p==='ADMIN');
+  show('m-gerenciar', p==='ADMIN');
+  show('m-customizar', p==='ADMIN');
+  document.getElementById('btnNovoTop').style.display = (p==='SEMED'||p==='ADMIN') ? 'inline-block' : 'none';
+  document.getElementById('comAdminCard').style.display = p==='ADMIN' ? 'block' : 'none';
+  if(p==='ADMIN'){ document.getElementById('comPercent').value = COMISSAO_PERCENT; }
+  document.getElementById('newRegResp').value = currentUser.name;
+  goTab('dashboard', document.getElementById('m-dashboard'), 'Dashboard');
 }
 
-function setActive(el){
-  document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
-  el.classList.add('active');
+function goTab(tab, el, title){
+  document.querySelectorAll('.tab-content').forEach(function(t){ t.classList.remove('active'); });
+  document.getElementById(tab).classList.add('active');
+  document.getElementById('pageTitle').innerHTML = title || tab;
+  document.querySelectorAll('.menu-item').forEach(function(m){ m.classList.remove('active'); });
+  if(el && el.classList) el.classList.add('active');
+  if(tab==='dashboard') loadDashboard();
+  if(tab==='registrosList') renderListTab();
+  if(tab==='osAbertas') renderOS('andamento');
+  if(tab==='osConcluidas') renderOS('concluida');
+  if(tab==='comissoes') renderComissoes();
+  if(tab==='gerenciar') renderUsuarios();
 }
 
-function toggleSubmenu(el, submenuId){
-  var submenu = document.getElementById(submenuId);
-  var arrow = el.querySelector('.menu-arrow');
-  
-  submenu.classList.toggle('open');
-  arrow.classList.toggle('open');
+function toggleSubmenu(el, id){
+  var sm = document.getElementById(id);
+  sm.classList.toggle('open');
+  var ar = el.querySelector('.menu-arrow');
+  if(ar) ar.classList.toggle('open');
+}
+
+function tipoInfo(t){
+  if(t==='rural') return {label:'Escola Rural', cls:'badge-rural'};
+  if(t==='urbana') return {label:'Escola Urbana', cls:'badge-urbana'};
+  return {label:'Setor', cls:'badge-setor'};
+}
+
+function recordCard(r){
+  var ti = tipoInfo(r.locType);
+  return '<div class="record-item"><div class="record-left">'+
+    '<div class="record-name">'+r.resp+'</div>'+
+    '<div class="record-desc">'+r.desc+'</div>'+
+    '<div><span class="badge '+ti.cls+'">'+ti.label+'</span><span class="badge badge-loc">'+r.local+'</span></div>'+
+    '</div><div class="record-meta"><div style="font-weight:600">'+r.date+'</div><div>'+(r.start||'--:--')+'</div></div></div>';
+}
+
+function renderPaged(lista, page, listId, pagId, pageVar){
+  var total = Math.ceil(lista.length / PER_PAGE);
+  if(page >= total) page = Math.max(0, total-1);
+  var slice = lista.slice(page*PER_PAGE, (page+1)*PER_PAGE);
+  var html = slice.map(recordCard).join('');
+  document.getElementById(listId).innerHTML = html || '<div style="padding:20px;color:#999;">Nenhum registro.</div>';
+  var pag = '';
+  if(total > 1){
+    for(var i=0;i<total;i++){
+      pag += '<button class="page-btn'+(i===page?' active':'')+'" onclick="'+pageVar+'='+i+';'+(pageVar==='DASH_PAGE'?'loadDashboard()':'renderListTab()')+'">'+(i+1)+'</button>';
+    }
+  }
+  document.getElementById(pagId).innerHTML = pag;
+  return page;
 }
 
 function loadDashboard(){
   document.getElementById('totalReg').innerHTML = records.length;
   var hoje = new Date().toLocaleDateString('pt-BR');
-  document.getElementById('todayReg').innerHTML = records.filter(r => r.date === hoje).length;
-  document.getElementById('osAbertaCount').innerHTML = osOrdens.filter(o => o.status !== 'Concluída').length;
-  
-  var html = records.slice(-5).reverse().map(r => 
-    '<div class="record-item"><div class="record-left"><div class="record-name">' + r.resp + '</div><div class="record-desc">' + r.desc + '</div><div><span class="badge badge-' + r.locType + '">' + (r.locType === 'rural' ? 'Escola Rural' : r.locType === 'urbana' ? 'Escola Urbana' : 'Setor') + '</span><span class="badge badge-setor">' + r.local + '</span></div></div><div style="font-size:12px;color:#999;">' + r.date + '</div></div>'
-  ).join('');
-  
-  document.getElementById('dashboardRegistros').innerHTML = html || '<div style="padding:20px;color:#999;">Nenhum registro.</div>';
+  document.getElementById('todayReg').innerHTML = records.filter(function(r){ return r.date===hoje; }).length;
+  document.getElementById('osAbertaCount').innerHTML = osOrdens.filter(function(o){ return o.status!=='Conclu\u00edda'; }).length;
+  var tecs = {};
+  usuarios.forEach(function(u){ if(u.profile!=='ADMIN') tecs[u.login]=1; });
+  document.getElementById('tecCount').innerHTML = Object.keys(tecs).length;
+  var lista = records.slice().reverse();
+  DASH_PAGE = renderPaged(lista, DASH_PAGE, 'dashList', 'dashPag', 'DASH_PAGE');
+}
+
+function renderListTab(){
+  var q = (document.getElementById('searchReg').value||'').toLowerCase();
+  var lista = records.filter(function(r){
+    var t = (r.resp+' '+r.local+' '+r.desc).toLowerCase();
+    return q==='' || t.indexOf(q)>=0;
+  }).reverse();
+  LIST_PAGE = renderPaged(lista, LIST_PAGE, 'listContent', 'listPag', 'LIST_PAGE');
 }
 
 function salvarRegistro(){
-  var resp = document.getElementById('newRegResp').value;
-  var local = document.getElementById('newRegLocal').value;
+  var resp = currentUser.name;
+  var local = document.getElementById('newRegLocal').value.trim();
   var type = document.getElementById('newRegType').value;
-  var desc = document.getElementById('newRegDesc').value;
-  
-  if(!resp || !local || !desc) return alert('Preencha todos os campos!');
-  
-  records.push({
-    id: Date.now(),
-    resp: resp,
-    local: local,
-    locType: type,
-    desc: desc,
-    date: new Date().toLocaleDateString('pt-BR'),
-    start: new Date().toLocaleTimeString('pt-BR')
-  });
-  
+  var desc = document.getElementById('newRegDesc').value.trim();
+  if(!local || !desc){ alert('Preencha local e descri\u00e7\u00e3o!'); return; }
+  var now = new Date();
+  records.push({ id:Date.now(), resp:resp, local:local, locType:type, desc:desc,
+    date: now.toLocaleDateString('pt-BR'),
+    start: now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}) });
   localStorage.setItem('arp_rec', JSON.stringify(records));
   alert('Registro salvo!');
-  document.getElementById('newRegResp').value = '';
-  document.getElementById('newRegLocal').value = '';
-  document.getElementById('newRegDesc').value = '';
+  document.getElementById('newRegLocal').value='';
+  document.getElementById('newRegDesc').value='';
   loadDashboard();
 }
 
 function abrirOS(){
-  var cliente = document.getElementById('osCliente').value;
-  var telefone = document.getElementById('osTelefone').value;
-  var email = document.getElementById('osEmail').value;
-  var desc = document.getElementById('osDesc').value;
-  
-  if(!cliente || !telefone || !desc) return alert('Preencha os campos!');
-  
-  osOrdens.push({
-    id: 'OS-' + Date.now(),
-    cliente: cliente,
-    telefone: telefone,
-    email: email,
-    desc: desc,
-    status: 'Em Andamento',
-    dataCriacao: new Date().toLocaleDateString('pt-BR'),
-    tecnico: currentUser.name
-  });
-  
+  var cliente = document.getElementById('osCliente').value.trim();
+  var tel = document.getElementById('osTelefone').value.trim();
+  var email = document.getElementById('osEmail').value.trim();
+  var desc = document.getElementById('osDesc').value.trim();
+  var valor = parseFloat(document.getElementById('osValor').value||'0');
+  if(!cliente || !tel || !desc){ alert('Preencha cliente, telefone e descri\u00e7\u00e3o!'); return; }
+  osOrdens.push({ id:'OS-'+Date.now(), cliente:cliente, telefone:tel, email:email, desc:desc,
+    valor: isNaN(valor)?0:valor, status:'Em Andamento',
+    dataCriacao:new Date().toLocaleDateString('pt-BR'), tecnico: currentUser.name });
   localStorage.setItem('arp_os', JSON.stringify(osOrdens));
   alert('OS aberta com sucesso!');
-  document.getElementById('osCliente').value = '';
-  document.getElementById('osTelefone').value = '';
-  document.getElementById('osEmail').value = '';
-  document.getElementById('osDesc').value = '';
+  document.getElementById('osCliente').value='';
+  document.getElementById('osTelefone').value='';
+  document.getElementById('osEmail').value='';
+  document.getElementById('osDesc').value='';
+  document.getElementById('osValor').value='';
 }
 
-function mudarCor(cor, el){
-  document.querySelectorAll('.color-option').forEach(c => c.classList.remove('selected'));
-  el.classList.add('selected');
-  document.documentElement.style.setProperty('--cor-primaria', cor);
-  localStorage.setItem('arp_cor', cor);
+function concluirOS(id){
+  for(var i=0;i<osOrdens.length;i++){
+    if(osOrdens[i].id===id){ osOrdens[i].status='Conclu\u00edda'; osOrdens[i].dataConclusao=new Date().toLocaleDateString('pt-BR'); break; }
+  }
+  localStorage.setItem('arp_os', JSON.stringify(osOrdens));
+  renderOS('andamento');
+}
+
+function renderOS(tipo){
+  var isAdmin = currentUser.profile==='ADMIN';
+  var lista = osOrdens.filter(function(o){
+    var st = (tipo==='concluida') ? o.status==='Conclu\u00edda' : o.status!=='Conclu\u00edda';
+    var own = isAdmin || o.tecnico===currentUser.name;
+    return st && own;
+  }).reverse();
+  var html = lista.map(function(o){
+    return '<div class="record-item"><div class="record-left">'+
+      '<div class="record-name">'+o.id+' &middot; '+o.cliente+'</div>'+
+      '<div class="record-desc">'+o.desc+'</div>'+
+      '<div style="font-size:11px;color:#666;margin-top:6px;">Tel: '+o.telefone+(o.email?' &middot; '+o.email:'')+' &middot; T\u00e9cnico: '+o.tecnico+(o.valor?' &middot; R$ '+o.valor.toFixed(2):'')+'</div>'+
+      (tipo!=='concluida' ? '<button class="btn-small" style="background:#2d7a4a;color:#fff;margin-top:8px;" onclick="concluirOS(\''+o.id+'\')">Concluir</button>' : '')+
+      '</div><div class="record-meta"><div style="font-weight:600">'+o.dataCriacao+'</div><div>'+o.status+'</div></div></div>';
+  }).join('');
+  var target = (tipo==='concluida') ? 'osConcluiContent' : 'osAbertasContent';
+  document.getElementById(target).innerHTML = html || '<div style="padding:20px;color:#999;">Nenhuma OS.</div>';
+}
+
+function salvarComissao(){
+  var v = parseFloat(document.getElementById('comPercent').value);
+  if(isNaN(v) || v<0 || v>100){ alert('Percentual inv\u00e1lido!'); return; }
+  COMISSAO_PERCENT = v;
+  localStorage.setItem('comissao_percent', String(v));
+  alert('Percentual salvo: '+v+'%');
+  renderComissoes();
+}
+
+function renderComissoes(){
+  var isAdmin = currentUser.profile==='ADMIN';
+  var concluidas = osOrdens.filter(function(o){ return o.status==='Conclu\u00edda'; });
+  var porTec = {};
+  concluidas.forEach(function(o){
+    if(!porTec[o.tecnico]) porTec[o.tecnico]={total:0,qtd:0};
+    porTec[o.tecnico].total += (o.valor||0);
+    porTec[o.tecnico].qtd += 1;
+  });
+  var html='';
+  if(isAdmin){
+    document.getElementById('comTitle').innerHTML='Comiss&otilde;es por T&eacute;cnico ('+COMISSAO_PERCENT+'%)';
+    var totalGeral=0, comGeral=0;
+    Object.keys(porTec).forEach(function(t){
+      var fat = porTec[t].total;
+      var com = fat * COMISSAO_PERCENT/100;
+      totalGeral+=fat; comGeral+=com;
+      html += '<div class="com-card"><div style="font-size:14px;font-weight:700;">'+t+'</div>'+
+        '<div class="com-value">R$ '+com.toFixed(2)+'</div>'+
+        '<div class="com-sub">Faturado: R$ '+fat.toFixed(2)+' &middot; '+porTec[t].qtd+' OS conclu\u00eddas &middot; Taxa '+COMISSAO_PERCENT+'%</div></div>';
+    });
+    if(html) html += '<div style="font-size:13px;color:#0d3b5c;font-weight:700;padding:8px 4px;">Total faturado: R$ '+totalGeral.toFixed(2)+' &middot; Total comiss&otilde;es: R$ '+comGeral.toFixed(2)+'</div>';
+  } else {
+    document.getElementById('comTitle').innerHTML='Minha Comiss&atilde;o';
+    var me = porTec[currentUser.name] || {total:0,qtd:0};
+    var com = me.total * COMISSAO_PERCENT/100;
+    html = '<div class="com-card"><div style="font-size:14px;font-weight:700;">'+currentUser.name+'</div>'+
+      '<div class="com-value">R$ '+com.toFixed(2)+'</div>'+
+      '<div class="com-sub">Faturado: R$ '+me.total.toFixed(2)+' &middot; '+me.qtd+' OS conclu\u00eddas &middot; Taxa '+COMISSAO_PERCENT+'%</div></div>';
+  }
+  document.getElementById('comissaoContent').innerHTML = html || '<div style="padding:20px;color:#999;">Nenhuma OS conclu\u00edda ainda.</div>';
+}
+
+function fillPerfis(){
+  var sel = document.getElementById('gPerfil');
+  sel.innerHTML = orgaos.map(function(o){ return '<option value="'+o+'">'+o+'</option>'; }).join('') + '<option value="ADMIN">ADMIN</option>';
+}
+
+function novoOrgao(){
+  var nome = prompt('Nome do novo \u00f3rg\u00e3o (ex: SEMSA):');
+  if(!nome) return;
+  nome = nome.trim().toUpperCase();
+  if(!nome || orgaos.indexOf(nome)>=0) return alert('\u00d3rg\u00e3o inv\u00e1lido ou j\u00e1 existe.');
+  orgaos.push(nome);
+  saveOrgaos();
+  fillPerfis();
+  alert('\u00d3rg\u00e3o "'+nome+'" adicionado!');
+}
+
+function cadastrarUsuario(){
+  var nome = document.getElementById('gNome').value.trim();
+  var loginU = document.getElementById('gLogin').value.trim().toLowerCase();
+  var senha = document.getElementById('gSenha').value;
+  var perfil = document.getElementById('gPerfil').value;
+  if(!nome || !loginU || !senha){ alert('Preencha todos os campos!'); return; }
+  for(var i=0;i<usuarios.length;i++){ if(usuarios[i].login===loginU){ alert('Login j\u00e1 existe!'); return; } }
+  usuarios.push({login:loginU, name:nome, pass:senha, profile:perfil});
+  saveUsers();
+  document.getElementById('gNome').value='';
+  document.getElementById('gLogin').value='';
+  document.getElementById('gSenha').value='';
+  renderUsuarios();
+  alert('Usu\u00e1rio cadastrado!');
+}
+
+function excluirUsuario(loginU){
+  if(loginU==='admin'){ alert('N\u00e3o \u00e9 poss\u00edvel excluir o Administrador.'); return; }
+  if(!confirm('Excluir usu\u00e1rio "'+loginU+'"?')) return;
+  usuarios = usuarios.filter(function(u){ return u.login!==loginU; });
+  saveUsers();
+  renderUsuarios();
+}
+
+function mudarPerfil(loginU, novo){
+  for(var i=0;i<usuarios.length;i++){ if(usuarios[i].login===loginU){ usuarios[i].profile=novo; break; } }
+  saveUsers();
+}
+
+function renderUsuarios(){
+  fillPerfis();
+  var opts = orgaos.slice(); opts.push('ADMIN');
+  var html = usuarios.map(function(u){
+    var sel = '<select class="form-input" style="padding:6px 8px;font-size:12px;" onchange="mudarPerfil(\''+u.login+'\',this.value)">'+
+      opts.map(function(o){ return '<option value="'+o+'"'+(u.profile===o?' selected':'')+'>'+o+'</option>'; }).join('')+'</select>';
+    return '<tr><td>'+u.name+'</td><td>'+u.login+'</td><td>'+sel+'</td>'+
+      '<td><button class="btn-danger" onclick="excluirUsuario(\''+u.login+'\')">Excluir</button></td></tr>';
+  }).join('');
+  document.getElementById('usersTable').innerHTML = html;
 }
 
 function atualizarLogo(){
-  var url = document.getElementById('logoUrl').value;
-  if(url) localStorage.setItem('arp_logo', url);
+  var url = document.getElementById('logoUrl').value.trim();
+  if(url){ localStorage.setItem('arp_logo', url); alert('Logo salva!'); }
 }
 </script>
 
