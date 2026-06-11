@@ -694,10 +694,17 @@ function goTab(tab, el, title){
   atualizarBotaoNovo(tab);
   if(tab==='dashboard') loadDashboard();
   if(tab==='registrosList') renderListTab();
-  if(tab==='novoRegistro'){
+  if(tab==='novoRegistro' && el){
+    EDIT_REG_ID = null;
     var now = new Date();
     document.getElementById('newRegData').value = now.toISOString().split('T')[0];
     document.getElementById('newRegHora').value = now.toTimeString().slice(0,5);
+    document.getElementById('newRegDesc').value='';
+  }
+  if(tab==='novoRegistro' && !el && !EDIT_REG_ID){
+    var now2 = new Date();
+    document.getElementById('newRegData').value = now2.toISOString().split('T')[0];
+    document.getElementById('newRegHora').value = now2.toTimeString().slice(0,5);
   }
   if(tab==='osEmAberto') renderOS('aberta');
   if(tab==='osAbertas') renderOS('andamento');
@@ -724,11 +731,50 @@ function tipoInfo(t){
 
 function recordCard(r){
   var ti = tipoInfo(r.locType);
+  var botoes='';
+  if(currentUser && currentUser.profile!=='ADMIN' && r.resp===currentUser.name){
+    botoes += '<button class="btn-small" style="background:var(--cor-secundaria);color:#fff;margin-right:6px;" onclick="editarRegistro('+r.id+')">Editar</button>';
+  }
+  if(currentUser && currentUser.profile==='ADMIN'){
+    botoes += '<button class="btn-small" style="background:var(--cor-secundaria);color:#fff;margin-right:6px;" onclick="editarRegistro('+r.id+')">Editar</button>';
+    botoes += '<button class="btn-danger btn-small" onclick="excluirRegistro('+r.id+')">Excluir</button>';
+  }
   return '<div class="record-item"><div class="record-left">'+
     '<div class="record-name">'+r.resp+'</div>'+
     '<div class="record-desc">'+r.desc+'</div>'+
     '<div><span class="badge '+ti.cls+'">'+ti.label+'</span><span class="badge badge-loc">'+r.local+'</span></div>'+
+    (botoes?'<div style="margin-top:8px;">'+botoes+'</div>':'')+
     '</div><div class="record-meta"><div style="font-weight:600">'+r.date+'</div><div>'+(r.start||'--:--')+'</div></div></div>';
+}
+
+var EDIT_REG_ID = null;
+function editarRegistro(id){
+  var r = null;
+  for(var i=0;i<records.length;i++){ if(records[i].id===id){ r=records[i]; break; } }
+  if(!r) return;
+  EDIT_REG_ID = id;
+  goTab('novoRegistro', null, 'Registros / Editar');
+  if(currentUser.profile==='ADMIN'){
+    document.getElementById('newRegRespSel').value = r.resp;
+  }
+  var idxLoc = -1;
+  for(var j=0;j<locais.length;j++){ if(locais[j].nome===r.local){ idxLoc=j; break; } }
+  document.getElementById('newRegLocalBusca').value='';
+  fillLocais();
+  if(idxLoc>=0) document.getElementById('newRegLocal').value = String(idxLoc);
+  document.getElementById('newRegType').value = r.locType || '';
+  var pd = (r.date||'').split('/');
+  if(pd.length===3) document.getElementById('newRegData').value = pd[2]+'-'+pd[1]+'-'+pd[0];
+  document.getElementById('newRegHora').value = r.start || '';
+  document.getElementById('newRegDesc').value = r.desc || '';
+}
+
+function excluirRegistro(id){
+  if(!confirm('Excluir este registro? Esta a\u00e7\u00e3o n\u00e3o pode ser desfeita.')) return;
+  records = records.filter(function(r){ return r.id!==id; });
+  localStorage.setItem('arp_rec', JSON.stringify(records));
+  loadDashboard();
+  renderListTab();
 }
 
 function pagButtons(total, page, fnName){
@@ -809,10 +855,23 @@ function salvarRegistro(){
   var loc = locais[parseInt(locIdx)];
   if(!type){ type = loc.tipo; }
   var pd = dataV.split('-');
-  records.push({ id:Date.now(), resp:resp, local:loc.nome, locType:type, desc:desc,
-    date: pd[2]+'/'+pd[1]+'/'+pd[0], start: horaV });
-  localStorage.setItem('arp_rec', JSON.stringify(records));
-  alert('Registro salvo!');
+  if(EDIT_REG_ID){
+    for(var k=0;k<records.length;k++){
+      if(records[k].id===EDIT_REG_ID){
+        records[k].resp=resp; records[k].local=loc.nome; records[k].locType=type;
+        records[k].desc=desc; records[k].date=pd[2]+'/'+pd[1]+'/'+pd[0]; records[k].start=horaV;
+        break;
+      }
+    }
+    EDIT_REG_ID=null;
+    localStorage.setItem('arp_rec', JSON.stringify(records));
+    alert('Registro atualizado!');
+  } else {
+    records.push({ id:Date.now(), resp:resp, local:loc.nome, locType:type, desc:desc,
+      date: pd[2]+'/'+pd[1]+'/'+pd[0], start: horaV });
+    localStorage.setItem('arp_rec', JSON.stringify(records));
+    alert('Registro salvo!');
+  }
   document.getElementById('newRegLocalBusca').value='';
   fillLocais();
   document.getElementById('newRegDesc').value='';
@@ -907,11 +966,25 @@ function iniciarOS(id){
 }
 
 function concluirOS(id){
-  for(var i=0;i<osOrdens.length;i++){
-    if(osOrdens[i].id===id){ osOrdens[i].status='Conclu\u00edda'; osOrdens[i].dataConclusao=new Date().toLocaleDateString('pt-BR'); break; }
-  }
+  var o=null;
+  for(var i=0;i<osOrdens.length;i++){ if(osOrdens[i].id===id){ o=osOrdens[i]; break; } }
+  if(!o) return;
+  var atual = o.valor ? o.valor.toFixed(2) : '';
+  var v = prompt('Valor final do servi\u00e7o (R$):', atual);
+  if(v===null) return;
+  var n = parseFloat(String(v).replace(',','.'));
+  if(!isNaN(n) && n>=0) o.valor = n;
+  o.status='Conclu\u00edda';
+  o.dataConclusao=new Date().toLocaleDateString('pt-BR');
   localStorage.setItem('arp_os', JSON.stringify(osOrdens));
   renderOS('andamento');
+}
+
+function excluirOS(id){
+  if(!confirm('Excluir esta ordem de servi\u00e7o? Esta a\u00e7\u00e3o n\u00e3o pode ser desfeita.')) return;
+  osOrdens = osOrdens.filter(function(o){ return o.id!==id; });
+  localStorage.setItem('arp_os', JSON.stringify(osOrdens));
+  renderOS('aberta'); renderOS('andamento'); renderOS('concluida');
 }
 
 function osCard(o, acoes){
@@ -945,12 +1018,13 @@ function renderOS(tipo){
   }).reverse();
 
   var page, contentId, pagId, fnName, acoesFn;
+  var btnExcluir = function(o){ return '<button class="btn-danger btn-small" onclick="excluirOS(\''+o.id+'\')">Excluir</button>'; };
   if(tipo==='aberta'){ page=OSA_PAGE; contentId='osEmAbertoContent'; pagId='osEmAbertoPag'; fnName='gotoOsa';
-    acoesFn=function(o){ return '<button class="btn-small" style="background:var(--cor-acento);color:#fff;" onclick="iniciarOS(\''+o.id+'\')">Iniciar Atendimento</button>'; }; }
+    acoesFn=function(o){ return '<button class="btn-small" style="background:var(--cor-acento);color:#fff;" onclick="iniciarOS(\''+o.id+'\')">Iniciar Atendimento</button>'+btnExcluir(o); }; }
   else if(tipo==='andamento'){ page=OSAND_PAGE; contentId='osAbertasContent'; pagId='osAbertasPag'; fnName='gotoOsand';
-    acoesFn=function(o){ return '<button class="btn-small" style="background:var(--cor-acento);color:#fff;" onclick="concluirOS(\''+o.id+'\')">Concluir</button>'; }; }
+    acoesFn=function(o){ return '<button class="btn-small" style="background:var(--cor-acento);color:#fff;" onclick="concluirOS(\''+o.id+'\')">Concluir</button>'+btnExcluir(o); }; }
   else { page=OSC_PAGE; contentId='osConcluiContent'; pagId='osConcluiPag'; fnName='gotoOsc';
-    acoesFn=function(o){ return ''; }; }
+    acoesFn=function(o){ return btnExcluir(o); }; }
 
   var total = Math.ceil(lista.length / PER_PAGE);
   if(page>=total) page=Math.max(0,total-1);
@@ -1146,6 +1220,18 @@ function salvarComissao(){
   renderComissoes();
 }
 
+var comPagamentos = JSON.parse(localStorage.getItem('arp_com_pay') || '{}');
+function salvarPagamentoTec(tec){
+  var el = document.getElementById('pay_'+tec.replace(/ /g,'_'));
+  if(!el) return;
+  var v = parseFloat(String(el.value).replace(',','.'));
+  if(isNaN(v) || v<0){ alert('Valor inv\u00e1lido!'); return; }
+  comPagamentos[tec] = v;
+  localStorage.setItem('arp_com_pay', JSON.stringify(comPagamentos));
+  alert('Valor a pagar de '+tec+' definido: R$ '+v.toFixed(2));
+  renderComissoes();
+}
+
 var COM_CORES = [
   {bg:'#e8f3ee', txt:'#14693c'},
   {bg:'#e9f0f8', txt:'#1a4e7a'},
@@ -1175,10 +1261,17 @@ function renderComissoes(){
       var fat = porTec[t].total;
       var com = fat * COMISSAO_PERCENT/100;
       totalGeral+=fat; comGeral+=com;
+      var tecId = t.replace(/ /g,'_');
+      var pago = comPagamentos[t];
       html += '<div class="com-card" style="background:'+cor.bg+';color:'+cor.txt+';">'+
         '<div style="font-size:14px;font-weight:700;">'+t+'</div>'+
         '<div class="com-value">R$ '+com.toFixed(2)+'</div>'+
-        '<div class="com-sub">Faturado: R$ '+fat.toFixed(2)+' &middot; '+porTec[t].qtd+' OS &middot; Taxa '+COMISSAO_PERCENT+'%</div></div>';
+        '<div class="com-sub">Faturado: R$ '+fat.toFixed(2)+' &middot; '+porTec[t].qtd+' OS &middot; Taxa '+COMISSAO_PERCENT+'%</div>'+
+        '<div style="display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap;">'+
+        '<input type="number" id="pay_'+tecId+'" class="form-input" style="max-width:150px;padding:8px 10px;font-size:13px;" step="0.01" min="0" placeholder="Valor a pagar" value="'+(pago!==undefined?pago:'')+'">'+
+        '<button class="btn-small" style="background:var(--cor-primaria);color:#fff;" onclick="salvarPagamentoTec(\''+t+'\')">Definir valor</button>'+
+        (pago!==undefined?'<span style="font-size:12px;font-weight:700;">A pagar: R$ '+pago.toFixed(2)+'</span>':'')+
+        '</div></div>';
     });
     if(html) html += '<div style="font-size:13px;color:var(--cor-primaria);font-weight:700;padding:8px 4px;">Total faturado: R$ '+totalGeral.toFixed(2)+' &middot; Total comiss&otilde;es: R$ '+comGeral.toFixed(2)+'</div>';
   } else {
