@@ -50,11 +50,14 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Roboto',sans-ser
 .btn-danger { background:#dc2626; color:#fff; border:none; padding:8px 14px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:600; }
 .btn-small { padding:6px 12px; font-size:12px; border-radius:6px; border:none; cursor:pointer; font-weight:600; }
 .btn-print { background:var(--cor-secundaria); color:#fff; }
+.btn-whats { background:#25D366; color:#fff; }
+.btn-mail { background:#6b7280; color:#fff; }
 
 .content { flex:1; padding:18px; overflow-y:auto; }
 .tab-content { display:none; }
 .tab-content.active { display:block; }
 .card { background:#fff; border-radius:8px; padding:18px; box-shadow:0 1px 3px rgba(0,0,0,0.08); margin-bottom:16px; }
+.card.externo-bg { background:#eef7f0; border:1px solid #cfe7d6; }
 .card-title { font-size:15px; font-weight:600; color:var(--cor-primaria); margin-bottom:16px; }
 
 .stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:18px; }
@@ -78,8 +81,10 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Roboto',sans-ser
 .badge-status-aberta { background:#fde8e8; color:#b91c1c; }
 .badge-status-andamento { background:#fff3d6; color:#92600a; }
 .badge-status-concluida { background:#d9f2e3; color:#14693c; }
+.badge-int { background:#e9f0f8; color:#1a4e7a; }
+.badge-ext { background:#e0f2e4; color:#166534; }
 
-.pagination { display:flex; gap:6px; margin-top:14px; justify-content:center; flex-wrap:wrap; }
+.pagination { display:flex; gap:6px; margin-top:14px; justify-content:center; flex-wrap:wrap; align-items:center; }
 .page-btn { padding:8px 12px; border-radius:8px; font-size:12px; font-weight:700; cursor:pointer; border:2px solid #b8d4cc; background:#fff; color:#2d4a44; }
 .page-btn.active { background:var(--cor-acento); border-color:var(--cor-acento); color:#fff; }
 
@@ -104,6 +109,7 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
 .material-row { display:grid; grid-template-columns:2fr 1fr auto; gap:8px; margin-bottom:8px; }
 .pwd-rules { font-size:11px; color:#666; line-height:1.7; background:#f7faf9; border:1px solid #e1ece8; border-radius:6px; padding:10px 14px; margin-bottom:14px; }
 .pwd-rules b { color:var(--cor-primaria); }
+.info-note { font-size:11px; color:#92600a; background:#fff8e6; border:1px solid #f3e3b3; border-radius:6px; padding:10px 14px; margin-bottom:14px; line-height:1.6; }
 
 @media (max-width:768px){
   .login-container { grid-template-columns:1fr; }
@@ -127,7 +133,7 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
       <div style="font-size:14px;color:rgba(255,255,255,0.8);margin-bottom:36px;">Amaz&ocirc;nia</div>
       <div class="feature"><div class="feature-icon">&#10003;</div><div>Gerenciamento de Ordens de Servi&ccedil;o</div></div>
       <div class="feature"><div class="feature-icon">&#10003;</div><div>Registro de Atendimento em Tempo Real</div></div>
-      <div class="feature"><div class="feature-icon">&#10003;</div><div>Controle de Comiss&otilde;es e Relat&oacute;rios</div></div>
+      <div class="feature"><div class="feature-icon">&#10003;</div><div>Notas, Comiss&otilde;es e Relat&oacute;rios</div></div>
     </div>
     <div class="login-form">
       <div class="form-title">Bem-vindo</div>
@@ -162,9 +168,11 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
       <div class="menu-item" onclick="goTab('osConcluidas',this,'OS / Conclu\u00eddas')">Conclu&iacute;das</div>
     </div>
 
+    <div class="menu-item" id="m-notas" onclick="goTab('notas',this,'Notas Fiscais')" style="display:none;">Notas Fiscais</div>
     <div class="menu-item" id="m-comissoes" onclick="goTab('comissoes',this,'Comiss\u00f5es')">Comiss&otilde;es</div>
     <div class="menu-item" id="m-gerenciar" onclick="goTab('gerenciar',this,'Gerenciar')" style="display:none;">Gerenciar</div>
     <div class="menu-item" id="m-locais" onclick="goTab('locais',this,'Locais')" style="display:none;">Locais</div>
+    <div class="menu-item" id="m-servicos" onclick="goTab('servicos',this,'Servi\u00e7os')" style="display:none;">Servi&ccedil;os</div>
     <div class="menu-item" id="m-customizar" onclick="goTab('customizar',this,'Customizar Sistema')" style="display:none;">Customizar Sistema</div>
     <div class="menu-item" id="m-conta" onclick="goTab('minhaConta',this,'Minha Conta')">Minha Conta</div>
 
@@ -180,20 +188,15 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
         <button class="menu-toggle" onclick="toggleSidebar()">&#9776;</button>
         <div class="header-title" id="pageTitle">Dashboard</div>
       </div>
-      <button class="btn-primary" id="btnNovoTop" onclick="goTab('novoRegistro',null,'Registros / Novo')">+ Novo Registro</button>
+      <button class="btn-primary" id="btnNovoTop" style="display:none;" onclick="goTab('novoRegistro',null,'Registros / Novo')">+ Novo Registro</button>
     </div>
 
     <div class="content">
 
       <div id="dashboard" class="tab-content active">
-        <div class="stats-grid">
-          <div class="stat-card"><div class="stat-label">Total Registros</div><div class="stat-value" id="totalReg">0</div></div>
-          <div class="stat-card"><div class="stat-label">Hoje</div><div class="stat-value" id="todayReg">0</div></div>
-          <div class="stat-card"><div class="stat-label">OS Abertas</div><div class="stat-value" id="osAbertaCount">0</div></div>
-          <div class="stat-card"><div class="stat-label">T&eacute;cnicos</div><div class="stat-value" id="tecCount">0</div></div>
-        </div>
+        <div class="stats-grid" id="dashStats"></div>
         <div class="card">
-          <div class="card-title">&Uacute;ltimos Registros</div>
+          <div class="card-title" id="dashListTitle">&Uacute;ltimos Registros</div>
           <div id="dashList" class="scroll-list"></div>
           <div id="dashPag" class="pagination"></div>
         </div>
@@ -217,7 +220,8 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
             <select id="newRegRespSel" class="form-input" style="display:none;"></select>
           </div>
           <div class="form-group"><label class="form-label">Local</label>
-            <select id="newRegLocal" class="form-input"></select>
+            <input type="text" id="newRegLocalBusca" class="form-input" placeholder="Pesquisar local..." oninput="filtrarLocais()" style="margin-bottom:8px;">
+            <select id="newRegLocal" class="form-input" size="1"></select>
           </div>
           <div class="form-group"><label class="form-label">Tipo</label>
             <select id="newRegType" class="form-input">
@@ -227,14 +231,18 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
               <option value="setor">Setor</option>
             </select>
           </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div class="form-group"><label class="form-label">Data</label><input type="date" id="newRegData" class="form-input"></div>
+            <div class="form-group"><label class="form-label">Hor&aacute;rio do atendimento</label><input type="time" id="newRegHora" class="form-input"></div>
+          </div>
           <div class="form-group"><label class="form-label">Descri&ccedil;&atilde;o</label><textarea id="newRegDesc" class="form-input" style="min-height:100px;resize:vertical;"></textarea></div>
           <button class="btn-primary" onclick="salvarRegistro()">Salvar</button>
         </div>
       </div>
 
       <div id="osAbrir" class="tab-content">
-        <div class="card">
-          <div class="card-title">Abrir Ordem de Servi&ccedil;o</div>
+        <div class="card" id="osAbrirCard">
+          <div class="card-title">Abrir Ordem de Servi&ccedil;o <span id="osTipoBadge"></span></div>
           <div class="form-group" id="osTecGroup" style="display:none;">
             <label class="form-label">T&eacute;cnico respons&aacute;vel</label>
             <select id="osTecSel" class="form-input"></select>
@@ -246,17 +254,7 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
             </div>
           </div>
           <div class="form-group"><label class="form-label">Servi&ccedil;o</label>
-            <select id="osServico" class="form-input" onchange="osServicoChange()">
-              <option value="" selected disabled>Selecionar servi&ccedil;o</option>
-              <option>Manuten&ccedil;&atilde;o de impressora</option>
-              <option>Manuten&ccedil;&atilde;o de computador/notebook</option>
-              <option>Instala&ccedil;&atilde;o de equipamento</option>
-              <option>Manuten&ccedil;&atilde;o de rede/internet</option>
-              <option>Formata&ccedil;&atilde;o e backup</option>
-              <option>Abastecimento de toner/tinta</option>
-              <option>Troca de pe&ccedil;as</option>
-              <option value="outro">Outro</option>
-            </select>
+            <select id="osServico" class="form-input" onchange="osServicoChange()"></select>
             <input type="text" id="osServicoOutro" class="form-input" placeholder="Descreva o servi&ccedil;o" style="display:none;margin-top:8px;">
           </div>
           <div class="form-group"><label class="form-label">Cliente</label><input type="text" id="osCliente" class="form-input"></div>
@@ -275,15 +273,33 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
       </div>
 
       <div id="osEmAberto" class="tab-content">
-        <div class="card"><div class="card-title">Ordens Abertas (aguardando in&iacute;cio)</div><div id="osEmAbertoContent" class="scroll-list"></div></div>
+        <div class="card"><div class="card-title">Ordens Abertas (aguardando in&iacute;cio)</div><div id="osEmAbertoContent" class="scroll-list"></div><div id="osEmAbertoPag" class="pagination"></div></div>
       </div>
 
       <div id="osAbertas" class="tab-content">
-        <div class="card"><div class="card-title">Ordens em Andamento</div><div id="osAbertasContent" class="scroll-list"></div></div>
+        <div class="card"><div class="card-title">Ordens em Andamento</div><div id="osAbertasContent" class="scroll-list"></div><div id="osAbertasPag" class="pagination"></div></div>
       </div>
 
       <div id="osConcluidas" class="tab-content">
         <div class="card"><div class="card-title">Ordens Conclu&iacute;das</div><div id="osConcluiContent" class="scroll-list"></div><div id="osConcluiPag" class="pagination"></div></div>
+      </div>
+
+      <div id="notas" class="tab-content">
+        <div class="info-note"><b>Aviso:</b> a emiss&atilde;o aqui gera o DANFE como documento auxiliar <b>sem valor fiscal</b>. Para emiss&atilde;o fiscal v&aacute;lida &eacute; necess&aacute;rio certificado digital e integra&ccedil;&atilde;o com a SEFAZ (podemos integrar futuramente).</div>
+        <div class="card">
+          <div class="card-title">Emitir Nota a partir de OS Conclu&iacute;da</div>
+          <div class="form-group"><label class="form-label">Selecionar OS</label><select id="nfOsSel" class="form-input"></select></div>
+          <button class="btn-primary" onclick="emitirNF()">Emitir Nota</button>
+        </div>
+        <div class="card">
+          <div class="card-title">Notas Emitidas</div>
+          <div id="nfLista" class="scroll-list"></div>
+          <div id="nfPag" class="pagination"></div>
+        </div>
+        <div class="card" id="nfPermCard" style="display:none;">
+          <div class="card-title">Conceder Acesso &agrave;s Notas Fiscais</div>
+          <div id="nfPermLista"></div>
+        </div>
       </div>
 
       <div id="comissoes" class="tab-content">
@@ -298,7 +314,7 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
       <div id="gerenciar" class="tab-content">
         <div class="card">
           <div class="card-title">Cadastrar Usu&aacute;rio</div>
-          <div class="pwd-rules"><b>Requisitos da senha:</b> m&iacute;nimo 8 caracteres, com letra mai&uacute;scula, min&uacute;scula, n&uacute;mero e caractere especial (!@#$%...). A senha criada pelo administrador &eacute; tempor&aacute;ria e expira em <b>3 dias</b> — o usu&aacute;rio dever&aacute; redefini-la em "Minha Conta".</div>
+          <div class="pwd-rules"><b>Requisitos da senha:</b> m&iacute;nimo 8 caracteres, com mai&uacute;scula, min&uacute;scula, n&uacute;mero e caractere especial. Senha tempor&aacute;ria expira em <b>3 dias</b>.</div>
           <div class="form-group"><label class="form-label">Nome</label><input type="text" id="gNome" class="form-input"></div>
           <div class="form-group"><label class="form-label">Usu&aacute;rio (login)</label><input type="text" id="gLogin" class="form-input" autocapitalize="none"></div>
           <div class="form-group"><label class="form-label">Senha tempor&aacute;ria</label><input type="text" id="gSenha" class="form-input"></div>
@@ -337,14 +353,34 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
         </div>
         <div class="card">
           <div class="card-title">Locais Cadastrados</div>
-          <div id="locaisLista"></div>
+          <div id="locaisLista" class="scroll-list"></div>
+          <div id="locaisPag" class="pagination"></div>
+        </div>
+      </div>
+
+      <div id="servicos" class="tab-content">
+        <div class="card">
+          <div class="card-title">Cadastrar Servi&ccedil;o</div>
+          <div class="form-group"><label class="form-label">Nome do servi&ccedil;o</label><input type="text" id="srvNome" class="form-input" placeholder="Ex: Troca de fonte"></div>
+          <div class="form-group"><label class="form-label">Categoria</label>
+            <select id="srvTipo" class="form-input">
+              <option value="" selected disabled>Selecionar</option>
+              <option value="interno">Interno</option>
+              <option value="externo">Externo</option>
+            </select>
+          </div>
+          <button class="btn-primary" onclick="cadastrarServico()">Cadastrar Servi&ccedil;o</button>
+        </div>
+        <div class="card">
+          <div class="card-title">Servi&ccedil;os Cadastrados</div>
+          <div id="servicosLista"></div>
         </div>
       </div>
 
       <div id="minhaConta" class="tab-content">
         <div class="card">
           <div class="card-title">Redefinir Minha Senha</div>
-          <div class="pwd-rules"><b>Requisitos:</b> m&iacute;nimo 8 caracteres, pelo menos 1 letra mai&uacute;scula, 1 min&uacute;scula, 1 n&uacute;mero e 1 caractere especial.</div>
+          <div class="pwd-rules"><b>Requisitos:</b> m&iacute;nimo 8 caracteres, mai&uacute;scula, min&uacute;scula, n&uacute;mero e caractere especial.</div>
           <div class="form-group"><label class="form-label">Senha atual</label><input type="password" id="mcSenhaAtual" class="form-input"></div>
           <div class="form-group"><label class="form-label">Nova senha</label><input type="password" id="mcNovaSenha" class="form-input"></div>
           <div class="form-group"><label class="form-label">Confirmar nova senha</label><input type="password" id="mcConfSenha" class="form-input"></div>
@@ -352,7 +388,6 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
         </div>
         <div class="card" id="mcEmailCard" style="display:none;">
           <div class="card-title">E-mail de Recupera&ccedil;&atilde;o (Administrador)</div>
-          <p style="font-size:12px;color:#666;margin-bottom:12px;">Este e-mail ser&aacute; usado para receber o link de redefini&ccedil;&atilde;o caso o Administrador esque&ccedil;a a senha.</p>
           <div class="form-group"><label class="form-label">E-mail</label><input type="email" id="mcEmailAdmin" class="form-input" placeholder="admin@empresa.com"></div>
           <button class="btn-primary" onclick="salvarEmailAdmin()">Salvar E-mail</button>
         </div>
@@ -370,16 +405,17 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
         </div>
         <div class="card">
           <div class="card-title">Logo do Sistema</div>
-          <p style="font-size:12px;color:#666;margin-bottom:12px;">Tamanho recomendado: <b>400 x 120 pixels</b> (PNG com fundo transparente). Exibida no login, menu lateral e impress&atilde;o das OS.</p>
+          <p style="font-size:12px;color:#666;margin-bottom:12px;">Tamanho recomendado: <b>400 x 120 pixels</b> (PNG transparente).</p>
           <div class="form-group"><label class="form-label">URL da logo</label><input type="text" id="logoUrl" class="form-input" placeholder="https://..."></div>
           <button class="btn-primary" onclick="salvarLogo()">Salvar Logo</button>
         </div>
         <div class="card">
-          <div class="card-title">Dados da Empresa (cabe&ccedil;alho de impress&atilde;o)</div>
-          <div class="form-group"><label class="form-label">CNPJ</label><input type="text" id="empCnpj" class="form-input" placeholder="00.000.000/0000-00"></div>
+          <div class="card-title">Dados da Empresa (impress&atilde;o e notas)</div>
+          <div class="form-group"><label class="form-label">CNPJ</label><input type="text" id="empCnpj" class="form-input"></div>
           <div class="form-group"><label class="form-label">Inscri&ccedil;&atilde;o Estadual</label><input type="text" id="empIe" class="form-input"></div>
           <div class="form-group"><label class="form-label">E-mail</label><input type="email" id="empEmail" class="form-input"></div>
           <div class="form-group"><label class="form-label">Telefone</label><input type="tel" id="empTel" class="form-input"></div>
+          <div class="form-group"><label class="form-label">Endere&ccedil;o</label><input type="text" id="empEnd" class="form-input"></div>
           <button class="btn-primary" onclick="salvarEmpresa()">Salvar Dados</button>
         </div>
       </div>
@@ -390,14 +426,16 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
 
 <script>
 var PER_PAGE = 50;
-var DASH_PAGE = 0, LIST_PAGE = 0, OSC_PAGE = 0;
+var DASH_PAGE=0, LIST_PAGE=0, OSC_PAGE=0, OSA_PAGE=0, OSAND_PAGE=0, LOCAIS_PAGE=0, NF_PAGE=0;
 var currentUser = null;
 var OS_TIPO = 'interno';
 var EXPIRA_DIAS = 3;
 
 var records = JSON.parse(localStorage.getItem('arp_rec') || '[]');
 var osOrdens = JSON.parse(localStorage.getItem('arp_os') || '[]');
+var notas = JSON.parse(localStorage.getItem('arp_nf') || '[]');
 var COMISSAO_PERCENT = parseFloat(localStorage.getItem('comissao_percent') || '70');
+var nfAccess = JSON.parse(localStorage.getItem('arp_nf_access') || '[]');
 
 var DEFAULT_USERS = [
   {login:'ayrton',   name:'Ayrton',        pass:'ayrton123',    profile:'SEMED',   mustChange:false},
@@ -408,7 +446,7 @@ var DEFAULT_USERS = [
 ];
 var usuarios = JSON.parse(localStorage.getItem('arp_users') || 'null') || DEFAULT_USERS;
 var orgaos = JSON.parse(localStorage.getItem('arp_orgaos') || 'null') || ['SEMED','ARPTECH'];
-var empresa = JSON.parse(localStorage.getItem('arp_empresa') || 'null') || {cnpj:'', ie:'', email:'', tel:''};
+var empresa = JSON.parse(localStorage.getItem('arp_empresa') || 'null') || {cnpj:'', ie:'', email:'', tel:'', end:''};
 
 var DEFAULT_LOCAIS = [
   {nome:'Divis\u00e3o de Tecnologia da Informa\u00e7\u00e3o - DTI', tipo:'setor'},
@@ -419,6 +457,17 @@ var DEFAULT_LOCAIS = [
   {nome:'Escola Martha Macedo', tipo:'urbana'}
 ];
 var locais = JSON.parse(localStorage.getItem('arp_locais') || 'null') || DEFAULT_LOCAIS;
+
+var DEFAULT_SERVICOS = [
+  {nome:'Manuten\u00e7\u00e3o de impressora', tipo:'interno'},
+  {nome:'Manuten\u00e7\u00e3o de computador/notebook', tipo:'interno'},
+  {nome:'Formata\u00e7\u00e3o e backup', tipo:'interno'},
+  {nome:'Abastecimento de toner/tinta', tipo:'interno'},
+  {nome:'Troca de pe\u00e7as', tipo:'interno'},
+  {nome:'Instala\u00e7\u00e3o de equipamento', tipo:'externo'},
+  {nome:'Suporte ao usu\u00e1rio', tipo:'externo'}
+];
+var servicos = JSON.parse(localStorage.getItem('arp_servicos') || 'null') || DEFAULT_SERVICOS;
 
 var CORES_PADRAO = {primaria:'#0d3b5c', secundaria:'#1a5276', acento:'#2d7a4a', login:'#0d3b5c'};
 var cores = JSON.parse(localStorage.getItem('arp_cores') || 'null') || JSON.parse(JSON.stringify(CORES_PADRAO));
@@ -442,6 +491,9 @@ aplicarCores();
 function saveUsers(){ localStorage.setItem('arp_users', JSON.stringify(usuarios)); }
 function saveOrgaos(){ localStorage.setItem('arp_orgaos', JSON.stringify(orgaos)); }
 function saveLocais(){ localStorage.setItem('arp_locais', JSON.stringify(locais)); }
+function saveServicos(){ localStorage.setItem('arp_servicos', JSON.stringify(servicos)); }
+function saveNotas(){ localStorage.setItem('arp_nf', JSON.stringify(notas)); }
+function saveNfAccess(){ localStorage.setItem('arp_nf_access', JSON.stringify(nfAccess)); }
 
 function senhaForte(s){
   if(!s || s.length < 8) return false;
@@ -451,11 +503,9 @@ function senhaForte(s){
   if(!/[^A-Za-z0-9]/.test(s)) return false;
   return true;
 }
-
 function senhaExpirada(u){
   if(!u.mustChange || !u.passSetAt) return false;
-  var dias = (Date.now() - u.passSetAt) / 86400000;
-  return dias > EXPIRA_DIAS;
+  return (Date.now() - u.passSetAt) / 86400000 > EXPIRA_DIAS;
 }
 
 function toggleSidebar(){ document.getElementById('sidebar').classList.toggle('open'); }
@@ -464,33 +514,46 @@ function esqueciSenha(){
   var u = (document.getElementById('loginUser').value||'').trim().toLowerCase();
   if(u === 'admin'){
     var email = localStorage.getItem('arp_admin_email') || '';
-    if(!email){
-      alert('Nenhum e-mail de recupera\u00e7\u00e3o cadastrado. Cadastre em Minha Conta ao acessar o sistema.');
-      return;
-    }
+    if(!email){ alert('Nenhum e-mail de recupera\u00e7\u00e3o cadastrado. Cadastre em Minha Conta ao acessar o sistema.'); return; }
     var codigo = String(Math.floor(100000 + Math.random()*900000));
     localStorage.setItem('arp_reset_code', codigo);
     localStorage.setItem('arp_reset_time', String(Date.now()));
-    var link = 'mailto:'+email+'?subject=Redefini\u00e7\u00e3o de senha - ARP TECH&body=Seu c\u00f3digo de redefini\u00e7\u00e3o \u00e9: '+codigo+'%0A%0AEste c\u00f3digo expira em 15 minutos.';
-    window.location.href = link;
+    window.location.href = 'mailto:'+email+'?subject=Redefini\u00e7\u00e3o de senha - ARP TECH&body=Seu c\u00f3digo: '+codigo+'%0AExpira em 15 minutos.';
     setTimeout(function(){
-      var entrado = prompt('Um link com c\u00f3digo de redefini\u00e7\u00e3o foi enviado para '+email+'.\n\nDigite o c\u00f3digo recebido:');
+      var entrado = prompt('Um c\u00f3digo foi enviado para '+email+'.\n\nDigite o c\u00f3digo:');
       if(!entrado) return;
-      var salvo = localStorage.getItem('arp_reset_code');
-      var tempo = parseInt(localStorage.getItem('arp_reset_time')||'0');
-      if(Date.now() - tempo > 15*60000){ alert('C\u00f3digo expirado. Tente novamente.'); return; }
-      if(entrado.trim() !== salvo){ alert('C\u00f3digo incorreto!'); return; }
-      var nova = prompt('Digite a nova senha (m\u00edn. 8 caracteres, mai\u00fascula, min\u00fascula, n\u00famero e caractere especial):');
+      if(Date.now() - parseInt(localStorage.getItem('arp_reset_time')||'0') > 900000){ alert('C\u00f3digo expirado.'); return; }
+      if(entrado.trim() !== localStorage.getItem('arp_reset_code')){ alert('C\u00f3digo incorreto!'); return; }
+      var nova = prompt('Nova senha (m\u00edn. 8, mai\u00fascula, min\u00fascula, n\u00famero e especial):');
       if(!nova) return;
-      if(!senhaForte(nova)){ alert('Senha n\u00e3o atende aos requisitos de seguran\u00e7a!'); return; }
+      if(!senhaForte(nova)){ alert('Senha fraca!'); return; }
       for(var i=0;i<usuarios.length;i++){ if(usuarios[i].login==='admin'){ usuarios[i].pass=nova; usuarios[i].mustChange=false; break; } }
       saveUsers();
       localStorage.removeItem('arp_reset_code');
-      alert('Senha do Administrador redefinida com sucesso!');
+      alert('Senha redefinida!');
     }, 800);
   } else {
     alert('Para redefinir sua senha, entre em contato com o Administrador do sistema.');
   }
+}
+
+// ===== SESSAO: reset completo de UI =====
+function resetUI(){
+  document.querySelectorAll('.submenu').forEach(function(s){ s.classList.remove('open'); });
+  document.querySelectorAll('.menu-arrow').forEach(function(a){ a.classList.remove('open'); });
+  document.querySelectorAll('.menu-item').forEach(function(m){ m.classList.remove('active'); });
+  document.querySelectorAll('.tab-content').forEach(function(t){ t.classList.remove('active'); });
+  ['m-registros','m-os','m-notas','m-comissoes','m-gerenciar','m-locais','m-servicos','m-customizar'].forEach(function(id){
+    document.getElementById(id).style.display='none';
+  });
+  document.getElementById('btnNovoTop').style.display='none';
+  document.getElementById('comAdminCard').style.display='none';
+  document.getElementById('mcEmailCard').style.display='none';
+  document.getElementById('nfPermCard').style.display='none';
+  document.getElementById('osTecGroup').style.display='none';
+  document.getElementById('userInfo').innerHTML='';
+  document.getElementById('sidebar').classList.remove('open');
+  DASH_PAGE=0; LIST_PAGE=0; OSC_PAGE=0; OSA_PAGE=0; OSAND_PAGE=0; LOCAIS_PAGE=0; NF_PAGE=0;
 }
 
 function login(){
@@ -501,41 +564,64 @@ function login(){
   for(var i=0;i<usuarios.length;i++){ if(usuarios[i].login.toLowerCase()===u && usuarios[i].pass===p){ found=usuarios[i]; break; } }
   if(!found){ alert('Usu\u00e1rio ou senha incorretos!'); return; }
   if(senhaExpirada(found)){
-    alert('Sua senha tempor\u00e1ria expirou (prazo de '+EXPIRA_DIAS+' dias). Entre em contato com o Administrador para liberar o acesso.');
+    alert('Sua senha tempor\u00e1ria expirou. Contate o Administrador.');
     return;
   }
+  resetUI();
   currentUser = found;
   document.getElementById('loginScreen').style.display='none';
   document.getElementById('systemWrapper').classList.add('active');
   document.getElementById('userInfo').innerHTML = found.name + '<br><small style="color:#9fb6c6">' + found.profile + '</small>';
   applyPermissions();
-  loadDashboard();
   if(found.mustChange){
-    alert('Voc\u00ea est\u00e1 usando uma senha tempor\u00e1ria criada pelo Administrador. Redefina sua senha em "Minha Conta" dentro de '+EXPIRA_DIAS+' dias.');
+    alert('Voc\u00ea usa senha tempor\u00e1ria. Redefina em "Minha Conta" em at\u00e9 '+EXPIRA_DIAS+' dias.');
     goTab('minhaConta', document.getElementById('m-conta'), 'Minha Conta');
   }
 }
 
 function logout(){
   currentUser=null;
+  resetUI();
   document.getElementById('loginScreen').style.display='flex';
   document.getElementById('systemWrapper').classList.remove('active');
   document.getElementById('loginUser').value='';
   document.getElementById('loginPass').value='';
 }
 
-function fillLocais(){
+var LOCAIS_FILTRADOS = null;
+function fillLocais(filtro){
   var sel = document.getElementById('newRegLocal');
+  var lista = locais.map(function(l,i){ return {l:l, i:i}; });
+  if(filtro){
+    var f = filtro.toLowerCase();
+    lista = lista.filter(function(x){ return x.l.nome.toLowerCase().indexOf(f)>=0; });
+  }
   sel.innerHTML = '<option value="" selected disabled>Selecionar local</option>' +
-    locais.map(function(l,i){ return '<option value="'+i+'">'+l.nome+'</option>'; }).join('');
+    lista.map(function(x){ return '<option value="'+x.i+'">'+x.l.nome+'</option>'; }).join('');
+}
+function filtrarLocais(){
+  fillLocais(document.getElementById('newRegLocalBusca').value.trim());
 }
 
-function fillTecnicos(selId, incluirAdmin){
+function fillTecnicos(selId){
   var sel = document.getElementById(selId);
   var opts = usuarios.filter(function(u){ return u.profile!=='ADMIN'; });
   sel.innerHTML = '<option value="" selected disabled>Selecionar t\u00e9cnico</option>' +
     opts.map(function(u){ return '<option value="'+u.name+'">'+u.name+' ('+u.profile+')</option>'; }).join('') +
-    (incluirAdmin ? '<option value="'+currentUser.name+'">'+currentUser.name+' (ADMIN)</option>' : '');
+    '<option value="'+currentUser.name+'">'+currentUser.name+' (ADMIN)</option>';
+}
+
+function fillServicos(){
+  var sel = document.getElementById('osServico');
+  var lista = servicos.filter(function(s){ return s.tipo===OS_TIPO; });
+  sel.innerHTML = '<option value="" selected disabled>Selecionar servi\u00e7o</option>' +
+    lista.map(function(s){ return '<option>'+s.nome+'</option>'; }).join('') +
+    '<option value="outro">Outro</option>';
+  document.getElementById('osServicoOutro').style.display='none';
+}
+
+function temNF(){
+  return currentUser.profile==='ADMIN' || nfAccess.indexOf(currentUser.login)>=0;
 }
 
 function applyPermissions(){
@@ -547,11 +633,13 @@ function applyPermissions(){
   show('m-comissoes', p==='ARPTECH' || p==='ADMIN');
   show('m-gerenciar', p==='ADMIN');
   show('m-locais', p==='ADMIN');
+  show('m-servicos', p==='ADMIN');
   show('m-customizar', p==='ADMIN');
+  show('m-notas', temNF());
   show('m-conta', true);
-  document.getElementById('btnNovoTop').style.display = (p==='SEMED'||p==='ADMIN') ? 'inline-block' : 'none';
   document.getElementById('comAdminCard').style.display = p==='ADMIN' ? 'block' : 'none';
   document.getElementById('mcEmailCard').style.display = p==='ADMIN' ? 'block' : 'none';
+  document.getElementById('nfPermCard').style.display = p==='ADMIN' ? 'block' : 'none';
   if(p==='ADMIN'){
     document.getElementById('comPercent').value = COMISSAO_PERCENT;
     document.getElementById('mcEmailAdmin').value = localStorage.getItem('arp_admin_email') || '';
@@ -560,19 +648,19 @@ function applyPermissions(){
   var inp = document.getElementById('newRegResp');
   var sel = document.getElementById('newRegRespSel');
   if(p==='ADMIN'){
-    inp.style.display='none';
-    sel.style.display='block';
-    fillTecnicos('newRegRespSel', true);
+    inp.style.display='none'; sel.style.display='block';
+    fillTecnicos('newRegRespSel');
     document.getElementById('osTecGroup').style.display='block';
-    fillTecnicos('osTecSel', true);
+    fillTecnicos('osTecSel');
   } else {
-    sel.style.display='none';
-    inp.style.display='block';
+    sel.style.display='none'; inp.style.display='block';
     inp.value = currentUser.name;
     document.getElementById('osTecGroup').style.display='none';
   }
 
+  document.getElementById('newRegLocalBusca').value='';
   fillLocais();
+  setOsTipo('interno');
 
   if(p==='ADMIN'){
     document.getElementById('corPrimaria').value = cores.primaria;
@@ -584,9 +672,16 @@ function applyPermissions(){
     document.getElementById('empIe').value = empresa.ie;
     document.getElementById('empEmail').value = empresa.email;
     document.getElementById('empTel').value = empresa.tel;
+    document.getElementById('empEnd').value = empresa.end || '';
   }
   aplicarLogo();
   goTab('dashboard', document.getElementById('m-dashboard'), 'Dashboard');
+}
+
+function atualizarBotaoNovo(tab){
+  var p = currentUser ? currentUser.profile : '';
+  var mostrar = (tab==='registrosList' || tab==='novoRegistro') && (p==='SEMED' || p==='ADMIN');
+  document.getElementById('btnNovoTop').style.display = mostrar ? 'inline-block' : 'none';
 }
 
 function goTab(tab, el, title){
@@ -596,14 +691,22 @@ function goTab(tab, el, title){
   document.querySelectorAll('.menu-item').forEach(function(m){ m.classList.remove('active'); });
   if(el && el.classList) el.classList.add('active');
   document.getElementById('sidebar').classList.remove('open');
+  atualizarBotaoNovo(tab);
   if(tab==='dashboard') loadDashboard();
   if(tab==='registrosList') renderListTab();
+  if(tab==='novoRegistro'){
+    var now = new Date();
+    document.getElementById('newRegData').value = now.toISOString().split('T')[0];
+    document.getElementById('newRegHora').value = now.toTimeString().slice(0,5);
+  }
   if(tab==='osEmAberto') renderOS('aberta');
   if(tab==='osAbertas') renderOS('andamento');
   if(tab==='osConcluidas') renderOS('concluida');
   if(tab==='comissoes') renderComissoes();
   if(tab==='gerenciar') renderUsuarios();
   if(tab==='locais') renderLocais();
+  if(tab==='servicos') renderServicos();
+  if(tab==='notas'){ fillNfOs(); renderNotas(); renderNfPerm(); }
 }
 
 function toggleSubmenu(el, id){
@@ -630,23 +733,46 @@ function recordCard(r){
 
 function pagButtons(total, page, fnName){
   if(total<=1) return '';
-  var h='';
+  var h='<button class="page-btn" onclick="'+fnName+'('+Math.max(0,page-1)+')">&#8249;</button>';
   for(var i=0;i<total;i++){ h += '<button class="page-btn'+(i===page?' active':'')+'" onclick="'+fnName+'('+i+')">'+(i+1)+'</button>'; }
+  h+='<button class="page-btn" onclick="'+fnName+'('+Math.min(total-1,page+1)+')">&#8250;</button>';
   return h;
 }
 function gotoDash(i){ DASH_PAGE=i; loadDashboard(); }
 function gotoList(i){ LIST_PAGE=i; renderListTab(); }
 function gotoOsc(i){ OSC_PAGE=i; renderOS('concluida'); }
+function gotoOsa(i){ OSA_PAGE=i; renderOS('aberta'); }
+function gotoOsand(i){ OSAND_PAGE=i; renderOS('andamento'); }
+function gotoLocais(i){ LOCAIS_PAGE=i; renderLocais(); }
+function gotoNf(i){ NF_PAGE=i; renderNotas(); }
 
 function loadDashboard(){
-  document.getElementById('totalReg').innerHTML = records.length;
+  var p = currentUser.profile;
+  var stats = document.getElementById('dashStats');
+  if(p==='ARPTECH'){
+    var minhas = osOrdens.filter(function(o){ return o.tecnico===currentUser.name; });
+    var ab = minhas.filter(function(o){ return o.status==='Em Aberto'; }).length;
+    var an = minhas.filter(function(o){ return o.status==='Em Andamento'; }).length;
+    var co = minhas.filter(function(o){ return o.status==='Conclu\u00edda'; }).length;
+    stats.innerHTML = '<div class="stat-card"><div class="stat-label">Minhas OS</div><div class="stat-value">'+minhas.length+'</div></div>'+
+      '<div class="stat-card"><div class="stat-label">Abertas</div><div class="stat-value">'+ab+'</div></div>'+
+      '<div class="stat-card"><div class="stat-label">Em Andamento</div><div class="stat-value">'+an+'</div></div>'+
+      '<div class="stat-card"><div class="stat-label">Conclu\u00eddas</div><div class="stat-value">'+co+'</div></div>';
+    document.getElementById('dashListTitle').innerHTML='Minhas Ordens de Servi\u00e7o';
+    var lista = minhas.slice().reverse();
+    var total = Math.ceil(lista.length / PER_PAGE);
+    if(DASH_PAGE>=total) DASH_PAGE=Math.max(0,total-1);
+    var slice = lista.slice(DASH_PAGE*PER_PAGE,(DASH_PAGE+1)*PER_PAGE);
+    document.getElementById('dashList').innerHTML = slice.map(function(o){ return osCard(o,''); }).join('') || '<div style="padding:20px;color:#999;">Nenhuma OS.</div>';
+    document.getElementById('dashPag').innerHTML = pagButtons(total, DASH_PAGE, 'gotoDash');
+    return;
+  }
   var hoje = new Date().toLocaleDateString('pt-BR');
-  document.getElementById('todayReg').innerHTML = records.filter(function(r){ return r.date===hoje; }).length;
-  document.getElementById('osAbertaCount').innerHTML = osOrdens.filter(function(o){ return o.status!=='Conclu\u00edda'; }).length;
-  var tecs = {};
-  usuarios.forEach(function(u){ if(u.profile!=='ADMIN') tecs[u.login]=1; });
-  document.getElementById('tecCount').innerHTML = Object.keys(tecs).length;
-
+  stats.innerHTML = '<div class="stat-card"><div class="stat-label">Total Registros</div><div class="stat-value">'+records.length+'</div></div>'+
+    '<div class="stat-card"><div class="stat-label">Hoje</div><div class="stat-value">'+records.filter(function(r){ return r.date===hoje; }).length+'</div></div>'+
+    '<div class="stat-card"><div class="stat-label">OS Abertas</div><div class="stat-value">'+osOrdens.filter(function(o){ return o.status!=='Conclu\u00edda'; }).length+'</div></div>'+
+    '<div class="stat-card"><div class="stat-label">T\u00e9cnicos</div><div class="stat-value">'+usuarios.filter(function(u){ return u.profile!=='ADMIN'; }).length+'</div></div>';
+  document.getElementById('dashListTitle').innerHTML='\u00daltimos Registros';
   var lista = records.slice().reverse();
   var total = Math.ceil(lista.length / PER_PAGE);
   if(DASH_PAGE>=total) DASH_PAGE=Math.max(0,total-1);
@@ -673,22 +799,22 @@ function salvarRegistro(){
   if(currentUser.profile==='ADMIN'){
     resp = document.getElementById('newRegRespSel').value;
     if(!resp){ alert('Selecione o respons\u00e1vel!'); return; }
-  } else {
-    resp = currentUser.name;
-  }
+  } else { resp = currentUser.name; }
   var locIdx = document.getElementById('newRegLocal').value;
   var type = document.getElementById('newRegType').value;
   var desc = document.getElementById('newRegDesc').value.trim();
-  if(locIdx==='' || locIdx===null || !desc){ alert('Preencha local e descri\u00e7\u00e3o!'); return; }
+  var dataV = document.getElementById('newRegData').value;
+  var horaV = document.getElementById('newRegHora').value;
+  if(locIdx==='' || locIdx===null || !desc || !dataV || !horaV){ alert('Preencha local, data, hor\u00e1rio e descri\u00e7\u00e3o!'); return; }
   var loc = locais[parseInt(locIdx)];
   if(!type){ type = loc.tipo; }
-  var now = new Date();
+  var pd = dataV.split('-');
   records.push({ id:Date.now(), resp:resp, local:loc.nome, locType:type, desc:desc,
-    date: now.toLocaleDateString('pt-BR'),
-    start: now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}) });
+    date: pd[2]+'/'+pd[1]+'/'+pd[0], start: horaV });
   localStorage.setItem('arp_rec', JSON.stringify(records));
   alert('Registro salvo!');
-  document.getElementById('newRegLocal').selectedIndex=0;
+  document.getElementById('newRegLocalBusca').value='';
+  fillLocais();
   document.getElementById('newRegDesc').value='';
   document.getElementById('newRegType').selectedIndex=0;
   loadDashboard();
@@ -697,9 +823,7 @@ function salvarRegistro(){
 document.addEventListener('change', function(e){
   if(e.target && e.target.id==='newRegLocal'){
     var idx = parseInt(e.target.value);
-    if(!isNaN(idx) && locais[idx]){
-      document.getElementById('newRegType').value = locais[idx].tipo;
-    }
+    if(!isNaN(idx) && locais[idx]){ document.getElementById('newRegType').value = locais[idx].tipo; }
   }
 });
 
@@ -707,6 +831,16 @@ function setOsTipo(t){
   OS_TIPO = t;
   document.getElementById('tgInterno').classList.toggle('sel', t==='interno');
   document.getElementById('tgExterno').classList.toggle('sel', t==='externo');
+  var card = document.getElementById('osAbrirCard');
+  var badge = document.getElementById('osTipoBadge');
+  if(t==='externo'){
+    card.classList.add('externo-bg');
+    badge.innerHTML = '<span class="badge badge-ext" style="margin-left:8px;">Externo</span>';
+  } else {
+    card.classList.remove('externo-bg');
+    badge.innerHTML = '<span class="badge badge-int" style="margin-left:8px;">Interno</span>';
+  }
+  fillServicos();
 }
 
 function osServicoChange(){
@@ -738,10 +872,8 @@ function abrirOS(){
   var tecnico;
   if(currentUser.profile==='ADMIN'){
     tecnico = document.getElementById('osTecSel').value;
-    if(!tecnico){ alert('Selecione o t\u00e9cnico respons\u00e1vel!'); return; }
-  } else {
-    tecnico = currentUser.name;
-  }
+    if(!tecnico){ alert('Selecione o t\u00e9cnico!'); return; }
+  } else { tecnico = currentUser.name; }
   var servico = document.getElementById('osServico').value;
   if(!servico){ alert('Selecione o servi\u00e7o!'); return; }
   if(servico==='outro'){
@@ -757,15 +889,13 @@ function abrirOS(){
   var valor = parseFloat(document.getElementById('osValor').value||'0');
   if(!cliente || !tel || !desc){ alert('Preencha cliente, telefone e descri\u00e7\u00e3o!'); return; }
   var os = { id:'OS-'+Date.now(), cliente:cliente, doc:doc, telefone:tel, email:email, desc:desc,
-    servico: servico, tipo: OS_TIPO, materiais: getMateriais(),
+    servico:servico, tipo:OS_TIPO, materiais:getMateriais(),
     valor: isNaN(valor)?0:valor, status:'Em Aberto',
     dataCriacao:new Date().toLocaleDateString('pt-BR'), tecnico: tecnico };
   osOrdens.push(os);
   localStorage.setItem('arp_os', JSON.stringify(osOrdens));
   alert('OS '+os.id+' aberta com sucesso!');
   ['osCliente','osDoc','osTelefone','osEmail','osDesc','osValor','osServicoOutro'].forEach(function(id){ document.getElementById(id).value=''; });
-  document.getElementById('osServico').selectedIndex=0;
-  document.getElementById('osServicoOutro').style.display='none';
   document.getElementById('materiais').innerHTML='';
   setOsTipo('interno');
 }
@@ -790,13 +920,14 @@ function osCard(o, acoes){
   if(o.materiais && o.materiais.length){
     matHtml = '<div style="font-size:11px;color:#555;margin-top:6px;">Materiais: '+o.materiais.map(function(m){ return m.nome+' (R$ '+m.valor.toFixed(2)+')'; }).join(', ')+'</div>';
   }
+  var tipoBadge = o.tipo ? '<span class="badge '+(o.tipo==='externo'?'badge-ext':'badge-int')+'">'+(o.tipo==='externo'?'Externo':'Interno')+'</span>' : '';
   return '<div class="record-item"><div class="record-left">'+
     '<div class="record-name">'+o.id+' &middot; '+o.cliente+'</div>'+
     (o.servico?'<div style="font-size:11px;color:var(--cor-acento);font-weight:700;margin-top:2px;">'+o.servico+'</div>':'')+
     '<div class="record-desc">'+o.desc+'</div>'+
-    '<div style="font-size:11px;color:#666;margin-top:6px;">'+(o.doc?'Doc: '+o.doc+' &middot; ':'')+'Tel: '+o.telefone+(o.email?' &middot; '+o.email:'')+' &middot; T\u00e9cnico: '+o.tecnico+(o.valor?' &middot; Servi\u00e7o: R$ '+o.valor.toFixed(2):'')+(o.tipo?' &middot; '+(o.tipo==='interno'?'Interno':'Externo'):'')+'</div>'+
+    '<div style="font-size:11px;color:#666;margin-top:6px;">'+(o.doc?'Doc: '+o.doc+' &middot; ':'')+'Tel: '+o.telefone+(o.email?' &middot; '+o.email:'')+' &middot; T\u00e9cnico: '+o.tecnico+(o.valor?' &middot; R$ '+o.valor.toFixed(2):'')+'</div>'+
     matHtml+
-    '<div><span class="badge '+stCls+'">'+o.status+'</span></div>'+
+    '<div><span class="badge '+stCls+'">'+o.status+'</span>'+tipoBadge+'</div>'+
     '<div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">'+acoes+
     '<button class="btn-small btn-print" onclick="imprimirOS(\''+o.id+'\')">Imprimir</button></div>'+
     '</div><div class="record-meta"><div style="font-weight:600">'+o.dataCriacao+'</div>'+(o.dataConclusao?'<div>Concl.: '+o.dataConclusao+'</div>':'')+'</div></div>';
@@ -813,31 +944,35 @@ function renderOS(tipo){
     return st && own;
   }).reverse();
 
-  if(tipo==='concluida'){
-    var total = Math.ceil(lista.length / PER_PAGE);
-    if(OSC_PAGE>=total) OSC_PAGE=Math.max(0,total-1);
-    var slice = lista.slice(OSC_PAGE*PER_PAGE,(OSC_PAGE+1)*PER_PAGE);
-    document.getElementById('osConcluiContent').innerHTML = slice.map(function(o){ return osCard(o,''); }).join('') || '<div style="padding:20px;color:#999;">Nenhuma OS conclu\u00edda.</div>';
-    document.getElementById('osConcluiPag').innerHTML = pagButtons(total, OSC_PAGE, 'gotoOsc');
-    return;
-  }
+  var page, contentId, pagId, fnName, acoesFn;
+  if(tipo==='aberta'){ page=OSA_PAGE; contentId='osEmAbertoContent'; pagId='osEmAbertoPag'; fnName='gotoOsa';
+    acoesFn=function(o){ return '<button class="btn-small" style="background:var(--cor-acento);color:#fff;" onclick="iniciarOS(\''+o.id+'\')">Iniciar Atendimento</button>'; }; }
+  else if(tipo==='andamento'){ page=OSAND_PAGE; contentId='osAbertasContent'; pagId='osAbertasPag'; fnName='gotoOsand';
+    acoesFn=function(o){ return '<button class="btn-small" style="background:var(--cor-acento);color:#fff;" onclick="concluirOS(\''+o.id+'\')">Concluir</button>'; }; }
+  else { page=OSC_PAGE; contentId='osConcluiContent'; pagId='osConcluiPag'; fnName='gotoOsc';
+    acoesFn=function(o){ return ''; }; }
 
-  var html = lista.map(function(o){
-    var acoes='';
-    if(tipo==='aberta') acoes = '<button class="btn-small" style="background:var(--cor-acento);color:#fff;" onclick="iniciarOS(\''+o.id+'\')">Iniciar Atendimento</button>';
-    if(tipo==='andamento') acoes = '<button class="btn-small" style="background:var(--cor-acento);color:#fff;" onclick="concluirOS(\''+o.id+'\')">Concluir</button>';
-    return osCard(o, acoes);
-  }).join('');
-  var target = tipo==='aberta' ? 'osEmAbertoContent' : 'osAbertasContent';
-  document.getElementById(target).innerHTML = html || '<div style="padding:20px;color:#999;">Nenhuma OS.</div>';
+  var total = Math.ceil(lista.length / PER_PAGE);
+  if(page>=total) page=Math.max(0,total-1);
+  if(tipo==='aberta') OSA_PAGE=page; else if(tipo==='andamento') OSAND_PAGE=page; else OSC_PAGE=page;
+  var slice = lista.slice(page*PER_PAGE,(page+1)*PER_PAGE);
+  document.getElementById(contentId).innerHTML = slice.map(function(o){ return osCard(o, acoesFn(o)); }).join('') || '<div style="padding:20px;color:#999;">Nenhuma OS.</div>';
+  document.getElementById(pagId).innerHTML = pagButtons(total, page, fnName);
+}
+
+function dadosEmpresaHtml(){
+  return (empresa.cnpj?'CNPJ: '+empresa.cnpj+'<br>':'')+(empresa.ie?'Inscri\u00e7\u00e3o Estadual: '+empresa.ie+'<br>':'')+
+    (empresa.end?empresa.end+'<br>':'')+(empresa.email?'E-mail: '+empresa.email+'<br>':'')+(empresa.tel?'Telefone: '+empresa.tel:'');
+}
+function logoPrintHtml(){
+  var logoUrl = localStorage.getItem('arp_logo') || '';
+  return logoUrl ? '<img src="'+logoUrl+'" style="max-width:200px;max-height:60px;">' : '<div style="font-size:24px;font-weight:700;color:#0d3b5c;">ARP TECH AMAZ\u00d4NIA</div>';
 }
 
 function imprimirOS(id){
   var o = null;
   for(var i=0;i<osOrdens.length;i++){ if(osOrdens[i].id===id){ o=osOrdens[i]; break; } }
   if(!o) return;
-  var logoUrl = localStorage.getItem('arp_logo') || '';
-  var logoHtml = logoUrl ? '<img src="'+logoUrl+'" style="max-width:200px;max-height:60px;">' : '<div style="font-size:24px;font-weight:700;color:#0d3b5c;">ARP TECH AMAZ\u00d4NIA</div>';
   var matHtml=''; var totalMat=0;
   if(o.materiais && o.materiais.length){
     matHtml = '<h3>Materiais / Equipamentos</h3><table><tr><th>Item</th><th>Valor</th></tr>'+
@@ -856,8 +991,7 @@ function imprimirOS(id){
     '.assin{margin-top:60px;display:flex;justify-content:space-between;gap:40px;}'+
     '.assin div{flex:1;border-top:1px solid #333;text-align:center;padding-top:6px;font-size:12px;}'+
     '</style></head><body>'+
-    '<div class="head">'+logoHtml+
-    '<div class="emp">'+(empresa.cnpj?'CNPJ: '+empresa.cnpj+'<br>':'')+(empresa.ie?'Inscri\u00e7\u00e3o Estadual: '+empresa.ie+'<br>':'')+(empresa.email?'E-mail: '+empresa.email+'<br>':'')+(empresa.tel?'Telefone: '+empresa.tel:'')+'</div></div>'+
+    '<div class="head">'+logoPrintHtml()+'<div class="emp">'+dadosEmpresaHtml()+'</div></div>'+
     '<h2>Ordem de Servi\u00e7o '+o.id+'</h2>'+
     '<table>'+
     '<tr><th>Cliente</th><td>'+o.cliente+'</td></tr>'+
@@ -867,8 +1001,8 @@ function imprimirOS(id){
     (o.servico?'<tr><th>Servi\u00e7o</th><td>'+o.servico+'</td></tr>':'')+
     '<tr><th>Tipo</th><td>'+(o.tipo==='externo'?'Externo':'Interno')+'</td></tr>'+
     '<tr><th>T\u00e9cnico</th><td>'+o.tecnico+'</td></tr>'+
-    '<tr><th>Data de abertura</th><td>'+o.dataCriacao+'</td></tr>'+
-    (o.dataConclusao?'<tr><th>Data de conclus\u00e3o</th><td>'+o.dataConclusao+'</td></tr>':'')+
+    '<tr><th>Abertura</th><td>'+o.dataCriacao+'</td></tr>'+
+    (o.dataConclusao?'<tr><th>Conclus\u00e3o</th><td>'+o.dataConclusao+'</td></tr>':'')+
     '<tr><th>Status</th><td>'+o.status+'</td></tr>'+
     '</table>'+
     '<h3>Descri\u00e7\u00e3o do problema</h3><p style="font-size:13px;line-height:1.6;">'+o.desc+'</p>'+
@@ -878,6 +1012,129 @@ function imprimirOS(id){
     '</body></html>');
   w.document.close();
   setTimeout(function(){ w.print(); }, 400);
+}
+
+// ===== NOTAS FISCAIS =====
+function fillNfOs(){
+  var sel = document.getElementById('nfOsSel');
+  var concluidas = osOrdens.filter(function(o){ return o.status==='Conclu\u00edda'; });
+  sel.innerHTML = '<option value="" selected disabled>Selecionar OS conclu\u00edda</option>' +
+    concluidas.map(function(o){ return '<option value="'+o.id+'">'+o.id+' - '+o.cliente+'</option>'; }).join('');
+}
+
+function emitirNF(){
+  var osId = document.getElementById('nfOsSel').value;
+  if(!osId){ alert('Selecione uma OS!'); return; }
+  var o = null;
+  for(var i=0;i<osOrdens.length;i++){ if(osOrdens[i].id===osId){ o=osOrdens[i]; break; } }
+  if(!o) return;
+  var num = parseInt(localStorage.getItem('arp_nf_num')||'0') + 1;
+  localStorage.setItem('arp_nf_num', String(num));
+  var totalMat = 0;
+  if(o.materiais) o.materiais.forEach(function(m){ totalMat+=m.valor; });
+  var nf = { numero: String(num).padStart(6,'0'), serie:'001', osId:o.id, cliente:o.cliente, doc:o.doc||'',
+    telefone:o.telefone, email:o.email||'', servico:o.servico||'', descricao:o.desc,
+    valorServico:o.valor||0, valorMateriais:totalMat, total:(o.valor||0)+totalMat,
+    materiais:o.materiais||[], dataEmissao:new Date().toLocaleDateString('pt-BR'),
+    horaEmissao:new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),
+    emitente: currentUser.name };
+  notas.push(nf);
+  saveNotas();
+  renderNotas();
+  alert('Nota n\u00ba '+nf.numero+' emitida!');
+}
+
+function renderNotas(){
+  var lista = notas.slice().reverse();
+  var total = Math.ceil(lista.length / PER_PAGE);
+  if(NF_PAGE>=total) NF_PAGE=Math.max(0,total-1);
+  var slice = lista.slice(NF_PAGE*PER_PAGE,(NF_PAGE+1)*PER_PAGE);
+  var html = slice.map(function(n){
+    return '<div class="record-item"><div class="record-left">'+
+      '<div class="record-name">NF-e n\u00ba '+n.numero+' &middot; S\u00e9rie '+n.serie+'</div>'+
+      '<div class="record-desc">'+n.cliente+(n.servico?' &middot; '+n.servico:'')+'</div>'+
+      '<div style="font-size:11px;color:#666;margin-top:4px;">OS: '+n.osId+' &middot; Total: R$ '+n.total.toFixed(2)+'</div>'+
+      '<div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">'+
+      '<button class="btn-small btn-print" onclick="imprimirDANFE(\''+n.numero+'\')">Imprimir DANFE</button>'+
+      '<button class="btn-small btn-whats" onclick="enviarNfWhats(\''+n.numero+'\')">WhatsApp</button>'+
+      '<button class="btn-small btn-mail" onclick="enviarNfEmail(\''+n.numero+'\')">E-mail</button>'+
+      '</div>'+
+      '</div><div class="record-meta"><div style="font-weight:600">'+n.dataEmissao+'</div><div>'+n.horaEmissao+'</div></div></div>';
+  }).join('');
+  document.getElementById('nfLista').innerHTML = html || '<div style="padding:20px;color:#999;">Nenhuma nota emitida.</div>';
+  document.getElementById('nfPag').innerHTML = pagButtons(total, NF_PAGE, 'gotoNf');
+}
+
+function getNf(num){
+  for(var i=0;i<notas.length;i++){ if(notas[i].numero===num) return notas[i]; }
+  return null;
+}
+
+function imprimirDANFE(num){
+  var n = getNf(num);
+  if(!n) return;
+  var matRows = (n.materiais||[]).map(function(m){ return '<tr><td>'+m.nome+'</td><td>1</td><td>R$ '+m.valor.toFixed(2)+'</td><td>R$ '+m.valor.toFixed(2)+'</td></tr>'; }).join('');
+  var srvRow = n.valorServico ? '<tr><td>'+(n.servico||'Servi\u00e7o t\u00e9cnico')+'</td><td>1</td><td>R$ '+n.valorServico.toFixed(2)+'</td><td>R$ '+n.valorServico.toFixed(2)+'</td></tr>' : '';
+  var w = window.open('','_blank');
+  w.document.write('<!DOCTYPE html><html><head><title>DANFE '+n.numero+'</title><style>'+
+    'body{font-family:Arial,sans-serif;padding:24px;color:#222;font-size:12px;}'+
+    '.borda{border:2px solid #000;padding:14px;margin-bottom:10px;}'+
+    '.head{display:flex;justify-content:space-between;align-items:center;}'+
+    '.danfe-tit{text-align:center;font-weight:700;font-size:16px;}'+
+    '.danfe-sub{text-align:center;font-size:10px;color:#555;}'+
+    'table{width:100%;border-collapse:collapse;font-size:11px;margin-top:8px;}'+
+    'td,th{border:1px solid #000;padding:6px;text-align:left;} th{background:#eee;}'+
+    '.aviso{text-align:center;font-size:10px;color:#b91c1c;font-weight:700;margin-top:12px;}'+
+    '.tot{text-align:right;font-size:13px;font-weight:700;margin-top:10px;}'+
+    '</style></head><body>'+
+    '<div class="borda"><div class="head">'+logoPrintHtml()+
+    '<div><div class="danfe-tit">DANFE</div><div class="danfe-sub">Documento Auxiliar da<br>Nota Fiscal Eletr\u00f4nica</div></div>'+
+    '<div style="font-size:11px;text-align:right;">N\u00ba '+n.numero+'<br>S\u00e9rie '+n.serie+'<br>'+n.dataEmissao+' '+n.horaEmissao+'</div></div>'+
+    '<div style="font-size:11px;margin-top:10px;line-height:1.6;">'+dadosEmpresaHtml()+'</div></div>'+
+    '<div class="borda"><b>DESTINAT\u00c1RIO</b><br>'+n.cliente+(n.doc?' &middot; '+n.doc:'')+'<br>Tel: '+n.telefone+(n.email?' &middot; '+n.email:'')+'</div>'+
+    '<div class="borda"><b>PRODUTOS / SERVI\u00c7OS</b>'+
+    '<table><tr><th>Descri\u00e7\u00e3o</th><th>Qtd</th><th>Valor Unit.</th><th>Total</th></tr>'+srvRow+matRows+'</table>'+
+    '<div class="tot">VALOR TOTAL DA NOTA: R$ '+n.total.toFixed(2)+'</div></div>'+
+    '<div class="borda"><b>INFORMA\u00c7\u00d5ES COMPLEMENTARES</b><br>'+n.descricao+'<br>Refer\u00eancia: '+n.osId+'</div>'+
+    '<div class="aviso">DOCUMENTO SEM VALOR FISCAL - EMITIDO PARA CONTROLE INTERNO</div>'+
+    '</body></html>');
+  w.document.close();
+  setTimeout(function(){ w.print(); }, 400);
+}
+
+function enviarNfWhats(num){
+  var n = getNf(num);
+  if(!n) return;
+  var tel = (n.telefone||'').replace(/\D/g,'');
+  if(tel.length===11 || tel.length===10) tel = '55'+tel;
+  var texto = 'Ol\u00e1 '+n.cliente+'! Segue sua nota n\u00ba '+n.numero+' referente \u00e0 '+n.osId+'. Total: R$ '+n.total.toFixed(2)+'. Qualquer d\u00favida estamos \u00e0 disposi\u00e7\u00e3o. ARP TECH Amaz\u00f4nia.';
+  window.open('https://wa.me/'+tel+'?text='+encodeURIComponent(texto), '_blank');
+}
+
+function enviarNfEmail(num){
+  var n = getNf(num);
+  if(!n) return;
+  if(!n.email){ alert('Esta nota n\u00e3o possui e-mail do cliente.'); return; }
+  var corpo = 'Ol\u00e1 '+n.cliente+',%0A%0ASegue sua nota n\u00ba '+n.numero+' (s\u00e9rie '+n.serie+') referente \u00e0 '+n.osId+'.%0ATotal: R$ '+n.total.toFixed(2)+'%0A%0AARP TECH Amaz\u00f4nia';
+  window.location.href = 'mailto:'+n.email+'?subject=Nota Fiscal n\u00ba '+n.numero+' - ARP TECH&body='+corpo;
+}
+
+function renderNfPerm(){
+  if(currentUser.profile!=='ADMIN') return;
+  var html = usuarios.filter(function(u){ return u.profile!=='ADMIN'; }).map(function(u){
+    var tem = nfAccess.indexOf(u.login)>=0;
+    return '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px;border-bottom:1px solid #e7eeec;">'+
+      '<div><b style="font-size:13px;">'+u.name+'</b> <span style="font-size:11px;color:#888;">('+u.profile+')</span></div>'+
+      '<button class="btn-small" style="background:'+(tem?'#dc2626':'var(--cor-acento)')+';color:#fff;" onclick="toggleNfAccess(\''+u.login+'\')">'+(tem?'Revogar':'Conceder')+'</button></div>';
+  }).join('');
+  document.getElementById('nfPermLista').innerHTML = html || '<div style="padding:12px;color:#999;">Nenhum usu\u00e1rio.</div>';
+}
+
+function toggleNfAccess(loginU){
+  var idx = nfAccess.indexOf(loginU);
+  if(idx>=0) nfAccess.splice(idx,1); else nfAccess.push(loginU);
+  saveNfAccess();
+  renderNfPerm();
 }
 
 function salvarComissao(){
@@ -921,7 +1178,7 @@ function renderComissoes(){
       html += '<div class="com-card" style="background:'+cor.bg+';color:'+cor.txt+';">'+
         '<div style="font-size:14px;font-weight:700;">'+t+'</div>'+
         '<div class="com-value">R$ '+com.toFixed(2)+'</div>'+
-        '<div class="com-sub">Faturado: R$ '+fat.toFixed(2)+' &middot; '+porTec[t].qtd+' OS conclu\u00eddas &middot; Taxa '+COMISSAO_PERCENT+'%</div></div>';
+        '<div class="com-sub">Faturado: R$ '+fat.toFixed(2)+' &middot; '+porTec[t].qtd+' OS &middot; Taxa '+COMISSAO_PERCENT+'%</div></div>';
     });
     if(html) html += '<div style="font-size:13px;color:var(--cor-primaria);font-weight:700;padding:8px 4px;">Total faturado: R$ '+totalGeral.toFixed(2)+' &middot; Total comiss&otilde;es: R$ '+comGeral.toFixed(2)+'</div>';
   } else {
@@ -930,7 +1187,7 @@ function renderComissoes(){
     var com = me.total * COMISSAO_PERCENT/100;
     html = '<div class="com-card" style="background:#e8f3ee;color:#14693c;"><div style="font-size:14px;font-weight:700;">'+currentUser.name+'</div>'+
       '<div class="com-value">R$ '+com.toFixed(2)+'</div>'+
-      '<div class="com-sub">Faturado: R$ '+me.total.toFixed(2)+' &middot; '+me.qtd+' OS conclu\u00eddas &middot; Taxa '+COMISSAO_PERCENT+'%</div></div>';
+      '<div class="com-sub">Faturado: R$ '+me.total.toFixed(2)+' &middot; '+me.qtd+' OS &middot; Taxa '+COMISSAO_PERCENT+'%</div></div>';
   }
   document.getElementById('comissaoContent').innerHTML = html || '<div style="padding:20px;color:#999;">Nenhuma OS conclu\u00edda ainda.</div>';
 }
@@ -958,7 +1215,7 @@ function cadastrarUsuario(){
   var senha = document.getElementById('gSenha').value;
   var perfil = document.getElementById('gPerfil').value;
   if(!nome || !loginU || !senha){ alert('Preencha todos os campos!'); return; }
-  if(!senhaForte(senha)){ alert('A senha n\u00e3o atende aos requisitos: m\u00edn. 8 caracteres, mai\u00fascula, min\u00fascula, n\u00famero e caractere especial.'); return; }
+  if(!senhaForte(senha)){ alert('Senha fraca! M\u00edn. 8 caracteres com mai\u00fascula, min\u00fascula, n\u00famero e especial.'); return; }
   for(var i=0;i<usuarios.length;i++){ if(usuarios[i].login===loginU){ alert('Login j\u00e1 existe!'); return; } }
   usuarios.push({login:loginU, name:nome, pass:senha, profile:perfil, mustChange:true, passSetAt:Date.now()});
   saveUsers();
@@ -978,20 +1235,15 @@ function excluirUsuario(loginU){
 }
 
 function redefinirSenha(loginU){
-  var nova = prompt('Nova senha tempor\u00e1ria para "'+loginU+'" (m\u00edn. 8 caracteres, mai\u00fascula, min\u00fascula, n\u00famero e especial):');
+  var nova = prompt('Nova senha tempor\u00e1ria para "'+loginU+'":');
   if(!nova) return;
-  if(!senhaForte(nova)){ alert('Senha n\u00e3o atende aos requisitos!'); return; }
+  if(!senhaForte(nova)){ alert('Senha fraca!'); return; }
   for(var i=0;i<usuarios.length;i++){
-    if(usuarios[i].login===loginU){
-      usuarios[i].pass=nova;
-      usuarios[i].mustChange=true;
-      usuarios[i].passSetAt=Date.now();
-      break;
-    }
+    if(usuarios[i].login===loginU){ usuarios[i].pass=nova; usuarios[i].mustChange=true; usuarios[i].passSetAt=Date.now(); break; }
   }
   saveUsers();
   renderUsuarios();
-  alert('Senha redefinida! O usu\u00e1rio tem '+EXPIRA_DIAS+' dias para troc\u00e1-la em "Minha Conta".');
+  alert('Senha redefinida! Validade: '+EXPIRA_DIAS+' dias.');
 }
 
 function mudarPerfil(loginU, novo){
@@ -1025,14 +1277,11 @@ function redefinirMinhaSenha(){
   var conf = document.getElementById('mcConfSenha').value;
   if(atual !== currentUser.pass){ alert('Senha atual incorreta!'); return; }
   if(nova !== conf){ alert('As senhas n\u00e3o coincidem!'); return; }
-  if(!senhaForte(nova)){ alert('A nova senha n\u00e3o atende aos requisitos: m\u00edn. 8 caracteres, mai\u00fascula, min\u00fascula, n\u00famero e caractere especial.'); return; }
+  if(!senhaForte(nova)){ alert('A nova senha n\u00e3o atende aos requisitos!'); return; }
   for(var i=0;i<usuarios.length;i++){
     if(usuarios[i].login===currentUser.login){
-      usuarios[i].pass=nova;
-      usuarios[i].mustChange=false;
-      delete usuarios[i].passSetAt;
-      currentUser = usuarios[i];
-      break;
+      usuarios[i].pass=nova; usuarios[i].mustChange=false; delete usuarios[i].passSetAt;
+      currentUser = usuarios[i]; break;
     }
   }
   saveUsers();
@@ -1072,14 +1321,89 @@ function excluirLocal(idx){
 }
 
 function renderLocais(){
-  var html = locais.map(function(l,i){
-    var ti = tipoInfo(l.tipo);
+  var lista = locais.map(function(l,i){ return {l:l, i:i}; });
+  var total = Math.ceil(lista.length / PER_PAGE);
+  if(LOCAIS_PAGE>=total) LOCAIS_PAGE=Math.max(0,total-1);
+  var slice = lista.slice(LOCAIS_PAGE*PER_PAGE,(LOCAIS_PAGE+1)*PER_PAGE);
+  var html = slice.map(function(x){
+    var ti = tipoInfo(x.l.tipo);
     return '<div class="record-item"><div class="record-left">'+
-      '<div class="record-name">'+l.nome+'</div>'+
+      '<div class="record-name">'+x.l.nome+'</div>'+
       '<div><span class="badge '+ti.cls+'">'+ti.label+'</span></div>'+
-      '</div><button class="btn-danger" onclick="excluirLocal('+i+')">Excluir</button></div>';
+      '</div><button class="btn-danger" onclick="excluirLocal('+x.i+')">Excluir</button></div>';
   }).join('');
   document.getElementById('locaisLista').innerHTML = html || '<div style="padding:20px;color:#999;">Nenhum local cadastrado.</div>';
+  document.getElementById('locaisPag').innerHTML = pagButtons(total, LOCAIS_PAGE, 'gotoLocais');
+}
+
+function cadastrarServico(){
+  var nome = document.getElementById('srvNome').value.trim();
+  var tipo = document.getElementById('srvTipo').value;
+  if(!nome || !tipo){ alert('Preencha nome e categoria!'); return; }
+  for(var i=0;i<servicos.length;i++){ if(servicos[i].nome.toLowerCase()===nome.toLowerCase() && servicos[i].tipo===tipo){ alert('Servi\u00e7o j\u00e1 cadastrado!'); return; } }
+  servicos.push({nome:nome, tipo:tipo});
+  saveServicos();
+  document.getElementById('srvNome').value='';
+  document.getElementById('srvTipo').selectedIndex=0;
+  renderServicos();
+  fillServicos();
+  alert('Servi\u00e7o cadastrado!');
+}
+
+function excluirServico(idx){
+  if(!confirm('Excluir o servi\u00e7o "'+servicos[idx].nome+'"?')) return;
+  servicos.splice(idx,1);
+  saveServicos();
+  renderServicos();
+  fillServicos();
+}
+
+function renderServicos(){
+  var html = servicos.map(function(s,i){
+    var b = s.tipo==='externo' ? '<span class="badge badge-ext">Externo</span>' : '<span class="badge badge-int">Interno</span>';
+    return '<div class="record-item"><div class="record-left">'+
+      '<div class="record-name">'+s.nome+'</div><div>'+b+'</div>'+
+      '</div><button class="btn-danger" onclick="excluirServico('+i+')">Excluir</button></div>';
+  }).join('');
+  document.getElementById('servicosLista').innerHTML = html || '<div style="padding:20px;color:#999;">Nenhum servi\u00e7o cadastrado.</div>';
+}
+
+function salvarCores(){
+  cores.primaria = document.getElementById('corPrimaria').value;
+  cores.secundaria = document.getElementById('corSecundaria').value;
+  cores.acento = document.getElementById('corAcento').value;
+  cores.login = document.getElementById('corLogin').value;
+  localStorage.setItem('arp_cores', JSON.stringify(cores));
+  aplicarCores();
+  alert('Cores salvas!');
+}
+
+function resetCores(){
+  cores = JSON.parse(JSON.stringify(CORES_PADRAO));
+  localStorage.setItem('arp_cores', JSON.stringify(cores));
+  document.getElementById('corPrimaria').value = cores.primaria;
+  document.getElementById('corSecundaria').value = cores.secundaria;
+  document.getElementById('corAcento').value = cores.acento;
+  document.getElementById('corLogin').value = cores.login;
+  aplicarCores();
+  alert('Cores restauradas!');
+}
+
+function salvarLogo(){
+  var url = document.getElementById('logoUrl').value.trim();
+  if(url){ localStorage.setItem('arp_logo', url); } else { localStorage.removeItem('arp_logo'); }
+  aplicarLogo();
+  alert('Logo salva!');
+}
+
+function salvarEmpresa(){
+  empresa.cnpj = document.getElementById('empCnpj').value.trim();
+  empresa.ie = document.getElementById('empIe').value.trim();
+  empresa.email = document.getElementById('empEmail').value.trim();
+  empresa.tel = document.getElementById('empTel').value.trim();
+  empresa.end = document.getElementById('empEnd').value.trim();
+  localStorage.setItem('arp_empresa', JSON.stringify(empresa));
+  alert('Dados da empresa salvos!');
 }
 
 aplicarLogo();
