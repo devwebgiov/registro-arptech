@@ -165,7 +165,7 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
     <div id="osSubmenu" class="submenu">
       <div class="menu-item" onclick="goTab('osAbrir',this,'OS / Abrir Nova')">Abrir Nova</div>
       <div class="menu-item" onclick="goTab('osEmAberto',this,'OS / Abertas')">Abertas</div>
-      <div class="menu-item" onclick="goTab('osAbertas',this,'OS / Em Andamento')">Em Andamento</div>
+      <div class="menu-item" onclick="goTab('osAbertas',this,'OS / Em Atendimento')">Em Atendimento</div>
       <div class="menu-item" onclick="goTab('osConcluidas',this,'OS / Conclu\u00eddas')">Conclu&iacute;das</div>
     </div>
 
@@ -263,11 +263,6 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
           <div class="form-group"><label class="form-label">Telefone</label><input type="tel" id="osTelefone" class="form-input"></div>
           <div class="form-group"><label class="form-label">E-mail (opcional)</label><input type="email" id="osEmail" class="form-input"></div>
           <div class="form-group"><label class="form-label">Descri&ccedil;&atilde;o do problema</label><textarea id="osDesc" class="form-input" style="min-height:100px;resize:vertical;"></textarea></div>
-          <div class="form-group">
-            <label class="form-label">Materiais / Equipamentos</label>
-            <div id="materiais"></div>
-            <button class="btn-small" style="background:var(--cor-secundaria);color:#fff;" onclick="addMaterial()">+ Adicionar material</button>
-          </div>
           <div class="form-group"><label class="form-label">Valor do servi&ccedil;o (R$)</label><input type="number" id="osValor" class="form-input" step="0.01" min="0" placeholder="0,00"></div>
           <button class="btn-primary" onclick="abrirOS()">Abrir OS</button>
         </div>
@@ -278,7 +273,7 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
       </div>
 
       <div id="osAbertas" class="tab-content">
-        <div class="card"><div class="card-title">Ordens em Andamento</div><div id="osAbertasContent" class="scroll-list"></div><div id="osAbertasPag" class="pagination"></div></div>
+        <div class="card"><div class="card-title">Ordens em Atendimento</div><div id="osAbertasContent" class="scroll-list"></div><div id="osAbertasPag" class="pagination"></div></div>
       </div>
 
       <div id="osConcluidas" class="tab-content">
@@ -286,7 +281,7 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
       </div>
 
       <div id="notas" class="tab-content">
-        <div class="info-note"><b>Aviso:</b> a emiss&atilde;o aqui gera o DANFE como documento auxiliar <b>sem valor fiscal</b>. Para emiss&atilde;o fiscal v&aacute;lida &eacute; necess&aacute;rio certificado digital e integra&ccedil;&atilde;o com a SEFAZ (podemos integrar futuramente).</div>
+        <div class="info-note"><b>Aviso:</b> a emiss&atilde;o de notas fiscais v&aacute;lidas pelo sistema est&aacute; <b>pendente</b> (requer certificado digital e integra&ccedil;&atilde;o com a SEFAZ). Por enquanto: gere o DANFE interno, imprima recibos e anexe os arquivos oficiais (DANFE, XML, NFSe) emitidos externamente.</div>
         <div class="card">
           <div class="card-title">Emitir Nota a partir de OS Conclu&iacute;da</div>
           <div class="form-group"><label class="form-label">Selecionar OS</label><select id="nfOsSel" class="form-input"></select></div>
@@ -434,6 +429,7 @@ var EXPIRA_DIAS = 3;
 
 var records = JSON.parse(localStorage.getItem('arp_rec') || '[]');
 var osOrdens = JSON.parse(localStorage.getItem('arp_os') || '[]');
+osOrdens.forEach(function(o){ if(o.status==='Em Andamento'){ o.status='Em Atendimento'; } });
 var notas = JSON.parse(localStorage.getItem('arp_nf') || '[]');
 var COMISSAO_PERCENT = parseFloat(localStorage.getItem('comissao_percent') || '70');
 var nfAccess = JSON.parse(localStorage.getItem('arp_nf_access') || '[]');
@@ -799,11 +795,11 @@ function loadDashboard(){
   if(p==='ARPTECH'){
     var minhas = osOrdens.filter(function(o){ return o.tecnico===currentUser.name; });
     var ab = minhas.filter(function(o){ return o.status==='Em Aberto'; }).length;
-    var an = minhas.filter(function(o){ return o.status==='Em Andamento'; }).length;
+    var an = minhas.filter(function(o){ return o.status==='Em Atendimento'; }).length;
     var co = minhas.filter(function(o){ return o.status==='Conclu\u00edda'; }).length;
     stats.innerHTML = '<div class="stat-card"><div class="stat-label">Minhas OS</div><div class="stat-value">'+minhas.length+'</div></div>'+
       '<div class="stat-card"><div class="stat-label">Abertas</div><div class="stat-value">'+ab+'</div></div>'+
-      '<div class="stat-card"><div class="stat-label">Em Andamento</div><div class="stat-value">'+an+'</div></div>'+
+      '<div class="stat-card"><div class="stat-label">Em Atendimento</div><div class="stat-value">'+an+'</div></div>'+
       '<div class="stat-card"><div class="stat-label">Conclu\u00eddas</div><div class="stat-value">'+co+'</div></div>';
     document.getElementById('dashListTitle').innerHTML='Minhas Ordens de Servi\u00e7o';
     var lista = minhas.slice().reverse();
@@ -917,17 +913,6 @@ function addMaterial(){
   document.getElementById('materiais').appendChild(div);
 }
 
-function getMateriais(){
-  var rows = document.querySelectorAll('#materiais .material-row');
-  var mats = [];
-  rows.forEach(function(row){
-    var n = row.querySelector('.mat-nome').value.trim();
-    var v = parseFloat(row.querySelector('.mat-valor').value||'0');
-    if(n) mats.push({nome:n, valor:isNaN(v)?0:v});
-  });
-  return mats;
-}
-
 function abrirOS(){
   var tecnico;
   if(currentUser.profile==='ADMIN'){
@@ -949,21 +934,53 @@ function abrirOS(){
   var valor = parseFloat(document.getElementById('osValor').value||'0');
   if(!cliente || !tel || !desc){ alert('Preencha cliente, telefone e descri\u00e7\u00e3o!'); return; }
   var os = { id:'OS-'+Date.now(), cliente:cliente, doc:doc, telefone:tel, email:email, desc:desc,
-    servico:servico, tipo:OS_TIPO, materiais:getMateriais(),
+    servico:servico, tipo:OS_TIPO, materiais:[],
     valor: isNaN(valor)?0:valor, status:'Em Aberto',
     dataCriacao:new Date().toLocaleDateString('pt-BR'), tecnico: tecnico };
   osOrdens.push(os);
   localStorage.setItem('arp_os', JSON.stringify(osOrdens));
   alert('OS '+os.id+' aberta com sucesso!');
   ['osCliente','osDoc','osTelefone','osEmail','osDesc','osValor','osServicoOutro'].forEach(function(id){ document.getElementById(id).value=''; });
-  document.getElementById('materiais').innerHTML='';
   setOsTipo('interno');
 }
 
 function iniciarOS(id){
-  for(var i=0;i<osOrdens.length;i++){ if(osOrdens[i].id===id){ osOrdens[i].status='Em Andamento'; break; } }
+  for(var i=0;i<osOrdens.length;i++){ if(osOrdens[i].id===id){ osOrdens[i].status='Em Atendimento'; break; } }
   localStorage.setItem('arp_os', JSON.stringify(osOrdens));
   renderOS('aberta');
+}
+
+function editarObs(id){
+  var o=null;
+  for(var i=0;i<osOrdens.length;i++){ if(osOrdens[i].id===id){ o=osOrdens[i]; break; } }
+  if(!o) return;
+  var obs = prompt('Observa\u00e7\u00f5es da OS:', o.obs||'');
+  if(obs===null) return;
+  o.obs = obs.trim();
+  localStorage.setItem('arp_os', JSON.stringify(osOrdens));
+  renderOS('aberta'); renderOS('andamento'); renderOS('concluida');
+}
+
+function addMaterialOS(id){
+  var o=null;
+  for(var i=0;i<osOrdens.length;i++){ if(osOrdens[i].id===id){ o=osOrdens[i]; break; } }
+  if(!o) return;
+  var nome = prompt('Nome do material/equipamento:');
+  if(!nome || !nome.trim()) return;
+  var v = prompt('Valor do material (R$):', '0');
+  if(v===null) return;
+  var n = parseFloat(String(v).replace(',','.'));
+  if(isNaN(n) || n<0){ alert('Valor inv\u00e1lido!'); return; }
+  if(!o.materiais) o.materiais=[];
+  o.materiais.push({nome:nome.trim(), valor:n});
+  localStorage.setItem('arp_os', JSON.stringify(osOrdens));
+  renderOS('aberta'); renderOS('andamento'); renderOS('concluida');
+  alert('Material adicionado!');
+}
+
+function setSituacao(id, val){
+  for(var i=0;i<osOrdens.length;i++){ if(osOrdens[i].id===id){ osOrdens[i].situacao=val; break; } }
+  localStorage.setItem('arp_os', JSON.stringify(osOrdens));
 }
 
 function concluirOS(id){
@@ -989,7 +1006,7 @@ function excluirOS(id){
 }
 
 function osCard(o, acoes){
-  var stCls = o.status==='Conclu\u00edda' ? 'badge-status-concluida' : (o.status==='Em Andamento' ? 'badge-status-andamento' : 'badge-status-aberta');
+  var stCls = o.status==='Conclu\u00edda' ? 'badge-status-concluida' : (o.status==='Em Atendimento' ? 'badge-status-andamento' : 'badge-status-aberta');
   var matHtml = '';
   if(o.materiais && o.materiais.length){
     matHtml = '<div style="font-size:11px;color:#555;margin-top:6px;">Materiais: '+o.materiais.map(function(m){ return m.nome+' (R$ '+m.valor.toFixed(2)+')'; }).join(', ')+'</div>';
@@ -1001,7 +1018,14 @@ function osCard(o, acoes){
     '<div class="record-desc">'+o.desc+'</div>'+
     '<div style="font-size:11px;color:#666;margin-top:6px;">'+(o.doc?'Doc: '+o.doc+' &middot; ':'')+'Tel: '+o.telefone+(o.email?' &middot; '+o.email:'')+' &middot; T\u00e9cnico: '+o.tecnico+(o.valor?' &middot; R$ '+o.valor.toFixed(2):'')+'</div>'+
     matHtml+
+    (o.obs?'<div style="font-size:11px;color:#555;margin-top:6px;"><b>Obs:</b> '+o.obs+'</div>':'')+
     '<div><span class="badge '+stCls+'">'+o.status+'</span>'+tipoBadge+'</div>'+
+    '<div style="margin-top:8px;"><select class="form-input" style="padding:7px 10px;font-size:12px;max-width:280px;" onchange="setSituacao(\''+o.id+'\',this.value)">'+
+    '<option value=""'+(!o.situacao?' selected':'')+'>Situa\u00e7\u00e3o (opcional)</option>'+
+    '<option'+(o.situacao==='Pendente'?' selected':'')+'>Pendente</option>'+
+    '<option'+(o.situacao==='Reposi\u00e7\u00e3o de Pe\u00e7as'?' selected':'')+'>Reposi\u00e7\u00e3o de Pe\u00e7as</option>'+
+    '<option'+(o.situacao==='Pe\u00e7a solicitada, aguardando entrega'?' selected':'')+'>Pe\u00e7a solicitada, aguardando entrega</option>'+
+    '</select></div>'+
     '<div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">'+acoes+
     '<button class="btn-small btn-print" onclick="imprimirOS(\''+o.id+'\')">Imprimir</button></div>'+
     '</div><div class="record-meta"><div style="font-weight:600">'+o.dataCriacao+'</div>'+(o.dataConclusao?'<div>Concl.: '+o.dataConclusao+'</div>':'')+'</div></div>';
@@ -1012,7 +1036,7 @@ function renderOS(tipo){
   var lista = osOrdens.filter(function(o){
     var st;
     if(tipo==='aberta') st = o.status==='Em Aberto';
-    else if(tipo==='andamento') st = o.status==='Em Andamento';
+    else if(tipo==='andamento') st = o.status==='Em Atendimento';
     else st = o.status==='Conclu\u00edda';
     var own = isAdmin || o.tecnico===currentUser.name;
     return st && own;
@@ -1020,10 +1044,12 @@ function renderOS(tipo){
 
   var page, contentId, pagId, fnName, acoesFn;
   var btnExcluir = function(o){ return '<button class="btn-danger btn-small" onclick="excluirOS(\''+o.id+'\')">Excluir</button>'; };
+  var btnMat = function(o){ return '<button class="btn-small" style="background:#6b7280;color:#fff;" onclick="addMaterialOS(\''+o.id+'\')">+ Material</button>'; };
+  var btnObs = function(o){ return '<button class="btn-small" style="background:#0e7490;color:#fff;" onclick="editarObs(\''+o.id+'\')">Observa\u00e7\u00f5es</button>'; };
   if(tipo==='aberta'){ page=OSA_PAGE; contentId='osEmAbertoContent'; pagId='osEmAbertoPag'; fnName='gotoOsa';
-    acoesFn=function(o){ return '<button class="btn-small" style="background:var(--cor-acento);color:#fff;" onclick="iniciarOS(\''+o.id+'\')">Iniciar Atendimento</button>'+btnExcluir(o); }; }
+    acoesFn=function(o){ return '<button class="btn-small" style="background:var(--cor-acento);color:#fff;" onclick="iniciarOS(\''+o.id+'\')">Iniciar Atendimento</button>'+btnMat(o)+btnExcluir(o); }; }
   else if(tipo==='andamento'){ page=OSAND_PAGE; contentId='osAbertasContent'; pagId='osAbertasPag'; fnName='gotoOsand';
-    acoesFn=function(o){ return '<button class="btn-small" style="background:var(--cor-acento);color:#fff;" onclick="concluirOS(\''+o.id+'\')">Concluir</button>'+btnExcluir(o); }; }
+    acoesFn=function(o){ return '<button class="btn-small" style="background:var(--cor-acento);color:#fff;" onclick="concluirOS(\''+o.id+'\')">Concluir</button>'+btnMat(o)+btnObs(o)+btnExcluir(o); }; }
   else { page=OSC_PAGE; contentId='osConcluiContent'; pagId='osConcluiPag'; fnName='gotoOsc';
     acoesFn=function(o){ return btnExcluir(o); }; }
 
@@ -1129,10 +1155,17 @@ function renderNotas(){
       '<div class="record-name">NF-e n\u00ba '+n.numero+' &middot; S\u00e9rie '+n.serie+'</div>'+
       '<div class="record-desc">'+n.cliente+(n.servico?' &middot; '+n.servico:'')+'</div>'+
       '<div style="font-size:11px;color:#666;margin-top:4px;">OS: '+n.osId+' &middot; Total: R$ '+n.total.toFixed(2)+'</div>'+
+      (n.anexos && (n.anexos.danfe||n.anexos.xml||n.anexos.nfse) ? '<div style="font-size:11px;margin-top:4px;">'+
+        (n.anexos.danfe?'<a href="'+n.anexos.danfe+'" target="_blank" style="margin-right:10px;color:#1a5276;">DANFE</a>':'')+
+        (n.anexos.xml?'<a href="'+n.anexos.xml+'" target="_blank" style="margin-right:10px;color:#1a5276;">XML</a>':'')+
+        (n.anexos.nfse?'<a href="'+n.anexos.nfse+'" target="_blank" style="color:#1a5276;">NFSe</a>':'')+
+        '</div>' : '')+
       '<div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">'+
       '<button class="btn-small btn-print" onclick="imprimirDANFE(\''+n.numero+'\')">Imprimir DANFE</button>'+
       '<button class="btn-small btn-whats" onclick="enviarNfWhats(\''+n.numero+'\')">WhatsApp</button>'+
       '<button class="btn-small btn-mail" onclick="enviarNfEmail(\''+n.numero+'\')">E-mail</button>'+
+      '<button class="btn-small" style="background:#7c3aed;color:#fff;" onclick="anexosNF(\''+n.numero+'\')">Anexos</button>'+
+      '<button class="btn-small" style="background:#0e7490;color:#fff;" onclick="imprimirRecibo(\''+n.numero+'\')">Recibo</button>'+
       '<button class="btn-small" style="background:var(--cor-secundaria);color:#fff;" onclick="editarNF(\''+n.numero+'\')">Editar</button>'+
       '<button class="btn-danger btn-small" onclick="excluirNF(\''+n.numero+'\')">Excluir</button>'+
       '</div>'+
@@ -1230,6 +1263,49 @@ function enviarNfEmail(num){
   if(!n.email){ alert('Esta nota n\u00e3o possui e-mail do cliente.'); return; }
   var corpo = 'Ol\u00e1 '+n.cliente+',%0A%0ASegue sua nota n\u00ba '+n.numero+' (s\u00e9rie '+n.serie+') referente \u00e0 '+n.osId+'.%0ATotal: R$ '+n.total.toFixed(2)+'%0A%0AARP TECH Amaz\u00f4nia';
   window.location.href = 'mailto:'+n.email+'?subject=Nota Fiscal n\u00ba '+n.numero+' - ARP TECH&body='+corpo;
+}
+
+function anexosNF(num){
+  var n = getNf(num);
+  if(!n) return;
+  if(!n.anexos) n.anexos = {danfe:'', xml:'', nfse:''};
+  var d = prompt('Link do DANFE (URL):', n.anexos.danfe||'');
+  if(d===null) return;
+  var x = prompt('Link do arquivo .XML (URL):', n.anexos.xml||'');
+  if(x===null) return;
+  var s = prompt('Link da NFSe (URL):', n.anexos.nfse||'');
+  if(s===null) return;
+  n.anexos = {danfe:d.trim(), xml:x.trim(), nfse:s.trim()};
+  saveNotas();
+  renderNotas();
+  alert('Anexos salvos!');
+}
+
+function imprimirRecibo(num){
+  var n = getNf(num);
+  if(!n) return;
+  var w = window.open('','_blank');
+  w.document.write('<!DOCTYPE html><html><head><title>Recibo '+n.numero+'</title><style>'+
+    'body{font-family:Arial,sans-serif;padding:40px;color:#222;}'+
+    '.borda{border:2px solid #000;padding:24px;}'+
+    '.head{display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #0d3b5c;padding-bottom:12px;margin-bottom:18px;}'+
+    '.emp{font-size:11px;text-align:right;line-height:1.6;color:#444;}'+
+    'h2{text-align:center;font-size:20px;letter-spacing:3px;margin:14px 0;}'+
+    '.valor{text-align:right;font-size:16px;font-weight:700;margin:14px 0;}'+
+    'p{font-size:13px;line-height:1.8;}'+
+    '.assin{margin-top:70px;text-align:center;}'+
+    '.assin div{display:inline-block;border-top:1px solid #333;padding-top:6px;font-size:12px;min-width:300px;}'+
+    '</style></head><body><div class="borda">'+
+    '<div class="head">'+logoPrintHtml()+'<div class="emp">'+dadosEmpresaHtml()+'</div></div>'+
+    '<h2>RECIBO</h2>'+
+    '<div class="valor">N\u00ba '+n.numero+' &middot; Valor: R$ '+n.total.toFixed(2)+'</div>'+
+    '<p>Recebemos de <b>'+n.cliente+'</b>'+(n.doc?' ('+n.doc+')':'')+' a import\u00e2ncia de <b>R$ '+n.total.toFixed(2)+'</b> referente a '+(n.servico||'servi\u00e7os prestados')+' (Ordem de Servi\u00e7o '+n.osId+').</p>'+
+    '<p>Para clareza, firmamos o presente recibo.</p>'+
+    '<p style="text-align:right;margin-top:30px;">Humait\u00e1 - AM, '+new Date().toLocaleDateString('pt-BR')+'</p>'+
+    '<div class="assin"><div>Assinatura</div></div>'+
+    '</div></body></html>');
+  w.document.close();
+  setTimeout(function(){ w.print(); }, 400);
 }
 
 function renderNfPerm(){
