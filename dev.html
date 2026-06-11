@@ -67,6 +67,7 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Roboto',sans-ser
 
 .scroll-list { max-height:55vh; overflow-y:auto; direction:rtl; padding-left:8px; }
 .scroll-list > * { direction:ltr; }
+.scroll-right { max-height:55vh; overflow-y:auto; padding-right:8px; }
 
 .record-item { display:flex; justify-content:space-between; align-items:flex-start; padding:14px; background:#fff; border:2px solid #d0e8e5; border-radius:10px; margin-bottom:10px; }
 .record-left { flex:1; min-width:0; }
@@ -293,7 +294,7 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
         </div>
         <div class="card">
           <div class="card-title">Notas Emitidas</div>
-          <div id="nfLista" class="scroll-list"></div>
+          <div id="nfLista" class="scroll-right"></div>
           <div id="nfPag" class="pagination"></div>
         </div>
         <div class="card" id="nfPermCard" style="display:none;">
@@ -1132,11 +1133,49 @@ function renderNotas(){
       '<button class="btn-small btn-print" onclick="imprimirDANFE(\''+n.numero+'\')">Imprimir DANFE</button>'+
       '<button class="btn-small btn-whats" onclick="enviarNfWhats(\''+n.numero+'\')">WhatsApp</button>'+
       '<button class="btn-small btn-mail" onclick="enviarNfEmail(\''+n.numero+'\')">E-mail</button>'+
+      '<button class="btn-small" style="background:var(--cor-secundaria);color:#fff;" onclick="editarNF(\''+n.numero+'\')">Editar</button>'+
+      '<button class="btn-danger btn-small" onclick="excluirNF(\''+n.numero+'\')">Excluir</button>'+
       '</div>'+
       '</div><div class="record-meta"><div style="font-weight:600">'+n.dataEmissao+'</div><div>'+n.horaEmissao+'</div></div></div>';
   }).join('');
   document.getElementById('nfLista').innerHTML = html || '<div style="padding:20px;color:#999;">Nenhuma nota emitida.</div>';
   document.getElementById('nfPag').innerHTML = pagButtons(total, NF_PAGE, 'gotoNf');
+}
+
+function editarNF(num){
+  var n = getNf(num);
+  if(!n) return;
+  var cliente = prompt('Cliente:', n.cliente);
+  if(cliente===null) return;
+  var doc = prompt('CPF/CNPJ:', n.doc||'');
+  if(doc===null) return;
+  var tel = prompt('Telefone:', n.telefone||'');
+  if(tel===null) return;
+  var email = prompt('E-mail:', n.email||'');
+  if(email===null) return;
+  var srv = prompt('Servi\u00e7o:', n.servico||'');
+  if(srv===null) return;
+  var vs = prompt('Valor do servi\u00e7o (R$):', n.valorServico ? n.valorServico.toFixed(2) : '0');
+  if(vs===null) return;
+  var nv = parseFloat(String(vs).replace(',','.'));
+  if(isNaN(nv) || nv<0){ alert('Valor inv\u00e1lido!'); return; }
+  n.cliente = cliente.trim() || n.cliente;
+  n.doc = doc.trim();
+  n.telefone = tel.trim() || n.telefone;
+  n.email = email.trim();
+  n.servico = srv.trim();
+  n.valorServico = nv;
+  n.total = nv + (n.valorMateriais||0);
+  saveNotas();
+  renderNotas();
+  alert('Nota n\u00ba '+n.numero+' atualizada!');
+}
+
+function excluirNF(num){
+  if(!confirm('Excluir a nota n\u00ba '+num+'? Esta a\u00e7\u00e3o n\u00e3o pode ser desfeita.')) return;
+  notas = notas.filter(function(n){ return n.numero!==num; });
+  saveNotas();
+  renderNotas();
 }
 
 function getNf(num){
