@@ -1665,7 +1665,8 @@ function salvarEmpresa(){
 }
 
 // ===== SINCRONIZACAO ENTRE DISPOSITIVOS =====
-var SYNC_URL = localStorage.getItem('arp_sync_url') || '';
+var SYNC_URL_PADRAO = 'https://script.google.com/macros/s/AKfycbxYRAfAW9NtUsRg2iisBZgisO5OjdCTiJpmvqaWUPssFts6uEfPNu_ByrQFsUwRbARRtw/exec';
+var SYNC_URL = localStorage.getItem('arp_sync_url') || SYNC_URL_PADRAO;
 var SYNC_KEYS = ['arp_rec','arp_os','arp_nf','arp_users','arp_orgaos','arp_locais','arp_servicos','arp_empresa','arp_cores','arp_logo','comissao_percent','arp_com_pay','arp_nf_access','arp_admin_email','arp_nf_num'];
 var _syncTimer = null;
 var _sincronizando = false;
