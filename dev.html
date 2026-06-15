@@ -1821,211 +1821,272 @@ function exportarRelatorio(tipo){
 }
 
 // === PDF via janela de impressao ===
+
+// ===== PDF: cabeçalho e rodapé repetidos em cada página =====
 function gerarRelatorioPDF(lista){
   var logoUrl = localStorage.getItem('arp_logo') || '';
   var logoHtml = logoUrl
-    ? '<img src="'+logoUrl+'" style="max-height:70px;max-width:220px;">'
-    : '<b style="font-size:24px;color:#016535;">ARP TECH</b>';
-  var empInfo = '<span style="font-size:11px;font-style:italic;font-family:Arial;line-height:1.7;">'+NOME_EMP+'<br>CNPJ: '+CNPJ_EMP+'<br>Inscri\u00e7\u00e3o Estadual: '+IE_EMP+'</span>';
+    ? '<img src="'+logoUrl+'" style="max-height:66px;max-width:200px;">'
+    : '<b style="font-size:22px;color:#016535;">ARP TECH</b>';
+  var empInfo = NOME_EMP+'<br>CNPJ: '+CNPJ_EMP+'<br>Inscri\u00e7\u00e3o Estadual: '+IE_EMP;
 
-  var linhas = lista.map(function(r, i){
+  var linhas = lista.map(function(r,i){
     var isSetor = r.locType==='setor';
     var setor = isSetor ? r.local : '';
     var escola = !isSetor ? r.local : '';
-    var bg = i%2===0 ? '#f5f5f5' : '#fff';
-    return '<tr style="background:'+bg+'">'+
-      '<td style="text-align:center">'+(i+1)+'</td>'+
-      '<td style="text-align:center">'+r.date+(r.start?' '+r.start:'')+'</td>'+
-      '<td>'+r.resp+'</td>'+
-      '<td>'+setor+'</td>'+
-      '<td>'+escola+'</td>'+
+    var bg = i%2===0 ? '#f5f5f5' : '#ffffff';
+    return '<tr style="background:'+bg+';">'+
+      '<td style="text-align:center;width:4%">'+(i+1)+'</td>'+
+      '<td style="text-align:center;width:13%">'+r.date+(r.start?' '+r.start:'')+'</td>'+
+      '<td style="width:12%">'+r.resp+'</td>'+
+      '<td style="width:14%">'+setor+'</td>'+
+      '<td style="width:14%">'+escola+'</td>'+
       '<td>'+r.desc+'</td>'+
       '</tr>';
   }).join('');
 
   var w = window.open('','_blank');
-  w.document.write('<!DOCTYPE html><html><head><title>Relat\u00f3rio Di\u00e1rio</title><style>'+
-    '@page{size:A4 landscape;margin:8mm 10mm;}'+
-    'body{font-family:Arial,sans-serif;font-size:10pt;margin:0;padding:0;}'+
-    '.outer{width:100%;border-collapse:collapse;}'+
-    '.outer thead td,.outer tfoot td{padding:0;}'+
-    '.outer tbody td{padding:0;}'+
-    '.cab{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:6px;border-bottom:1.5px solid #000;margin-bottom:4px;}'+
-    'h2{text-align:center;font-size:14pt;font-weight:bold;margin:5px 0 8px;}'+
-    '.dados{width:100%;border-collapse:collapse;font-size:10pt;font-family:Arial;}'+
-    '.dados th{background:#016535;color:#fff;font-weight:bold;padding:6px 4px;border:1px solid #016535;text-align:center;}'+
-    '.dados td{padding:5px 4px;border:1px solid #ccc;vertical-align:top;}'+
-    '.rodape{background:#016535;color:#fff;text-align:center;font-family:Arial;font-size:11pt;font-weight:bold;padding:7px 14px;border-radius:8px;margin-top:6px;}'+
+  w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8">'+
+    '<title>Relat\u00f3rio Di\u00e1rio ARP TECH</title><style>'+
+    '*{box-sizing:border-box;margin:0;padding:0;}'+
+    '@page{size:A4 landscape;margin:0;}'+
+    'body{font-family:Arial,sans-serif;font-size:10pt;}'+
+
+    /* Tabela externa: thead/tfoot se repetem em cada pagina impressa */
+    'table.outer{width:100%;border-collapse:collapse;page-break-inside:auto;}'+
+    'table.outer>thead{display:table-header-group;}'+
+    'table.outer>tfoot{display:table-footer-group;}'+
+    'table.outer>tbody{display:table-row-group;}'+
+
+    '.cab-cell{padding:8mm 10mm 4mm 10mm;}'+
+    '.rod-cell{padding:0 10mm 6mm 10mm;}'+
+    '.cont-cell{padding:0 10mm;}'+
+
+    '.cab{display:flex;justify-content:space-between;align-items:flex-start;'+
+    'padding-bottom:6px;border-bottom:1.5px solid #000;margin-bottom:4px;}'+
+    '.emp-info{font-style:italic;font-size:9.5pt;text-align:right;line-height:1.7;}'+
+    'h2{text-align:center;font-size:14pt;font-weight:bold;margin:4px 0 6px;}'+
+
+    '.rodape{background:#016535;color:#fff;text-align:center;font-family:Arial;'+
+    'font-size:11pt;font-weight:bold;padding:7px 14px;border-radius:8px;}'+
+
+    /* Tabela de dados */
+    'table.dados{width:100%;border-collapse:collapse;font-size:10pt;font-family:Arial;}'+
+    'table.dados thead{display:table-header-group;}'+
+    'table.dados th{background:#016535;color:#fff;font-weight:bold;padding:6px 4px;'+
+    'border:1px solid #016535;text-align:center;}'+
+    'table.dados td{padding:5px 4px;border:1px solid #ccc;vertical-align:top;}'+
+    'tr{page-break-inside:avoid;}'+
     '</style></head><body>'+
+
     '<table class="outer">'+
-    '<thead><tr><td>'+
-      '<div class="cab"><div>'+logoHtml+'</div><div style="text-align:right">'+empInfo+'</div></div>'+
-      '<h2>RELAT&Oacute;RIO DI&Aacute;RIO DE ATIVIDADES</h2>'+
-    '</td></tr></thead>'+
-    '<tfoot><tr><td>'+
-      '<div class="rodape">'+END_EMP+'</div>'+
-    '</td></tr></tfoot>'+
-    '<tbody><tr><td>'+
-      '<table class="dados"><thead><tr>'+
-        '<th style="width:4%">N\u00ba</th>'+
-        '<th style="width:13%">Carimbo de Data/Hora</th>'+
-        '<th style="width:12%">Respons\u00e1vel</th>'+
-        '<th style="width:14%">Setor</th>'+
-        '<th style="width:14%">Escola</th>'+
-        '<th>Descri\u00e7\u00e3o da Atividade Desenvolvida</th>'+
-      '</tr></thead><tbody>'+linhas+'</tbody></table>'+
-    '</td></tr></tbody>'+
+      '<thead><tr><td class="cab-cell">'+
+        '<div class="cab">'+
+          '<div>'+logoHtml+'</div>'+
+          '<div class="emp-info">'+empInfo+'</div>'+
+        '</div>'+
+        '<h2>RELAT&Oacute;RIO DI&Aacute;RIO DE ATIVIDADES</h2>'+
+      '</td></tr></thead>'+
+
+      '<tfoot><tr><td class="rod-cell">'+
+        '<div class="rodape">'+END_EMP+'</div>'+
+      '</td></tr></tfoot>'+
+
+      '<tbody><tr><td class="cont-cell">'+
+        '<table class="dados">'+
+          '<thead><tr>'+
+            '<th style="width:4%">N\u00ba</th>'+
+            '<th style="width:13%">Carimbo de Data/Hora</th>'+
+            '<th style="width:12%">Respons\u00e1vel</th>'+
+            '<th style="width:14%">Setor</th>'+
+            '<th style="width:14%">Escola</th>'+
+            '<th>Descri\u00e7\u00e3o da Atividade Desenvolvida</th>'+
+          '</tr></thead>'+
+          '<tbody>'+linhas+'</tbody>'+
+        '</table>'+
+      '</td></tr></tbody>'+
     '</table>'+
     '</body></html>');
   w.document.close();
-  setTimeout(function(){ w.print(); }, 500);
+  setTimeout(function(){ w.print(); }, 600);
 }
 
-// === DOCX via docxjs embutido ===
-// Usamos CDN docxjs no context da pagina para gerar o .docx no browser
+// ===== DOCX: usando JSZip + Open XML bruto (sem dependencia de CDN instavel) =====
 function gerarRelatorioDocx(lista){
-  var script = document.createElement('script');
-  var cdnUrls = ['https://unpkg.com/docx@8.5.0/build/index.min.js','https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.min.js'];
-  var cdnIdx = 0;
-  function tentarCdn(){
-    script.src = cdnUrls[cdnIdx++];
-    tentarCdn();
+  if(window.JSZip){
+    _gerarDocxComJSZip(lista);
+    return;
   }
-  script.onload = function(){ _buildDocx(lista); };
-  script.onerror = function(){ if(cdnIdx < cdnUrls.length){ script = document.createElement('script'); script.onload=function(){ _buildDocx(lista); }; script.onerror=arguments.callee; tentarCdn(); } else { alert('N\u00e3o foi poss\u00edvel carregar a biblioteca .docx. Use a op\u00e7\u00e3o PDF enquanto isso.'); } };
-  document.head.appendChild(script);
+  var s = document.createElement('script');
+  s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+  s.onload = function(){ _gerarDocxComJSZip(lista); };
+  s.onerror = function(){
+    alert('N\u00e3o foi poss\u00edvel carregar o gerador. Use "Exportar PDF" por enquanto.');
+  };
+  document.head.appendChild(s);
 }
 
-function _buildDocx(lista){
-  var D = window.docx;
-  if(!D){ alert('Biblioteca docx n\u00e3o carregada.'); return; }
+function _gerarDocxComJSZip(lista){
+  var VERDE = '016535';
+  var COLS_PCT = ['4%','13%','12%','14%','14%','43%'];
+  var HDRS = ['N\u00ba','Carimbo de Data/Hora','Respons\u00e1vel','Setor','Escola','Descri\u00e7\u00e3o da Atividade Desenvolvida'];
 
-  var VERDE_HEX = '016535';
-  var CONTENT_W = 15398; // DXA — A4 landscape 0.5" margins
-  var COLS = [700, 2000, 2200, 2200, 2200, 6098];
-  var BD = { style: D.BorderStyle.SINGLE, size: 4, color: VERDE_HEX };
-  var BDL = { style: D.BorderStyle.SINGLE, size: 2, color: 'CCCCCC' };
+  function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
-  function mk(text, opts){
-    opts = opts||{};
-    return new D.TextRun({ text:String(text||''), font:'Arial', size:opts.size||20,
-      bold:!!opts.bold, italic:!!opts.italic, color:opts.color||'000000' });
+  function wPr(bold,italic,sz,color){
+    return '<w:rPr>'+
+      (bold?'<w:b/>':'')+(italic?'<w:i/>':'')+
+      '<w:sz w:val="'+(sz||20)+'"/><w:szCs w:val="'+(sz||20)+'"/>'+
+      '<w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/>'+
+      (color?'<w:color w:val="'+color+'"/>':'')+
+      '</w:rPr>';
   }
-
-  function tc(text, colW, opts){
-    opts = opts||{};
-    var bg = opts.bg||null;
-    var borders = opts.borders || { top:BD, bottom:BD, left:BD, right:BD };
-    return new D.TableCell({
-      width:{size:colW, type:D.WidthType.DXA},
-      verticalAlign: D.VerticalAlign.CENTER,
-      margins:{top:60,bottom:60,left:100,right:100},
-      shading: bg ? {fill:bg, type:D.ShadingType.CLEAR} : undefined,
-      borders: borders,
-      children:[new D.Paragraph({
-        alignment: opts.align||D.AlignmentType.LEFT,
-        children:[mk(text, opts)]
-      })]
-    });
+  function run(text,bold,italic,sz,color){
+    return '<w:r>'+wPr(bold,italic,sz,color)+'<w:t xml:space="preserve">'+esc(text)+'</w:t></w:r>';
+  }
+  function para(content,align){
+    return '<w:p><w:pPr><w:jc w:val="'+(align||'left')+'"/></w:pPr>'+content+'</w:p>';
+  }
+  function tc(content,w,bgColor,borders){
+    var shd = bgColor?'<w:shd w:val="clear" w:color="auto" w:fill="'+bgColor+'"/>':'';
+    var brd = borders||('<w:top w:val="single" w:sz="4" w:color="'+VERDE+'"/>'+
+      '<w:left w:val="single" w:sz="4" w:color="'+VERDE+'"/>'+
+      '<w:bottom w:val="single" w:sz="4" w:color="'+VERDE+'"/>'+
+      '<w:right w:val="single" w:sz="4" w:color="'+VERDE+'"/>');
+    return '<w:tc><w:tcPr>'+
+      '<w:tcW w:w="'+w+'" w:type="pct"/>'+
+      '<w:tcMar><w:top w:w="60" w:type="dxa"/><w:bottom w:w="60" w:type="dxa"/>'+
+      '<w:left w:w="100" w:type="dxa"/><w:right w:w="100" w:type="dxa"/></w:tcMar>'+
+      shd+'<w:tcBorders>'+brd+'</w:tcBorders></w:tcPr>'+content+'</w:tc>';
   }
 
   var logoUrl = localStorage.getItem('arp_logo') || '';
-  var emp = empresa || {};
+  var dataNow = new Date().toLocaleDateString('pt-BR');
 
-  // Cabecalho
-  var headerChildren = [];
-  headerChildren.push(new D.Paragraph({
-    tabStops:[{type:D.TabStopType.RIGHT, position:CONTENT_W}],
-    children:[mk(NOME_EMP, {size:18,italic:true}), new D.TextRun({text:'\t'}), mk('',{size:18})]
-  }));
-  headerChildren.push(new D.Paragraph({
-    tabStops:[{type:D.TabStopType.RIGHT, position:CONTENT_W}],
-    children:[mk('CNPJ: '+CNPJ_EMP, {size:18,italic:true}), new D.TextRun({text:'\t'})]
-  }));
-  headerChildren.push(new D.Paragraph({
-    tabStops:[{type:D.TabStopType.RIGHT, position:CONTENT_W}],
-    children:[mk('Inscri\u00e7\u00e3o Estadual: '+IE_EMP, {size:18,italic:true}), new D.TextRun({text:'\t'})]
-  }));
-  headerChildren.push(new D.Paragraph({
-    border:{bottom:{style:D.BorderStyle.SINGLE, size:8, color:'000000', space:4}},
-    children:[mk('')]
-  }));
-  headerChildren.push(new D.Paragraph({
-    alignment:D.AlignmentType.CENTER,
-    spacing:{before:120,after:80},
-    children:[mk('RELAT\u00d3RIO DI\u00c1RIO DE ATIVIDADES', {bold:true,size:28})]
-  }));
+  // Cabeçalho XML
+  var headerXml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+    '<w:hdr xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'+
+    para(run(NOME_EMP,false,true,18)+'<w:r><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial"/><w:sz w:val="18"/></w:rPr><w:tab/></w:r>','left')+
+    para(run('CNPJ: '+CNPJ_EMP,false,true,18),'left')+
+    para(run('Inscri\u00e7\u00e3o Estadual: '+IE_EMP,false,true,18),'left')+
+    '<w:p><w:pPr><w:jc w:val="center"/><w:pBdr><w:bottom w:val="single" w:sz="8" w:space="4" w:color="000000"/></w:pBdr></w:pPr></w:p>'+
+    para(run('RELAT\u00d3RIO DI\u00c1RIO DE ATIVIDADES',true,false,28),'center')+
+    // Linha de colunas repetida em cada pagina
+    '<w:tbl><w:tblPr><w:tblW w:w="100%" w:type="pct"/>'+
+    '<w:tblBorders><w:insideH w:val="single" w:sz="2" w:color="CCCCCC"/><w:insideV w:val="single" w:sz="4" w:color="'+VERDE+'"/></w:tblBorders></w:tblPr>'+
+    '<w:tblGrid>'+COLS_PCT.map(function(){ return '<w:gridCol/>'; }).join('')+'</w:tblGrid>'+
+    '<w:tr>'+HDRS.map(function(h,i){
+      return tc(para(run(h,true,false,20,'FFFFFF'),'center'),COLS_PCT[i],VERDE);
+    }).join('')+'</w:tr></w:tbl>'+
+    '</w:hdr>';
 
-  // Tabela
-  var hdrs = ['N\u00ba','Carimbo de Data/Hora','Respons\u00e1vel','Setor','Escola','Descri\u00e7\u00e3o da Atividade Desenvolvida'];
-  var rows = [new D.TableRow({
-    tableHeader:true,
-    children: hdrs.map(function(h,i){
-      return new D.TableCell({
-        width:{size:COLS[i], type:D.WidthType.DXA},
-        verticalAlign:D.VerticalAlign.CENTER,
-        margins:{top:80,bottom:80,left:100,right:100},
-        shading:{fill:VERDE_HEX, type:D.ShadingType.CLEAR},
-        borders:{top:BD,bottom:BD,left:BD,right:BD},
-        children:[new D.Paragraph({
-          alignment:D.AlignmentType.CENTER,
-          children:[mk(h, {bold:true,size:20,color:'FFFFFF'})]
-        })]
-      });
-    })
-  })];
+  // Rodapé XML
+  var footerXml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+    '<w:ftr xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'+
+    '<w:tbl><w:tblPr><w:tblW w:w="100%" w:type="pct"/>'+
+    '<w:tblBorders><w:top w:val="single" w:sz="6" w:color="'+VERDE+'"/>'+
+    '<w:bottom w:val="single" w:sz="6" w:color="'+VERDE+'"/>'+
+    '<w:left w:val="single" w:sz="6" w:color="'+VERDE+'"/>'+
+    '<w:right w:val="single" w:sz="6" w:color="'+VERDE+'"/></w:tblBorders></w:tblPr>'+
+    '<w:tblGrid><w:gridCol/></w:tblGrid>'+
+    '<w:tr><w:tc><w:tcPr><w:tcW w:w="100%" w:type="pct"/>'+
+    '<w:shd w:val="clear" w:fill="'+VERDE+'"/>'+
+    '<w:tcMar><w:top w:w="80" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/>'+
+    '<w:left w:w="200" w:type="dxa"/><w:right w:w="200" w:type="dxa"/></w:tcMar></w:tcPr>'+
+    para(run(END_EMP,true,false,22,'FFFFFF'),'center')+
+    '</w:tc></w:tr></w:tbl>'+
+    '</w:ftr>';
 
-  lista.forEach(function(r, i){
+  // Linhas da tabela de dados
+  var dataRows = lista.map(function(r,i){
     var isSetor = r.locType==='setor';
     var setor = isSetor ? r.local : '';
     var escola = !isSetor ? r.local : '';
     var bg = i%2===0 ? 'F5F5F5' : 'FFFFFF';
-    var rowBD = {top:BDL,bottom:BDL,left:BD,right:BD};
-    rows.push(new D.TableRow({children:[
-      tc(String(i+1), COLS[0], {align:D.AlignmentType.CENTER, bg:bg, borders:rowBD}),
-      tc(r.date+(r.start?' '+r.start:''), COLS[1], {align:D.AlignmentType.CENTER, bg:bg, borders:rowBD}),
-      tc(r.resp||'', COLS[2], {bg:bg, borders:rowBD}),
-      tc(setor, COLS[3], {bg:bg, borders:rowBD}),
-      tc(escola, COLS[4], {bg:bg, borders:rowBD}),
-      tc(r.desc||'', COLS[5], {bg:bg, borders:rowBD})
-    ]}));
-  });
+    var rowBrd = '<w:top w:val="single" w:sz="2" w:color="CCCCCC"/>'+
+      '<w:bottom w:val="single" w:sz="2" w:color="CCCCCC"/>'+
+      '<w:left w:val="single" w:sz="4" w:color="'+VERDE+'"/>'+
+      '<w:right w:val="single" w:sz="4" w:color="'+VERDE+'"/>';
+    var cells = [String(i+1), r.date+(r.start?' '+r.start:''), r.resp||'', setor, escola, r.desc||''];
+    var aligns = ['center','center','left','left','left','left'];
+    return '<w:tr>'+cells.map(function(v,ci){
+      return tc(para(run(v,false,false,20)+(ci===0||ci===1?'':''),(aligns[ci])),COLS_PCT[ci],bg,rowBrd);
+    }).join('')+'</w:tr>';
+  }).join('');
 
-  var table = new D.Table({
-    width:{size:CONTENT_W, type:D.WidthType.DXA},
-    columnWidths:COLS, rows:rows
-  });
+  // Documento principal
+  var docXml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+    '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"'+
+    ' xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml"'+
+    ' xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">'+
+    '<w:body>'+
+    '<w:tbl>'+
+    '<w:tblPr><w:tblW w:w="100%" w:type="pct"/>'+
+    '<w:tblBorders>'+
+    '<w:top w:val="none"/><w:bottom w:val="none"/>'+
+    '<w:left w:val="none"/><w:right w:val="none"/>'+
+    '<w:insideH w:val="single" w:sz="2" w:color="CCCCCC"/>'+
+    '<w:insideV w:val="single" w:sz="4" w:color="'+VERDE+'"/>'+
+    '</w:tblBorders></w:tblPr>'+
+    '<w:tblGrid>'+COLS_PCT.map(function(){ return '<w:gridCol/>'; }).join('')+'</w:tblGrid>'+
+    dataRows+
+    '</w:tbl>'+
+    '<w:sectPr>'+
+    '<w:headerReference w:type="default" r:id="rId1"/>'+
+    '<w:footerReference w:type="default" r:id="rId2"/>'+
+    '<w:pgSz w:w="16838" w:h="11906" w:orient="landscape"/>'+
+    '<w:pgMar w:top="720" w:right="720" w:bottom="720" w:left="720" w:header="400" w:footer="400"/>'+
+    '</w:sectPr>'+
+    '</w:body></w:document>';
 
-  var doc = new D.Document({sections:[{
-    properties:{page:{
-      size:{width:11906, height:16838, orientation:D.PageOrientation.LANDSCAPE},
-      margin:{top:720,bottom:720,left:720,right:720}
-    }},
-    headers:{default: new D.Header({children:headerChildren})},
-    footers:{default: new D.Footer({children:[new D.Table({
-      width:{size:CONTENT_W, type:D.WidthType.DXA},
-      columnWidths:[CONTENT_W],
-      rows:[new D.TableRow({children:[new D.TableCell({
-        width:{size:CONTENT_W, type:D.WidthType.DXA},
-        shading:{fill:VERDE_HEX, type:D.ShadingType.CLEAR},
-        margins:{top:80,bottom:80,left:200,right:200},
-        borders:{top:{style:D.BorderStyle.SINGLE,size:6,color:VERDE_HEX},bottom:{style:D.BorderStyle.SINGLE,size:6,color:VERDE_HEX},
-          left:{style:D.BorderStyle.SINGLE,size:6,color:VERDE_HEX},right:{style:D.BorderStyle.SINGLE,size:6,color:VERDE_HEX}},
-        children:[new D.Paragraph({alignment:D.AlignmentType.CENTER,
-          children:[mk(END_EMP, {size:22,color:'FFFFFF',bold:true})]})]
-      })]})]
-    })]})},
-    children:[table]
-  }]});
+  // Content types
+  var contentTypes = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+    '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'+
+    '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>'+
+    '<Default Extension="xml" ContentType="application/xml"/>'+
+    '<Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>'+
+    '<Override PartName="/word/header1.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml"/>'+
+    '<Override PartName="/word/footer1.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml"/>'+
+    '<Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/>'+
+    '</Types>';
 
-  D.Packer.toBlob(doc).then(function(blob){
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement('a');
-    a.href=url; a.download='Relatorio_Diario_ARP_TECH.docx';
-    document.body.appendChild(a); a.click();
-    document.body.removeChild(a);
-    setTimeout(function(){ URL.revokeObjectURL(url); }, 3000);
-  }).catch(function(e){ alert('Erro ao gerar .docx: '+e.message); });
+  var relsMain = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+    '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+
+    '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/header" Target="header1.xml"/>'+
+    '<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer" Target="footer1.xml"/>'+
+    '<Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>'+
+    '</Relationships>';
+
+  var relsRoot = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+    '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+
+    '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>'+
+    '</Relationships>';
+
+  var stylesXml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+    '<w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'+
+    '<w:docDefaults><w:rPrDefault><w:rPr>'+
+    '<w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/>'+
+    '<w:sz w:val="20"/><w:szCs w:val="20"/>'+
+    '</w:rPr></w:rPrDefault></w:docDefaults></w:styles>';
+
+  var zip = new JSZip();
+  zip.file('[Content_Types].xml', contentTypes);
+  zip.file('_rels/.rels', relsRoot);
+  zip.file('word/document.xml', docXml);
+  zip.file('word/header1.xml', headerXml);
+  zip.file('word/footer1.xml', footerXml);
+  zip.file('word/styles.xml', stylesXml);
+  zip.file('word/_rels/document.xml.rels', relsMain);
+
+  zip.generateAsync({type:'blob', mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'})
+    .then(function(blob){
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href=url; a.download='Relatorio_Diario_ARP_TECH.docx';
+      document.body.appendChild(a); a.click();
+      document.body.removeChild(a);
+      setTimeout(function(){ URL.revokeObjectURL(url); }, 3000);
+    }).catch(function(e){ alert('Erro ao gerar .docx: '+e.message); });
 }
 
 aplicarLogo();
