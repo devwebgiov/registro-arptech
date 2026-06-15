@@ -170,6 +170,7 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
     </div>
 
     <div class="menu-item" id="m-notas" onclick="goTab('notas',this,'Notas Fiscais')" style="display:none;">Notas Fiscais</div>
+    <div class="menu-item" id="m-relatorio" onclick="goTab('relatorio',this,'Relat\u00f3rio Di\u00e1rio')" style="display:none;">Relat&oacute;rio Di&aacute;rio</div>
     <div class="menu-item" id="m-comissoes" onclick="goTab('comissoes',this,'Comiss\u00f5es')">Comiss&otilde;es</div>
     <div class="menu-item" id="m-gerenciar" onclick="goTab('gerenciar',this,'Gerenciar')" style="display:none;">Gerenciar</div>
     <div class="menu-item" id="m-locais" onclick="goTab('locais',this,'Locais')" style="display:none;">Locais</div>
@@ -278,6 +279,27 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
 
       <div id="osConcluidas" class="tab-content">
         <div class="card"><div class="card-title">Ordens Conclu&iacute;das</div><div id="osConcluiContent" class="scroll-list"></div><div id="osConcluiPag" class="pagination"></div></div>
+      </div>
+
+      <div id="relatorio" class="tab-content">
+        <div class="card">
+          <div class="card-title">Relat&oacute;rio Di&aacute;rio de Atividades</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+            <div class="form-group"><label class="form-label">Data inicial</label><input type="date" id="relDataIni" class="form-input"></div>
+            <div class="form-group"><label class="form-label">Data final</label><input type="date" id="relDataFim" class="form-input"></div>
+          </div>
+          <div class="form-group" id="relRespGroup">
+            <label class="form-label">Respons&aacute;vel (opcional)</label>
+            <select id="relResp" class="form-input">
+              <option value="">Todos</option>
+            </select>
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;">
+            <button class="btn-primary" onclick="exportarRelatorio('pdf')">Exportar PDF</button>
+            <button class="btn-primary" style="background:var(--cor-secundaria);" onclick="exportarRelatorio('docx')">Exportar .docx</button>
+          </div>
+          <div id="relPreview" style="margin-top:20px;"></div>
+        </div>
       </div>
 
       <div id="notas" class="tab-content">
@@ -633,6 +655,7 @@ function applyPermissions(){
   var show = function(id,on){ document.getElementById(id).style.display = on ? 'flex' : 'none'; };
   show('m-dashboard', true);
   show('m-registros', p==='SEMED' || p==='ADMIN');
+  show('m-relatorio', p==='SEMED' || p==='ADMIN');
   show('m-os', p==='ARPTECH' || p==='ADMIN');
   show('m-comissoes', p==='ARPTECH' || p==='ADMIN');
   show('m-gerenciar', p==='ADMIN');
@@ -716,6 +739,7 @@ function goTab(tab, el, title){
   if(tab==='osConcluidas') renderOS('concluida');
   if(tab==='comissoes') renderComissoes();
   if(tab==='gerenciar') renderUsuarios();
+  if(tab==='relatorio') initRelatorio();
   if(tab==='locais') renderLocais();
   if(tab==='servicos') renderServicos();
   if(tab==='notas'){ fillNfOs(); renderNotas(); renderNfPerm(); }
@@ -1736,6 +1760,258 @@ function sincronizarAgora(){
 }
 
 pullNuvem();
+
+
+// ===== RELATORIO DIARIO =====
+var CNPJ_EMP = '11.615.138/0001-11';
+var IE_EMP = '04.227.027-8';
+var END_EMP = 'Rua 5 de Setembro, 384, Centro, CEP - 69.800-000 - Humait\u00e1 - AM  |  Fone: (97)98429-4519  |  E-mail: suporte.arptech@gmail.com';
+var NOME_EMP = 'ARP TECH DA AMAZ\u00d4NIA LTDA';
+
+function initRelatorio(){
+  var now = new Date();
+  var ini = new Date(now.getFullYear(), now.getMonth(), 1);
+  document.getElementById('relDataIni').value = ini.toISOString().split('T')[0];
+  document.getElementById('relDataFim').value = now.toISOString().split('T')[0];
+  var sel = document.getElementById('relResp');
+  sel.innerHTML = '<option value="">Todos</option>';
+  usuarios.forEach(function(u){ sel.innerHTML += '<option>'+u.name+'</option>'; });
+  if(currentUser.profile==='SEMED'){
+    document.getElementById('relRespGroup').style.display='none';
+    sel.value = currentUser.name;
+  }
+}
+
+function parseDateBR(s){
+  if(!s) return null;
+  var p = s.split('/');
+  if(p.length===3) return new Date(+p[2], +p[1]-1, +p[0]);
+  p = s.split('-');
+  if(p.length===3) return new Date(+p[0], +p[1]-1, +p[2]);
+  return null;
+}
+
+function filtrarRelatorio(){
+  var ini = new Date(document.getElementById('relDataIni').value+'T00:00:00');
+  var fim = new Date(document.getElementById('relDataFim').value+'T23:59:59');
+  var resp = document.getElementById('relResp').value;
+  if(currentUser.profile==='SEMED') resp = currentUser.name;
+  return records.filter(function(r){
+    var d = parseDateBR(r.date);
+    if(!d) return false;
+    if(d<ini || d>fim) return false;
+    if(resp && r.resp!==resp) return false;
+    return true;
+  }).sort(function(a,b){
+    var da=parseDateBR(a.date), db=parseDateBR(b.date);
+    if(da.getTime()!==db.getTime()) return da-db;
+    return (a.start||'').localeCompare(b.start||'');
+  });
+}
+
+function exportarRelatorio(tipo){
+  var lista = filtrarRelatorio();
+  if(!lista.length){ alert('Nenhum registro encontrado para o per\u00edodo selecionado.'); return; }
+
+  if(tipo==='pdf'){
+    gerarRelatorioPDF(lista);
+  } else {
+    gerarRelatorioDocx(lista);
+  }
+}
+
+// === PDF via janela de impressao ===
+function gerarRelatorioPDF(lista){
+  var logoUrl = localStorage.getItem('arp_logo') || '';
+  var logoHtml = logoUrl
+    ? '<img src="'+logoUrl+'" style="max-height:70px;max-width:220px;">'
+    : '<b style="font-size:24px;color:#016535;">ARP TECH</b>';
+  var empInfo = '<span style="font-size:11px;font-style:italic;font-family:Arial;line-height:1.7;">'+NOME_EMP+'<br>CNPJ: '+CNPJ_EMP+'<br>Inscri\u00e7\u00e3o Estadual: '+IE_EMP+'</span>';
+
+  var linhas = lista.map(function(r, i){
+    var isSetor = r.locType==='setor';
+    var setor = isSetor ? r.local : '';
+    var escola = !isSetor ? r.local : '';
+    var bg = i%2===0 ? '#f5f5f5' : '#fff';
+    return '<tr style="background:'+bg+'">'+
+      '<td style="text-align:center">'+(i+1)+'</td>'+
+      '<td style="text-align:center">'+r.date+(r.start?' '+r.start:'')+'</td>'+
+      '<td>'+r.resp+'</td>'+
+      '<td>'+setor+'</td>'+
+      '<td>'+escola+'</td>'+
+      '<td>'+r.desc+'</td>'+
+      '</tr>';
+  }).join('');
+
+  var w = window.open('','_blank');
+  w.document.write('<!DOCTYPE html><html><head><title>Relat\u00f3rio Di\u00e1rio</title><style>'+
+    '@page{size:A4 landscape;margin:14mm 10mm 20mm 10mm;}'+
+    'body{font-family:Arial,sans-serif;font-size:10pt;margin:0;}'+
+    '.header{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:8px;border-bottom:1.5px solid #000;margin-bottom:6px;}'+
+    'h2{text-align:center;font-size:14pt;font-weight:bold;margin:6px 0 10px;}'+
+    'table{width:100%;border-collapse:collapse;font-size:10pt;font-family:Arial;}'+
+    'th{background:#016535;color:#fff;font-weight:bold;padding:6px 4px;border:1px solid #016535;text-align:center;}'+
+    'td{padding:5px 4px;border:1px solid #ccc;vertical-align:top;}'+
+    '.footer{position:fixed;bottom:8mm;left:10mm;right:10mm;}'+
+    '.rodape{background:#016535;color:#fff;text-align:center;font-family:Arial;font-size:11pt;font-weight:bold;padding:6px 14px;border-radius:8px;}'+
+    '</style></head><body>'+
+    '<div class="header"><div>'+logoHtml+'</div><div style="text-align:right">'+empInfo+'</div></div>'+
+    '<h2>RELAT&Oacute;RIO DI&Aacute;RIO DE ATIVIDADES</h2>'+
+    '<table><thead><tr>'+
+      '<th style="width:4%">N\u00ba</th>'+
+      '<th style="width:13%">Carimbo de Data/Hora</th>'+
+      '<th style="width:12%">Respons\u00e1vel</th>'+
+      '<th style="width:14%">Setor</th>'+
+      '<th style="width:14%">Escola</th>'+
+      '<th>Descri\u00e7\u00e3o da Atividade Desenvolvida</th>'+
+    '</tr></thead><tbody>'+linhas+'</tbody></table>'+
+    '<div class="footer"><div class="rodape">'+END_EMP+'</div></div>'+
+    '</body></html>');
+  w.document.close();
+  setTimeout(function(){ w.print(); }, 500);
+}
+
+// === DOCX via docxjs embutido ===
+// Usamos CDN docxjs no context da pagina para gerar o .docx no browser
+function gerarRelatorioDocx(lista){
+  var script = document.createElement('script');
+  script.src = 'https://cdn.jsdelivr.net/npm/docx@9.5.0/build/index.min.js';
+  script.onload = function(){ _buildDocx(lista); };
+  script.onerror = function(){ alert('N\u00e3o foi poss\u00edvel carregar a biblioteca. Verifique a conex\u00e3o e tente novamente.'); };
+  document.head.appendChild(script);
+}
+
+function _buildDocx(lista){
+  var D = window.docx;
+  if(!D){ alert('Biblioteca docx n\u00e3o carregada.'); return; }
+
+  var VERDE_HEX = '016535';
+  var CONTENT_W = 15398; // DXA — A4 landscape 0.5" margins
+  var COLS = [700, 2000, 2200, 2200, 2200, 6098];
+  var BD = { style: D.BorderStyle.SINGLE, size: 4, color: VERDE_HEX };
+  var BDL = { style: D.BorderStyle.SINGLE, size: 2, color: 'CCCCCC' };
+
+  function mk(text, opts){
+    opts = opts||{};
+    return new D.TextRun({ text:String(text||''), font:'Arial', size:opts.size||20,
+      bold:!!opts.bold, italic:!!opts.italic, color:opts.color||'000000' });
+  }
+
+  function tc(text, colW, opts){
+    opts = opts||{};
+    var bg = opts.bg||null;
+    var borders = opts.borders || { top:BD, bottom:BD, left:BD, right:BD };
+    return new D.TableCell({
+      width:{size:colW, type:D.WidthType.DXA},
+      verticalAlign: D.VerticalAlign.CENTER,
+      margins:{top:60,bottom:60,left:100,right:100},
+      shading: bg ? {fill:bg, type:D.ShadingType.CLEAR} : undefined,
+      borders: borders,
+      children:[new D.Paragraph({
+        alignment: opts.align||D.AlignmentType.LEFT,
+        children:[mk(text, opts)]
+      })]
+    });
+  }
+
+  var logoUrl = localStorage.getItem('arp_logo') || '';
+  var emp = empresa || {};
+
+  // Cabecalho
+  var headerChildren = [];
+  headerChildren.push(new D.Paragraph({
+    tabStops:[{type:D.TabStopType.RIGHT, position:CONTENT_W}],
+    children:[mk(NOME_EMP, {size:18,italic:true}), new D.TextRun({text:'\t'}), mk('',{size:18})]
+  }));
+  headerChildren.push(new D.Paragraph({
+    tabStops:[{type:D.TabStopType.RIGHT, position:CONTENT_W}],
+    children:[mk('CNPJ: '+CNPJ_EMP, {size:18,italic:true}), new D.TextRun({text:'\t'})]
+  }));
+  headerChildren.push(new D.Paragraph({
+    tabStops:[{type:D.TabStopType.RIGHT, position:CONTENT_W}],
+    children:[mk('Inscri\u00e7\u00e3o Estadual: '+IE_EMP, {size:18,italic:true}), new D.TextRun({text:'\t'})]
+  }));
+  headerChildren.push(new D.Paragraph({
+    border:{bottom:{style:D.BorderStyle.SINGLE, size:8, color:'000000', space:4}},
+    children:[mk('')]
+  }));
+  headerChildren.push(new D.Paragraph({
+    alignment:D.AlignmentType.CENTER,
+    spacing:{before:120,after:80},
+    children:[mk('RELAT\u00d3RIO DI\u00c1RIO DE ATIVIDADES', {bold:true,size:28})]
+  }));
+
+  // Tabela
+  var hdrs = ['N\u00ba','Carimbo de Data/Hora','Respons\u00e1vel','Setor','Escola','Descri\u00e7\u00e3o da Atividade Desenvolvida'];
+  var rows = [new D.TableRow({
+    tableHeader:true,
+    children: hdrs.map(function(h,i){
+      return new D.TableCell({
+        width:{size:COLS[i], type:D.WidthType.DXA},
+        verticalAlign:D.VerticalAlign.CENTER,
+        margins:{top:80,bottom:80,left:100,right:100},
+        shading:{fill:VERDE_HEX, type:D.ShadingType.CLEAR},
+        borders:{top:BD,bottom:BD,left:BD,right:BD},
+        children:[new D.Paragraph({
+          alignment:D.AlignmentType.CENTER,
+          children:[mk(h, {bold:true,size:20,color:'FFFFFF'})]
+        })]
+      });
+    })
+  })];
+
+  lista.forEach(function(r, i){
+    var isSetor = r.locType==='setor';
+    var setor = isSetor ? r.local : '';
+    var escola = !isSetor ? r.local : '';
+    var bg = i%2===0 ? 'F5F5F5' : 'FFFFFF';
+    var rowBD = {top:BDL,bottom:BDL,left:BD,right:BD};
+    rows.push(new D.TableRow({children:[
+      tc(String(i+1), COLS[0], {align:D.AlignmentType.CENTER, bg:bg, borders:rowBD}),
+      tc(r.date+(r.start?' '+r.start:''), COLS[1], {align:D.AlignmentType.CENTER, bg:bg, borders:rowBD}),
+      tc(r.resp||'', COLS[2], {bg:bg, borders:rowBD}),
+      tc(setor, COLS[3], {bg:bg, borders:rowBD}),
+      tc(escola, COLS[4], {bg:bg, borders:rowBD}),
+      tc(r.desc||'', COLS[5], {bg:bg, borders:rowBD})
+    ]}));
+  });
+
+  var table = new D.Table({
+    width:{size:CONTENT_W, type:D.WidthType.DXA},
+    columnWidths:COLS, rows:rows
+  });
+
+  var doc = new D.Document({sections:[{
+    properties:{page:{
+      size:{width:11906, height:16838, orientation:D.PageOrientation.LANDSCAPE},
+      margin:{top:720,bottom:720,left:720,right:720}
+    }},
+    headers:{default: new D.Header({children:headerChildren})},
+    footers:{default: new D.Footer({children:[new D.Table({
+      width:{size:CONTENT_W, type:D.WidthType.DXA},
+      columnWidths:[CONTENT_W],
+      rows:[new D.TableRow({children:[new D.TableCell({
+        width:{size:CONTENT_W, type:D.WidthType.DXA},
+        shading:{fill:VERDE_HEX, type:D.ShadingType.CLEAR},
+        margins:{top:80,bottom:80,left:200,right:200},
+        borders:{top:{style:D.BorderStyle.SINGLE,size:6,color:VERDE_HEX},bottom:{style:D.BorderStyle.SINGLE,size:6,color:VERDE_HEX},
+          left:{style:D.BorderStyle.SINGLE,size:6,color:VERDE_HEX},right:{style:D.BorderStyle.SINGLE,size:6,color:VERDE_HEX}},
+        children:[new D.Paragraph({alignment:D.AlignmentType.CENTER,
+          children:[mk(END_EMP, {size:22,color:'FFFFFF',bold:true})]})]
+      })]})]
+    })]})},
+    children:[table]
+  }]});
+
+  D.Packer.toBlob(doc).then(function(blob){
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href=url; a.download='Relatorio_Diario_ARP_TECH.docx';
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 3000);
+  }).catch(function(e){ alert('Erro ao gerar .docx: '+e.message); });
+}
 
 aplicarLogo();
 </script>
