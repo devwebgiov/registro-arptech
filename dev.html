@@ -1845,31 +1845,37 @@ function gerarRelatorioPDF(lista){
 
   var w = window.open('','_blank');
   w.document.write('<!DOCTYPE html><html><head><title>Relat\u00f3rio Di\u00e1rio</title><style>'+
-    '@page{size:A4 landscape;margin:0;}'+
-    'html,body{height:100%;margin:0;padding:0;}'+
-    'body{font-family:Arial,sans-serif;font-size:10pt;display:flex;flex-direction:column;min-height:100vh;padding:12mm 10mm 0 10mm;box-sizing:border-box;}'+
-    '.main-content{flex:1;}'+
-    '.header{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:8px;border-bottom:1.5px solid #000;margin-bottom:6px;}'+
-    'h2{text-align:center;font-size:14pt;font-weight:bold;margin:6px 0 10px;}'+
-    'table{width:100%;border-collapse:collapse;font-size:10pt;font-family:Arial;}'+
-    'th{background:#016535;color:#fff;font-weight:bold;padding:6px 4px;border:1px solid #016535;text-align:center;}'+
-    'td{padding:5px 4px;border:1px solid #ccc;vertical-align:top;}'+
-    '.rodape-wrap{margin-top:auto;padding:0 0 10mm 0;}'+
-    '.rodape{background:#016535;color:#fff;text-align:center;font-family:Arial;font-size:11pt;font-weight:bold;padding:8px 14px;border-radius:8px;}'+
+    '@page{size:A4 landscape;margin:8mm 10mm;}'+
+    'body{font-family:Arial,sans-serif;font-size:10pt;margin:0;padding:0;}'+
+    '.outer{width:100%;border-collapse:collapse;}'+
+    '.outer thead td,.outer tfoot td{padding:0;}'+
+    '.outer tbody td{padding:0;}'+
+    '.cab{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:6px;border-bottom:1.5px solid #000;margin-bottom:4px;}'+
+    'h2{text-align:center;font-size:14pt;font-weight:bold;margin:5px 0 8px;}'+
+    '.dados{width:100%;border-collapse:collapse;font-size:10pt;font-family:Arial;}'+
+    '.dados th{background:#016535;color:#fff;font-weight:bold;padding:6px 4px;border:1px solid #016535;text-align:center;}'+
+    '.dados td{padding:5px 4px;border:1px solid #ccc;vertical-align:top;}'+
+    '.rodape{background:#016535;color:#fff;text-align:center;font-family:Arial;font-size:11pt;font-weight:bold;padding:7px 14px;border-radius:8px;margin-top:6px;}'+
     '</style></head><body>'+
-    '<div class="main-content">'+
-    '<div class="header"><div>'+logoHtml+'</div><div style="text-align:right">'+empInfo+'</div></div>'+
-    '<h2>RELAT&Oacute;RIO DI&Aacute;RIO DE ATIVIDADES</h2>'+
-    '<table><thead><tr>'+
-      '<th style="width:4%">N\u00ba</th>'+
-      '<th style="width:13%">Carimbo de Data/Hora</th>'+
-      '<th style="width:12%">Respons\u00e1vel</th>'+
-      '<th style="width:14%">Setor</th>'+
-      '<th style="width:14%">Escola</th>'+
-      '<th>Descri\u00e7\u00e3o da Atividade Desenvolvida</th>'+
-    '</tr></thead><tbody>'+linhas+'</tbody></table>'+
-    '</div>'+
-    '<div class="rodape-wrap"><div class="rodape">'+END_EMP+'</div></div>'+
+    '<table class="outer">'+
+    '<thead><tr><td>'+
+      '<div class="cab"><div>'+logoHtml+'</div><div style="text-align:right">'+empInfo+'</div></div>'+
+      '<h2>RELAT&Oacute;RIO DI&Aacute;RIO DE ATIVIDADES</h2>'+
+    '</td></tr></thead>'+
+    '<tfoot><tr><td>'+
+      '<div class="rodape">'+END_EMP+'</div>'+
+    '</td></tr></tfoot>'+
+    '<tbody><tr><td>'+
+      '<table class="dados"><thead><tr>'+
+        '<th style="width:4%">N\u00ba</th>'+
+        '<th style="width:13%">Carimbo de Data/Hora</th>'+
+        '<th style="width:12%">Respons\u00e1vel</th>'+
+        '<th style="width:14%">Setor</th>'+
+        '<th style="width:14%">Escola</th>'+
+        '<th>Descri\u00e7\u00e3o da Atividade Desenvolvida</th>'+
+      '</tr></thead><tbody>'+linhas+'</tbody></table>'+
+    '</td></tr></tbody>'+
+    '</table>'+
     '</body></html>');
   w.document.close();
   setTimeout(function(){ w.print(); }, 500);
