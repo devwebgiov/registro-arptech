@@ -222,8 +222,10 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
             <select id="newRegRespSel" class="form-input" style="display:none;"></select>
           </div>
           <div class="form-group"><label class="form-label">Local</label>
-            <input type="text" id="newRegLocalBusca" class="form-input" placeholder="Pesquisar local..." oninput="filtrarLocais()" style="margin-bottom:8px;">
-            <select id="newRegLocal" class="form-input" size="1"></select>
+            <input type="text" id="newRegLocalBusca" class="form-input" placeholder="Digite para buscar..." autocomplete="off"
+              oninput="filtrarLocaisAC(this.value)" onfocus="filtrarLocaisAC(this.value)" onblur="setTimeout(function(){document.getElementById('acDropdown').style.display='none';},200)">
+            <div id="acDropdown" style="display:none;position:absolute;z-index:999;background:#fff;border:2px solid var(--cor-acento);border-radius:8px;max-height:200px;overflow-y:auto;box-shadow:0 4px 12px rgba(0,0,0,0.15);min-width:280px;"></div>
+            <input type="hidden" id="newRegLocal">
           </div>
           <div class="form-group"><label class="form-label">Tipo</label>
             <select id="newRegType" class="form-input">
@@ -314,6 +316,10 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
           <div id="nfLista" class="scroll-right"></div>
           <div id="nfPag" class="pagination"></div>
         </div>
+        <div class="card" id="relPermCard" style="display:none;">
+          <div class="card-title">Acesso a Relat&oacute;rios</div>
+          <div id="relPermLista"></div>
+        </div>
         <div class="card" id="nfPermCard" style="display:none;">
           <div class="card-title">Conceder Acesso &agrave;s Notas Fiscais</div>
           <div id="nfPermLista"></div>
@@ -326,7 +332,14 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
           <div class="form-group" style="max-width:220px;"><label class="form-label">Percentual (%)</label><input type="number" id="comPercent" class="form-input" min="0" max="100"></div>
           <button class="btn-primary" onclick="salvarComissao()">Salvar Percentual</button>
         </div>
-        <div class="card"><div class="card-title" id="comTitle">Comiss&otilde;es</div><div id="comissaoContent"></div></div>
+        <div class="card" id="comAdminCard2" style="display:none;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+            <div class="card-title" style="margin-bottom:0;">Fechamentos Mensais</div>
+            <button class="btn-primary" onclick="fecharMesComissao()">Encerrar Mês</button>
+          </div>
+          <div id="comFechamentosLista"></div>
+        </div>
+        <div class="card"><div class="card-title" id="comTitle">Comiss&otilde;es do Mês Atual</div><div id="comissaoContent"></div></div>
       </div>
 
       <div id="gerenciar" class="tab-content">
@@ -422,10 +435,24 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
           <button class="btn-small" style="background:#888;color:#fff;margin-left:8px;" onclick="resetCores()">Restaurar padr&atilde;o</button>
         </div>
         <div class="card">
-          <div class="card-title">Logo do Sistema</div>
-          <p style="font-size:12px;color:#666;margin-bottom:12px;">Tamanho recomendado: <b>400 x 120 pixels</b> (PNG transparente).</p>
-          <div class="form-group"><label class="form-label">URL da logo</label><input type="text" id="logoUrl" class="form-input" placeholder="https://..."></div>
-          <button class="btn-primary" onclick="salvarLogo()">Salvar Logo</button>
+          <div class="card-title">Logos do Sistema</div>
+          <p style="font-size:12px;color:#666;margin-bottom:16px;">Tamanho recomendado: <b>400 x 120 pixels</b>, PNG transparente. Faça upload de arquivo ou cole uma URL.</p>
+          <div class="form-group">
+            <label class="form-label">Logo principal (login + menu)</label>
+            <input type="text" id="logoUrl" class="form-input" placeholder="URL ou carregue abaixo" style="margin-bottom:6px;">
+            <input type="file" id="logoFile" accept="image/*" class="form-input" onchange="uploadLogo('arp_logo','logoUrl',this)">
+          </div>
+          <div class="form-group" style="margin-top:12px;">
+            <label class="form-label">Logo da Ordem de Serviço (impressão)</label>
+            <input type="text" id="logoOsUrl" class="form-input" placeholder="URL ou carregue abaixo" style="margin-bottom:6px;">
+            <input type="file" id="logoOsFile" accept="image/*" class="form-input" onchange="uploadLogo('arp_logo_os','logoOsUrl',this)">
+          </div>
+          <div class="form-group" style="margin-top:12px;">
+            <label class="form-label">Logo do Recibo (impressão)</label>
+            <input type="text" id="logoReciboUrl" class="form-input" placeholder="URL ou carregue abaixo" style="margin-bottom:6px;">
+            <input type="file" id="logoReciboFile" accept="image/*" class="form-input" onchange="uploadLogo('arp_logo_recibo','logoReciboUrl',this)">
+          </div>
+          <button class="btn-primary" onclick="salvarLogos()">Salvar URLs</button>
         </div>
         <div class="card">
           <div class="card-title">Sincroniza&ccedil;&atilde;o entre Dispositivos</div>
@@ -462,6 +489,9 @@ osOrdens.forEach(function(o){ if(o.status==='Em Andamento'){ o.status='Em Atendi
 var notas = JSON.parse(localStorage.getItem('arp_nf') || '[]');
 var COMISSAO_PERCENT = parseFloat(localStorage.getItem('comissao_percent') || '70');
 var nfAccess = JSON.parse(localStorage.getItem('arp_nf_access') || '[]');
+var relAccess = JSON.parse(localStorage.getItem('arp_rel_access') || '[]');
+function saveRelAccess(){ localStorage.setItem('arp_rel_access', JSON.stringify(relAccess)); }
+function temRelatorio(){ return currentUser.profile==='ADMIN' || relAccess.indexOf(currentUser.login)>=0; }
 
 var DEFAULT_USERS = [
   {login:'ayrton',   name:'Ayrton',        pass:'ayrton123',    profile:'SEMED',   mustChange:false},
@@ -614,19 +644,31 @@ function logout(){
   document.getElementById('loginPass').value='';
 }
 
-var LOCAIS_FILTRADOS = null;
-function fillLocais(filtro){
-  var sel = document.getElementById('newRegLocal');
+function fillLocais(){}
+function filtrarLocais(){}
+function filtrarLocaisAC(q){
+  var drop = document.getElementById('acDropdown');
   var lista = locais.map(function(l,i){ return {l:l, i:i}; });
-  if(filtro){
-    var f = filtro.toLowerCase();
+  if(q.trim()){
+    var f = q.toLowerCase();
     lista = lista.filter(function(x){ return x.l.nome.toLowerCase().indexOf(f)>=0; });
   }
-  sel.innerHTML = '<option value="" selected disabled>Selecionar local</option>' +
-    lista.map(function(x){ return '<option value="'+x.i+'">'+x.l.nome+'</option>'; }).join('');
+  if(!lista.length){ drop.style.display='none'; return; }
+  drop.innerHTML = lista.slice(0,10).map(function(x){
+    var ti = tipoInfo(x.l.tipo);
+    return '<div style="padding:10px 14px;cursor:pointer;border-bottom:1px solid #f0f0f0;font-size:13px;" '+
+      'onmousedown="selecionarLocal('+x.i+')" '+
+      'style="cursor:pointer;">'+
+      '<b>'+x.l.nome+'</b><br><span class="badge '+ti.cls+'" style="margin-top:4px;">'+ti.label+'</span></div>';
+  }).join('');
+  drop.style.display='block';
 }
-function filtrarLocais(){
-  fillLocais(document.getElementById('newRegLocalBusca').value.trim());
+function selecionarLocal(idx){
+  var loc = locais[idx];
+  document.getElementById('newRegLocalBusca').value = loc.nome;
+  document.getElementById('newRegLocal').value = String(idx);
+  document.getElementById('newRegType').value = loc.tipo;
+  document.getElementById('acDropdown').style.display='none';
 }
 
 function fillTecnicos(selId){
@@ -655,7 +697,7 @@ function applyPermissions(){
   var show = function(id,on){ document.getElementById(id).style.display = on ? 'flex' : 'none'; };
   show('m-dashboard', true);
   show('m-registros', p==='SEMED' || p==='ADMIN');
-  show('m-relatorio', p==='SEMED' || p==='ADMIN');
+  show('m-relatorio', temRelatorio());
   show('m-os', p==='ARPTECH' || p==='ADMIN');
   show('m-comissoes', p==='ARPTECH' || p==='ADMIN');
   show('m-gerenciar', p==='ADMIN');
@@ -665,8 +707,11 @@ function applyPermissions(){
   show('m-notas', temNF());
   show('m-conta', true);
   document.getElementById('comAdminCard').style.display = p==='ADMIN' ? 'block' : 'none';
+  var comAdmin2 = document.getElementById('comAdminCard2');
+  if(comAdmin2) comAdmin2.style.display = (p==='ADMIN'||p==='ARPTECH') ? 'block' : 'none';
   document.getElementById('mcEmailCard').style.display = p==='ADMIN' ? 'block' : 'none';
   document.getElementById('nfPermCard').style.display = p==='ADMIN' ? 'block' : 'none';
+  document.getElementById('relPermCard').style.display = p==='ADMIN' ? 'block' : 'none';
   if(p==='ADMIN'){
     document.getElementById('comPercent').value = COMISSAO_PERCENT;
     document.getElementById('mcEmailAdmin').value = localStorage.getItem('arp_admin_email') || '';
@@ -695,6 +740,8 @@ function applyPermissions(){
     document.getElementById('corAcento').value = cores.acento;
     document.getElementById('corLogin').value = cores.login;
     document.getElementById('logoUrl').value = localStorage.getItem('arp_logo') || '';
+    document.getElementById('logoOsUrl').value = localStorage.getItem('arp_logo_os') || '';
+    document.getElementById('logoReciboUrl').value = localStorage.getItem('arp_logo_recibo') || '';
     document.getElementById('syncUrl').value = localStorage.getItem('arp_sync_url') || '';
     document.getElementById('empCnpj').value = empresa.cnpj;
     document.getElementById('empIe').value = empresa.ie;
@@ -738,7 +785,7 @@ function goTab(tab, el, title){
   if(tab==='osAbertas') renderOS('andamento');
   if(tab==='osConcluidas') renderOS('concluida');
   if(tab==='comissoes') renderComissoes();
-  if(tab==='gerenciar') renderUsuarios();
+  if(tab==='gerenciar'){ renderUsuarios(); renderRelPerm(); }
   if(tab==='relatorio') initRelatorio();
   if(tab==='locais') renderLocais();
   if(tab==='servicos') renderServicos();
@@ -876,6 +923,9 @@ function salvarRegistro(){
     if(!resp){ alert('Selecione o respons\u00e1vel!'); return; }
   } else { resp = currentUser.name; }
   var locIdx = document.getElementById('newRegLocal').value;
+  if(locIdx==='' && document.getElementById('newRegLocalBusca').value.trim()){
+    alert('Selecione um local da lista de sugestões!'); return;
+  }
   var type = document.getElementById('newRegType').value;
   var desc = document.getElementById('newRegDesc').value.trim();
   var dataV = document.getElementById('newRegData').value;
@@ -1077,7 +1127,7 @@ function renderOS(tipo){
   var page, contentId, pagId, fnName, acoesFn;
   var btnExcluir = function(o){ return '<button class="btn-danger btn-small" onclick="excluirOS(\''+o.id+'\')">Excluir</button>'; };
   var btnMat = function(o){ return '<button class="btn-small" style="background:#6b7280;color:#fff;" onclick="addMaterialOS(\''+o.id+'\')">+ Material</button>'; };
-  var btnObs = function(o){ return '<button class="btn-small" style="background:#0e7490;color:#fff;" onclick="editarObs(\''+o.id+'\')">Observa\u00e7\u00f5es</button>'; };
+  var btnObs = function(o){ return '<button class="btn-small" style="background:#0e7490;color:#fff;" onclick="abrirPainelObs(\''+o.id+'\')">Observa\u00e7\u00f5es</button>'; };
   if(tipo==='aberta'){ page=OSA_PAGE; contentId='osEmAbertoContent'; pagId='osEmAbertoPag'; fnName='gotoOsa';
     acoesFn=function(o){ return '<button class="btn-small" style="background:var(--cor-acento);color:#fff;" onclick="iniciarOS(\''+o.id+'\')">Iniciar Atendimento</button>'+btnMat(o)+btnExcluir(o); }; }
   else if(tipo==='andamento'){ page=OSAND_PAGE; contentId='osAbertasContent'; pagId='osAbertasPag'; fnName='gotoOsand';
@@ -1097,9 +1147,13 @@ function dadosEmpresaHtml(){
   return (empresa.cnpj?'CNPJ: '+empresa.cnpj+'<br>':'')+(empresa.ie?'Inscri\u00e7\u00e3o Estadual: '+empresa.ie+'<br>':'')+
     (empresa.end?empresa.end+'<br>':'')+(empresa.email?'E-mail: '+empresa.email+'<br>':'')+(empresa.tel?'Telefone: '+empresa.tel:'');
 }
-function logoPrintHtml(){
-  var logoUrl = localStorage.getItem('arp_logo') || '';
-  return logoUrl ? '<img src="'+logoUrl+'" style="max-width:200px;max-height:60px;">' : '<div style="font-size:24px;font-weight:700;color:#0d3b5c;">ARP TECH AMAZ\u00d4NIA</div>';
+function logoPrintHtml(forOS){
+  var key = forOS ? (localStorage.getItem('arp_logo_os')||localStorage.getItem('arp_logo')||'') : localStorage.getItem('arp_logo')||'';
+  return key ? '<img src="'+key+'" style="max-width:180px;max-height:52px;">' : '<div style="font-size:20px;font-weight:700;color:#0d3b5c;">ARP TECH</div>';
+}
+function logoPrintReciboHtml(){
+  var key = localStorage.getItem('arp_logo_recibo')||localStorage.getItem('arp_logo')||'';
+  return key ? '<img src="'+key+'" style="max-width:180px;max-height:52px;">' : '<div style="font-size:20px;font-weight:700;color:#0d3b5c;">ARP TECH</div>';
 }
 
 function imprimirOS(id){
@@ -1116,7 +1170,7 @@ function imprimirOS(id){
   w.document.write('<!DOCTYPE html><html><head><title>'+o.id+'</title><style>'+
     'body{font-family:Arial,sans-serif;padding:30px;color:#222;}'+
     '.head{display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid #0d3b5c;padding-bottom:14px;margin-bottom:20px;}'+
-    '.emp{font-size:11px;text-align:right;line-height:1.6;color:#444;}'+
+    '.emp{font-size:9.5px;text-align:right;line-height:1.5;color:#444;max-width:200px;}'+
     'h2{color:#0d3b5c;font-size:18px;margin-bottom:14px;} h3{color:#0d3b5c;font-size:14px;margin:16px 0 8px;}'+
     'table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:10px;}'+
     'td,th{border:1px solid #ccc;padding:8px;text-align:left;} th{background:#eef4f2;}'+
@@ -1124,7 +1178,7 @@ function imprimirOS(id){
     '.assin{margin-top:60px;display:flex;justify-content:space-between;gap:40px;}'+
     '.assin div{flex:1;border-top:1px solid #333;text-align:center;padding-top:6px;font-size:12px;}'+
     '</style></head><body>'+
-    '<div class="head">'+logoPrintHtml()+'<div class="emp">'+dadosEmpresaHtml()+'</div></div>'+
+    '<div class="head">'+logoPrintReciboHtml()+'<div class="emp">'+dadosEmpresaHtml()+'</div></div>'+
     '<h2>Ordem de Servi\u00e7o '+o.id+'</h2>'+
     '<table>'+
     '<tr><th>Cliente</th><td>'+o.cliente+'</td></tr>'+
@@ -1363,14 +1417,14 @@ function imprimirRecibo(num){
     'body{font-family:Arial,sans-serif;padding:40px;color:#222;}'+
     '.borda{border:2px solid #000;padding:24px;}'+
     '.head{display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #0d3b5c;padding-bottom:12px;margin-bottom:18px;}'+
-    '.emp{font-size:11px;text-align:right;line-height:1.6;color:#444;}'+
+    '.emp{font-size:9.5px;text-align:right;line-height:1.5;color:#444;max-width:200px;}'+
     'h2{text-align:center;font-size:20px;letter-spacing:3px;margin:14px 0;}'+
     '.valor{text-align:right;font-size:16px;font-weight:700;margin:14px 0;}'+
     'p{font-size:13px;line-height:1.8;}'+
     '.assin{margin-top:70px;text-align:center;}'+
     '.assin div{display:inline-block;border-top:1px solid #333;padding-top:6px;font-size:12px;min-width:300px;}'+
     '</style></head><body><div class="borda">'+
-    '<div class="head">'+logoPrintHtml()+'<div class="emp">'+dadosEmpresaHtml()+'</div></div>'+
+    '<div class="head">'+logoPrintReciboHtml()+'<div class="emp">'+dadosEmpresaHtml()+'</div></div>'+
     '<h2>RECIBO</h2>'+
     '<div class="valor">N\u00ba '+n.numero+' &middot; Valor: R$ '+n.total.toFixed(2)+'</div>'+
     '<p>Recebemos de <b>'+n.cliente+'</b>'+(n.doc?' ('+n.doc+')':'')+' a import\u00e2ncia de <b>R$ '+n.total.toFixed(2)+'</b> referente a '+(n.servico||'servi\u00e7os prestados')+' (Ordem de Servi\u00e7o '+n.osId+').</p>'+
@@ -1393,6 +1447,23 @@ function renderNfPerm(){
   document.getElementById('nfPermLista').innerHTML = html || '<div style="padding:12px;color:#999;">Nenhum usu\u00e1rio.</div>';
 }
 
+function toggleRelAccess(loginU){
+  var idx = relAccess.indexOf(loginU);
+  if(idx>=0) relAccess.splice(idx,1); else relAccess.push(loginU);
+  saveRelAccess();
+  renderRelPerm();
+}
+function renderRelPerm(){
+  if(!currentUser || currentUser.profile!=='ADMIN') return;
+  var html = usuarios.filter(function(u){ return u.profile!=='ADMIN'; }).map(function(u){
+    var tem = relAccess.indexOf(u.login)>=0;
+    return '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px;border-bottom:1px solid #e7eeec;">'+
+      '<div><b style="font-size:13px;">'+u.name+'</b> <span style="font-size:11px;color:#888;">('+u.profile+')</span></div>'+
+      '<button class="btn-small" style="background:'+(tem?'#dc2626':'var(--cor-acento)')+';color:#fff;" onclick="toggleRelAccess(\''+u.login+'\')">'+
+      (tem?'Revogar':'Conceder')+'</button></div>';
+  }).join('');
+  document.getElementById('relPermLista').innerHTML = html || '<div style="padding:12px;color:#999;">Nenhum usuário.</div>';
+}
 function toggleNfAccess(loginU){
   var idx = nfAccess.indexOf(loginU);
   if(idx>=0) nfAccess.splice(idx,1); else nfAccess.push(loginU);
@@ -1400,6 +1471,12 @@ function toggleNfAccess(loginU){
   renderNfPerm();
 }
 
+function excluirFechamento(mes){
+  if(!confirm('Excluir o fechamento de '+mes+'?')) return;
+  comFechamentos = comFechamentos.filter(function(f){ return f.mes!==mes; });
+  saveComFechamentos();
+  renderComissoes();
+}
 function salvarComissao(){
   var v = parseFloat(document.getElementById('comPercent').value);
   if(isNaN(v) || v<0 || v>100){ alert('Percentual inv\u00e1lido!'); return; }
@@ -1410,6 +1487,34 @@ function salvarComissao(){
 }
 
 var comPagamentos = JSON.parse(localStorage.getItem('arp_com_pay') || '{}');
+var comFechamentos = JSON.parse(localStorage.getItem('arp_com_fechamentos') || '[]');
+function saveComFechamentos(){ LS('arp_com_fechamentos', JSON.stringify(comFechamentos)); }
+
+function fecharMesComissao(){
+  var mes = prompt('Informe o mês/ano a encerrar (ex: 06/2026):');
+  if(!mes || !mes.match(/^\d{2}\/\d{4}$/)) return alert('Formato inválido! Use MM/AAAA');
+  for(var i=0;i<comFechamentos.length;i++){ if(comFechamentos[i].mes===mes){ alert('Mês já encerrado!'); return; } }
+  var partes = mes.split('/');
+  var mm = parseInt(partes[0])-1; var aaaa = parseInt(partes[1]);
+  var ini = new Date(aaaa,mm,1); var fim = new Date(aaaa,mm+1,0,23,59,59);
+  var osMes = osOrdens.filter(function(o){
+    if(o.status!=='Concluída' || !o.dataConclusao) return false;
+    var p = o.dataConclusao.split('/');
+    if(p.length!==3) return false;
+    var d = new Date(+p[2],+p[1]-1,+p[0]);
+    return d>=ini && d<=fim;
+  });
+  var porTec = {};
+  osMes.forEach(function(o){
+    var tot=(o.valor||0); if(o.materiais) o.materiais.forEach(function(m){ tot+=m.valor; });
+    if(!porTec[o.tecnico]) porTec[o.tecnico]={qtd:0,total:0,os:[]};
+    porTec[o.tecnico].qtd++; porTec[o.tecnico].total+=tot; porTec[o.tecnico].os.push(o.id);
+  });
+  comFechamentos.push({ mes:mes, percent:COMISSAO_PERCENT, tecnicos:porTec, fechadoEm:new Date().toLocaleDateString('pt-BR'), fechadoPor:currentUser.name });
+  saveComFechamentos();
+  renderComissoes();
+  alert('Mês '+mes+' encerrado com sucesso!');
+}
 function salvarPagamentoTec(tec){
   var el = document.getElementById('pay_'+tec.replace(/ /g,'_'));
   if(!el) return;
@@ -1471,7 +1576,31 @@ function renderComissoes(){
       '<div class="com-value">R$ '+com.toFixed(2)+'</div>'+
       '<div class="com-sub">Faturado: R$ '+me.total.toFixed(2)+' &middot; '+me.qtd+' OS &middot; Taxa '+COMISSAO_PERCENT+'%</div></div>';
   }
-  document.getElementById('comissaoContent').innerHTML = html || '<div style="padding:20px;color:#999;">Nenhuma OS conclu\u00edda ainda.</div>';
+  document.getElementById('comissaoContent').innerHTML = html || '<div style="padding:20px;color:#999;">Nenhuma OS concluída ainda.</div>';
+
+  // Fechamentos mensais
+  var listaEl = document.getElementById('comFechamentosLista');
+  if(listaEl){
+    var isAdmin2 = currentUser.profile==='ADMIN';
+    var fechHtml = comFechamentos.slice().reverse().map(function(f){
+      var tecHtml = Object.keys(f.tecnicos).map(function(t,ti){
+        var tec = f.tecnicos[t];
+        var cor = COM_CORES[ti%COM_CORES.length];
+        var com = tec.total * f.percent/100;
+        return '<div class="com-card" style="background:'+cor.bg+';color:'+cor.txt+';margin-bottom:8px;">'+
+          '<div style="font-size:13px;font-weight:700;">'+t+'</div>'+
+          '<div class="com-value">R$ '+com.toFixed(2)+'</div>'+
+          '<div class="com-sub">'+tec.qtd+' OS • Faturado: R$ '+tec.total.toFixed(2)+' • Taxa: '+f.percent+'%</div>'+
+          '</div>';
+      }).join('');
+      return '<div style="border:2px solid #d0e8e5;border-radius:10px;padding:16px;margin-bottom:14px;">'+
+        '<div style="font-size:14px;font-weight:700;color:var(--cor-primaria);margin-bottom:10px;">Comissão – '+f.mes+
+        ' <span style="font-size:11px;font-weight:normal;color:#888;">(encerrado em '+f.fechadoEm+' por '+f.fechadoPor+')</span>'+
+        (isAdmin2?'<button class="btn-danger btn-small" style="float:right;" onclick="excluirFechamento(\''+f.mes+'\')">Excluir</button>':'')+
+        '</div>'+tecHtml+'</div>';
+    }).join('');
+    listaEl.innerHTML = fechHtml || '<div style="padding:12px;color:#999;">Nenhum mês encerrado ainda. Clique em "Encerrar Mês" para criar.</div>';
+  }
 }
 
 function fillPerfis(){
@@ -1671,12 +1800,30 @@ function resetCores(){
   alert('Cores restauradas!');
 }
 
-function salvarLogo(){
-  var url = document.getElementById('logoUrl').value.trim();
-  if(url){ LS('arp_logo', url); } else { localStorage.removeItem('arp_logo'); }
-  aplicarLogo();
-  alert('Logo salva!');
+function uploadLogo(key, fieldId, input){
+  var file = input.files[0];
+  if(!file) return;
+  if(file.size > 500*1024){ alert('Imagem muito grande. Use até 500KB.'); return; }
+  var reader = new FileReader();
+  reader.onload = function(ev){
+    LS(key, ev.target.result);
+    document.getElementById(fieldId).value = '(arquivo carregado)';
+    aplicarLogo();
+    alert('Logo salva!');
+  };
+  reader.readAsDataURL(file);
 }
+function salvarLogos(){
+  var url = document.getElementById('logoUrl').value.trim();
+  var urlOs = document.getElementById('logoOsUrl').value.trim();
+  var urlR = document.getElementById('logoReciboUrl').value.trim();
+  if(url && !url.startsWith('(')) LS('arp_logo', url);
+  if(urlOs && !urlOs.startsWith('(')) LS('arp_logo_os', urlOs);
+  if(urlR && !urlR.startsWith('(')) LS('arp_logo_recibo', urlR);
+  aplicarLogo();
+  alert('Logos salvas!');
+}
+function salvarLogo(){ salvarLogos(); }
 
 function salvarEmpresa(){
   empresa.cnpj = document.getElementById('empCnpj').value.trim();
@@ -2091,6 +2238,21 @@ function _gerarDocxComJSZip(lista){
 
 aplicarLogo();
 </script>
+<div id="obsOverlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:500;align-items:center;justify-content:center;padding:16px;">
+  <div style="background:#fff;border-radius:12px;width:100%;max-width:560px;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 10px 40px rgba(0,0,0,0.3);">
+    <div style="padding:18px 20px;border-bottom:1px solid #e1dfdd;display:flex;justify-content:space-between;align-items:center;">
+      <div style="font-size:16px;font-weight:700;color:var(--cor-primaria);">Observa&ccedil;&otilde;es da OS</div>
+      <button onclick="fecharPainelObs()" style="background:none;border:none;font-size:20px;cursor:pointer;color:#666;">&times;</button>
+    </div>
+    <div style="padding:18px;flex:1;overflow-y:auto;">
+      <div id="obsHistorico"></div>
+    </div>
+    <div style="padding:18px;border-top:1px solid #e1dfdd;">
+      <textarea id="obsTextoNovo" class="form-input" placeholder="Nova observação..." style="min-height:80px;resize:vertical;margin-bottom:10px;"></textarea>
+      <button class="btn-primary" onclick="salvarNovaObs()">Adicionar Observação</button>
+    </div>
+  </div>
+</div>
 <input type="file" id="nfFileInput" accept="application/pdf" multiple style="display:none;" onchange="processarAnexosPdf(this)">
 </body>
 </html>
