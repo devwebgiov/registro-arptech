@@ -1907,7 +1907,7 @@ function salvarEmpresa(){
 }
 
 // ===== SINCRONIZACAO ENTRE DISPOSITIVOS =====
-var SYNC_URL_PADRAO = 'https://script.google.com/macros/s/AKfycbxYRAfAW9NtUsRg2iisBZgisO5OjdCTiJpmvqaWUPssFts6uEfPNu_ByrQFsUwRbARRtw/exec';
+var SYNC_URL_PADRAO = 'https://script.google.com/macros/s/AKfycbzhWXLxXv_6KvsawxNWnbfMVwQr9pzC5Joc_SIgiFGCwVAK1a3RhhyMzc2bODDxkf9A/exec';
 var SYNC_URL = localStorage.getItem('arp_sync_url') || SYNC_URL_PADRAO;
 var SYNC_KEYS = ['arp_rec','arp_os','arp_nf','arp_users','arp_orgaos','arp_locais','arp_servicos','arp_empresa','arp_cores','arp_logo','comissao_percent','arp_com_pay','arp_nf_access','arp_admin_email','arp_nf_num'];
 var _syncTimer = null;
@@ -1941,26 +1941,78 @@ function pushNuvem(){
     .catch(function(){ _sincronizando=false; });
 }
 
-function pullNuvem(){
+function pullNuvem(silencioso){
   if(!SYNC_URL) return;
   fetch(SYNC_URL + (SYNC_URL.indexOf('?')<0?'?':'&') + 'action=load')
     .then(function(r){ return r.json(); })
     .then(function(remoto){
       if(!remoto || !remoto._ts) return;
       var localTs = parseInt(localStorage.getItem('arp_sync_ts')||'0');
-      if(remoto._ts > localTs && sessionStorage.getItem('arp_just_synced')!=='1'){
-        SYNC_KEYS.forEach(function(k){
-          if(remoto[k]!==undefined) localStorage.setItem(k, remoto[k]);
-        });
-        localStorage.setItem('arp_sync_ts', String(remoto._ts));
+      if(remoto._ts <= localTs){ sessionStorage.removeItem('arp_just_synced'); return; }
+      if(sessionStorage.getItem('arp_just_synced')==='1'){ sessionStorage.removeItem('arp_just_synced'); return; }
+
+      // Detectar novas OS vindas do WhatsApp
+      var osRemoto = [];
+      var osLocal  = records ? [] : [];
+      try { osRemoto = JSON.parse(remoto.arp_os || '[]'); } catch(e){}
+      try { osLocal  = JSON.parse(localStorage.getItem('arp_os')||'[]'); } catch(e){}
+
+      var idsLocais = {};
+      osLocal.forEach(function(o){ idsLocais[o.id]=1; });
+      var novasWA = osRemoto.filter(function(o){
+        return !idsLocais[o.id] && o.origem==='whatsapp';
+      });
+
+      // Atualizar dados locais
+      SYNC_KEYS.forEach(function(k){
+        if(remoto[k]!==undefined) localStorage.setItem(k, remoto[k]);
+      });
+      localStorage.setItem('arp_sync_ts', String(remoto._ts));
+
+      if(novasWA.length > 0 && currentUser){
+        // Recarregar arrays em memória sem refresh total
+        try{ osOrdens = JSON.parse(localStorage.getItem('arp_os')||'[]'); }catch(e){}
+        try{ records  = JSON.parse(localStorage.getItem('arp_rec')||'[]'); }catch(e){}
+        // Notificação
+        var msg = novasWA.length===1
+          ? 'Nova OS via WhatsApp! ' + novasWA[0].id + ' - ' + novasWA[0].cliente
+          : novasWA.length + ' novas OS via WhatsApp recebidas!';
+        mostrarNotificacao(msg);
+        // Atualizar tela atual
+        var tabAtiva = document.querySelector('.tab-content.active');
+        if(tabAtiva){
+          var id = tabAtiva.id;
+          if(id==='dashboard') loadDashboard();
+          if(id==='osEmAberto') renderOS('aberta');
+          if(id==='osAbertas') renderOS('andamento');
+          if(id==='osConcluidas') renderOS('concluida');
+        }
+      } else if(!silencioso){
         sessionStorage.setItem('arp_just_synced','1');
         location.reload();
-      } else {
-        sessionStorage.removeItem('arp_just_synced');
       }
     })
     .catch(function(){});
 }
+
+function mostrarNotificacao(msg){
+  var el = document.getElementById('waNotif');
+  if(!el){
+    el = document.createElement('div');
+    el.id='waNotif';
+    el.style.cssText='position:fixed;top:70px;right:16px;z-index:9999;background:#016535;color:#fff;'+
+      'padding:14px 18px;border-radius:12px;font-size:13px;font-weight:600;max-width:300px;'+
+      'box-shadow:0 6px 20px rgba(0,0,0,0.3);line-height:1.5;white-space:pre-line;cursor:pointer;';
+    el.onclick=function(){ el.remove(); };
+    document.body.appendChild(el);
+  }
+  el.textContent=msg;
+  clearTimeout(el._t);
+  el._t=setTimeout(function(){ if(el.parentNode) el.remove(); }, 8000);
+}
+
+// Poll automático a cada 15 segundos
+setInterval(function(){ if(currentUser) pullNuvem(true); }, 15000);
 
 function salvarSyncUrl(){
   var url = document.getElementById('syncUrl').value.trim();
