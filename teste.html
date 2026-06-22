@@ -174,6 +174,9 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
       Fila de Atendimento <span id="badgePendentes" style="background:#dc2626;color:#fff;border-radius:10px;padding:1px 7px;font-size:10px;margin-left:auto;display:none;">0</span>
     </div>
     <div class="menu-item" id="m-notas" onclick="goTab('notas',this,'Notas Fiscais')" style="display:none;">Notas Fiscais</div>
+    <div class="menu-item" id="m-fiscal-dash" onclick="goTab('fiscalDash',this,'Dashboard Fiscal')" style="display:none;">Dashboard</div>
+    <div class="menu-item" id="m-fiscal-rel" onclick="goTab('fiscalRelatorio',this,'Relat&oacute;rio de Atendimentos')" style="display:none;">Relat&oacute;rios</div>
+    <div class="menu-item" id="m-fiscal-logs" onclick="goTab('fiscalLogs',this,'Logs de Acesso')" style="display:none;">Logs de Acesso</div>
     <div class="menu-item" id="m-relatorio" onclick="goTab('relatorio',this,'Relat\u00f3rio Di\u00e1rio')" style="display:none;">Relat&oacute;rio Di&aacute;rio</div>
     <div class="menu-item" id="m-comissoes" onclick="goTab('comissoes',this,'Comiss\u00f5es')">Comiss&otilde;es</div>
     <div class="menu-item" id="m-gerenciar" onclick="goTab('gerenciar',this,'Gerenciar')" style="display:none;">Gerenciar</div>
@@ -244,6 +247,13 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
             <div class="form-group"><label class="form-label">Hor&aacute;rio do atendimento</label><input type="time" id="newRegHora" class="form-input"></div>
           </div>
           <div class="form-group"><label class="form-label">Descri&ccedil;&atilde;o</label><textarea id="newRegDesc" class="form-input" style="min-height:100px;resize:vertical;"></textarea></div>
+          <div class="form-group"><label class="form-label">Status do atendimento</label>
+            <select id="newRegStatus" class="form-input">
+              <option value="Concluido">Conclu&iacute;do</option>
+              <option value="Pendente">Pendente</option>
+              <option value="Em Aberto">Em Aberto</option>
+            </select>
+          </div>
           <button class="btn-primary" onclick="salvarRegistro()">Salvar</button>
         </div>
       </div>
@@ -285,6 +295,51 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
 
       <div id="osConcluidas" class="tab-content">
         <div class="card"><div class="card-title">Ordens Conclu&iacute;das</div><div id="osConcluiContent" class="scroll-list"></div><div id="osConcluiPag" class="pagination"></div></div>
+      </div>
+
+      <div id="fiscalDash" class="tab-content">
+        <div class="stats-grid" id="fiscalStatsGrid"></div>
+        <div class="card">
+          <div class="card-title">Registros Recentes — Equipe SEMED</div>
+          <div id="fiscalDashLista" class="scroll-list"></div>
+        </div>
+      </div>
+
+      <div id="fiscalRelatorio" class="tab-content">
+        <div class="card">
+          <div class="card-title">Relat&oacute;rio de Atendimentos SEMED</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+            <div class="form-group"><label class="form-label">Data inicial</label><input type="date" id="fiscalDataIni" class="form-input"></div>
+            <div class="form-group"><label class="form-label">Data final</label><input type="date" id="fiscalDataFim" class="form-input"></div>
+          </div>
+          <div class="form-group"><label class="form-label">T&eacute;cnico</label>
+            <select id="fiscalTecnico" class="form-input">
+              <option value="">Todos os t&eacute;cnicos SEMED</option>
+            </select>
+          </div>
+          <div class="form-group"><label class="form-label">Status</label>
+            <select id="fiscalStatus" class="form-input">
+              <option value="">Todos</option>
+              <option value="Concluido">Conclu&iacute;do</option>
+              <option value="Pendente">Pendente</option>
+              <option value="Em Aberto">Em Aberto</option>
+            </select>
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;">
+            <button class="btn-primary" onclick="filtrarFiscal()">Filtrar</button>
+            <button class="btn-primary" style="background:var(--cor-secundaria);" onclick="exportarFiscalPDF()">Exportar PDF</button>
+            <button class="btn-primary" style="background:#6b7280;" onclick="exportarFiscalDocx()">Exportar .docx</button>
+          </div>
+          <div id="fiscalResultado" class="scroll-list"></div>
+          <div id="fiscalPag" class="pagination"></div>
+        </div>
+      </div>
+
+      <div id="fiscalLogs" class="tab-content">
+        <div class="card">
+          <div class="card-title">Logs de Acesso ao Sistema</div>
+          <div id="fiscalLogsLista" class="scroll-list"></div>
+        </div>
       </div>
 
       <div id="relatorio" class="tab-content">
@@ -511,10 +566,11 @@ var DEFAULT_USERS = [
   {login:'giovanna', name:'Giovanna',      pass:'giovanna123',  profile:'SEMED',   mustChange:false},
   {login:'neudson',  name:'Neudson',       pass:'neudson123',   profile:'ARPTECH', mustChange:false},
   {login:'rodrigo',  name:'Rodrigo',       pass:'rodrigo123',   profile:'ARPTECH', mustChange:false},
-  {login:'admin',    name:'Administrador', pass:'admin@arptech',profile:'ADMIN',   mustChange:false}
+  {login:'admin',    name:'Administrador', pass:'admin@arptech',profile:'ADMIN',   mustChange:false},
+  {login:'fiscal',   name:'Fiscal SEMED',  pass:'Fiscal@2026!', profile:'FISCAL',  mustChange:true}
 ];
 var usuarios = JSON.parse(localStorage.getItem('hml_arp_users') || 'null') || DEFAULT_USERS;
-var orgaos = JSON.parse(localStorage.getItem('hml_arp_orgaos') || 'null') || ['SEMED','ARPTECH'];
+var orgaos = JSON.parse(localStorage.getItem('hml_arp_orgaos') || 'null') || ['SEMED','ARPTECH','FISCAL'];
 var empresa = JSON.parse(localStorage.getItem('hml_arp_empresa') || 'null') || {cnpj:'', ie:'', email:'', tel:'', end:''};
 
 var DEFAULT_LOCAIS = [
@@ -558,6 +614,18 @@ function aplicarLogo(){
 aplicarCores();
 
 function saveUsers(){ LS('hml_arp_users', JSON.stringify(usuarios)); }
+
+function registrarLogAcesso(usuario, acao){
+  var logs = JSON.parse(localStorage.getItem('hml_arp_logs_acesso') || '[]');
+  var agora = new Date();
+  logs.push({
+    usuario:  usuario,
+    acao:     acao,
+    dt:       agora.toLocaleDateString('pt-BR') + ' as ' + agora.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})
+  });
+  if(logs.length > 1000) logs = logs.slice(-1000);
+  LS('hml_arp_logs_acesso', JSON.stringify(logs));
+}
 function saveOrgaos(){ LS('hml_arp_orgaos', JSON.stringify(orgaos)); }
 function saveLocais(){ LS('hml_arp_locais', JSON.stringify(locais)); }
 function saveServicos(){ LS('hml_arp_servicos', JSON.stringify(servicos)); }
@@ -641,6 +709,7 @@ function login(){
   document.getElementById('loginScreen').style.display='none';
   document.getElementById('systemWrapper').classList.add('active');
   document.getElementById('userInfo').innerHTML = found.name + '<br><small style="color:#9fb6c6">' + found.profile + '</small>';
+  registrarLogAcesso(found.name, 'LOGIN');
   applyPermissions();
   if(found.mustChange){
     alert('Voc\u00ea usa senha tempor\u00e1ria. Redefina em "Minha Conta" em at\u00e9 '+EXPIRA_DIAS+' dias.');
@@ -649,6 +718,7 @@ function login(){
 }
 
 function logout(){
+  if(currentUser) registrarLogAcesso(currentUser.name, 'LOGOUT');
   currentUser=null;
   resetUI();
   document.getElementById('loginScreen').style.display='flex';
@@ -711,6 +781,12 @@ function applyPermissions(){
   show('m-dashboard', true);
   show('m-registros', p==='SEMED' || p==='ADMIN');
   show('m-relatorio', temRelatorio());
+  show('m-fiscal-dash', p==='FISCAL');
+  show('m-fiscal-rel', p==='FISCAL');
+  show('m-fiscal-logs', p==='ADMIN' || p==='FISCAL');
+  if(p==='FISCAL'){
+    document.getElementById('btnNovoTop').style.display='none';
+  }
   show('m-os', p==='ARPTECH' || p==='ADMIN');
   show('m-comissoes', p==='ARPTECH' || p==='ADMIN');
   show('m-gerenciar', p==='ADMIN');
@@ -764,7 +840,11 @@ function applyPermissions(){
     document.getElementById('empEnd').value = empresa.end || '';
   }
   aplicarLogo();
-  goTab('dashboard', document.getElementById('m-dashboard'), 'Dashboard');
+  if(currentUser && currentUser.profile==='FISCAL'){
+    goTab('fiscalDash', document.getElementById('m-fiscal-dash'), 'Dashboard Fiscal');
+  } else {
+    goTab('dashboard', document.getElementById('m-dashboard'), 'Dashboard');
+  }
 }
 
 function atualizarBotaoNovo(tab){
@@ -801,6 +881,9 @@ function goTab(tab, el, title){
   if(tab==='comissoes') renderComissoes();
   if(tab==='gerenciar'){ renderUsuarios(); renderRelPerm(); }
   if(tab==='relatorio') initRelatorio();
+  if(tab==='fiscalDash') carregarFiscalDash();
+  if(tab==='fiscalRelatorio') initFiscalRelatorio();
+  if(tab==='fiscalLogs') renderLogsAcesso();
   if(tab==='locais') renderLocais();
   if(tab==='servicos') renderServicos();
   if(tab==='notas'){ fillNfOs(); renderNotas(); renderNfPerm(); }
@@ -962,7 +1045,9 @@ function salvarRegistro(){
     alert('Registro atualizado!');
   } else {
     records.push({ id:Date.now(), resp:resp, local:loc.nome, locType:type, desc:desc,
-      date: pd[2]+'/'+pd[1]+'/'+pd[0], start: horaV });
+      date: pd[2]+'/'+pd[1]+'/'+pd[0], start: horaV,
+    status: (document.getElementById('newRegStatus')||{value:'Concluido'}).value
+  });
     LS('hml_arp_rec', JSON.stringify(records));
     alert('Registro salvo!');
   }
@@ -2524,6 +2609,219 @@ function _gerarDocxComJSZip(lista){
       document.body.removeChild(a);
       setTimeout(function(){ URL.revokeObjectURL(url); }, 3000);
     }).catch(function(e){ alert('Erro ao gerar .docx: '+e.message); });
+}
+
+// =============================================================
+// PERFIL FISCAL DE CONTRATO — SEMED
+// =============================================================
+
+var FISCAL_PAGE = 0;
+
+function tecnologosSemed(){
+  return usuarios.filter(function(u){ return u.profile==='SEMED'; });
+}
+
+function initFiscalRelatorio(){
+  var now = new Date();
+  var ini = new Date(now.getFullYear(), now.getMonth(), 1);
+  document.getElementById('fiscalDataIni').value = ini.toISOString().split('T')[0];
+  document.getElementById('fiscalDataFim').value = now.toISOString().split('T')[0];
+  var sel = document.getElementById('fiscalTecnico');
+  sel.innerHTML = '<option value="">Todos os tecnicos SEMED</option>';
+  tecnologosSemed().forEach(function(u){
+    sel.innerHTML += '<option value="'+u.name+'">'+u.name+'</option>';
+  });
+  filtrarFiscal();
+}
+
+function carregarFiscalDash(){
+  var hoje = new Date().toLocaleDateString('pt-BR');
+  var semedUsers = tecnologosSemed().map(function(u){ return u.name; });
+  var recSemed = records.filter(function(r){ return semedUsers.indexOf(r.resp)>=0; });
+  var hoje_ = recSemed.filter(function(r){ return r.date===hoje; });
+  var concl  = recSemed.filter(function(r){ return (r.status||'Concluido')==='Concluido'; });
+  var pend   = recSemed.filter(function(r){ return (r.status||'Concluido')==='Pendente'; });
+
+  document.getElementById('fiscalStatsGrid').innerHTML =
+    '<div class="stat-card"><div class="stat-label">Total Registros SEMED</div><div class="stat-value">'+recSemed.length+'</div></div>'+
+    '<div class="stat-card"><div class="stat-label">Hoje</div><div class="stat-value">'+hoje_.length+'</div></div>'+
+    '<div class="stat-card"><div class="stat-label">Conclu&iacute;dos</div><div class="stat-value" style="color:#14693c;">'+concl.length+'</div></div>'+
+    '<div class="stat-card"><div class="stat-label">Pendentes</div><div class="stat-value" style="color:#92600a;">'+pend.length+'</div></div>';
+
+  var lista = recSemed.slice().reverse().slice(0,20);
+  document.getElementById('fiscalDashLista').innerHTML = lista.map(recordCard).join('') ||
+    '<div style="padding:20px;color:#999;">Nenhum registro encontrado.</div>';
+}
+
+function filtrarFiscal(){
+  var ini   = new Date(document.getElementById('fiscalDataIni').value+'T00:00:00');
+  var fim   = new Date(document.getElementById('fiscalDataFim').value+'T23:59:59');
+  var tec   = document.getElementById('fiscalTecnico').value;
+  var st    = document.getElementById('fiscalStatus').value;
+  var semedNames = tecnologosSemed().map(function(u){ return u.name; });
+
+  var lista = records.filter(function(r){
+    if(semedNames.indexOf(r.resp)<0) return false;
+    var parts = r.date.split('/');
+    if(parts.length!==3) return false;
+    var d = new Date(+parts[2],+parts[1]-1,+parts[0]);
+    if(d<ini || d>fim) return false;
+    if(tec && r.resp!==tec) return false;
+    if(st && (r.status||'Concluido')!==st) return false;
+    return true;
+  }).sort(function(a,b){
+    var pa=a.date.split('/'); var pb=b.date.split('/');
+    var da=new Date(+pa[2],+pa[1]-1,+pa[0]); var db=new Date(+pb[2],+pb[1]-1,+pb[0]);
+    if(da.getTime()!==db.getTime()) return da-db;
+    return (a.start||'').localeCompare(b.start||'');
+  }).reverse();
+
+  var total = Math.ceil(lista.length/50);
+  if(FISCAL_PAGE>=total) FISCAL_PAGE=Math.max(0,total-1);
+  var slice = lista.slice(FISCAL_PAGE*50,(FISCAL_PAGE+1)*50);
+
+  document.getElementById('fiscalResultado').innerHTML = slice.map(function(r){
+    var ti = tipoInfo(r.locType);
+    var st2 = r.status||'Concluido';
+    var stCor = st2==='Concluido'?'#d9f2e3':st2==='Pendente'?'#fff3d6':'#fde8e8';
+    var stTxt = st2==='Concluido'?'#14693c':st2==='Pendente'?'#92600a':'#b91c1c';
+    return '<div class="record-item"><div class="record-left">'+
+      '<div class="record-name">'+r.resp+'</div>'+
+      '<div class="record-desc">'+r.desc+'</div>'+
+      '<div><span class="badge '+ti.cls+'">'+ti.label+'</span>'+
+      '<span class="badge badge-loc">'+r.local+'</span>'+
+      '<span style="background:'+stCor+';color:'+stTxt+';padding:4px 10px;border-radius:8px;font-size:10px;font-weight:700;margin-left:6px;">'+st2+'</span>'+
+      '</div></div>'+
+      '<div class="record-meta"><div style="font-weight:600">'+r.date+'</div><div>'+(r.start||'--:--')+'</div></div></div>';
+  }).join('') || '<div style="padding:20px;color:#999;text-align:center;">Nenhum registro para o per&iacute;odo selecionado.</div>';
+
+  var pag = '';
+  if(total>1){
+    pag = '<button class="page-btn" onclick="gotoFiscal('+Math.max(0,FISCAL_PAGE-1)+')">&#8249;</button>';
+    for(var i=0;i<total;i++){
+      pag += '<button class="page-btn'+(i===FISCAL_PAGE?' active':'')+'" onclick="gotoFiscal('+i+')">'+(i+1)+'</button>';
+    }
+    pag += '<button class="page-btn" onclick="gotoFiscal('+Math.min(total-1,FISCAL_PAGE+1)+')">&#8250;</button>';
+  }
+  document.getElementById('fiscalPag').innerHTML = pag;
+}
+
+function gotoFiscal(i){ FISCAL_PAGE=i; filtrarFiscal(); }
+
+function getFiscalLista(){
+  var ini   = new Date(document.getElementById('fiscalDataIni').value+'T00:00:00');
+  var fim   = new Date(document.getElementById('fiscalDataFim').value+'T23:59:59');
+  var tec   = document.getElementById('fiscalTecnico').value;
+  var st    = document.getElementById('fiscalStatus').value;
+  var semedNames = tecnologosSemed().map(function(u){ return u.name; });
+  return records.filter(function(r){
+    if(semedNames.indexOf(r.resp)<0) return false;
+    var parts = r.date.split('/');
+    if(parts.length!==3) return false;
+    var d = new Date(+parts[2],+parts[1]-1,+parts[0]);
+    if(d<ini || d>fim) return false;
+    if(tec && r.resp!==tec) return false;
+    if(st && (r.status||'Concluido')!==st) return false;
+    return true;
+  }).sort(function(a,b){
+    var pa=a.date.split('/'); var pb=b.date.split('/');
+    var da=new Date(+pa[2],+pa[1]-1,+pa[0]); var db=new Date(+pb[2],+pb[1]-1,+pb[0]);
+    if(da.getTime()!==db.getTime()) return da-db;
+    return (a.start||'').localeCompare(b.start||'');
+  });
+}
+
+function exportarFiscalPDF(){
+  var lista = getFiscalLista();
+  if(!lista.length){ alert('Nenhum registro no per\u00edodo.'); return; }
+  var logoUrl = localStorage.getItem('hml_arp_logo') || '';
+  var logoHtml = logoUrl ? '<img src="'+logoUrl+'" style="max-height:66px;max-width:200px;">' : '<b style="font-size:22px;color:#016535;">ARP TECH</b>';
+  var tec   = document.getElementById('fiscalTecnico').value || 'Todos';
+  var ini   = document.getElementById('fiscalDataIni').value;
+  var fim   = document.getElementById('fiscalDataFim').value;
+  var stFlt = document.getElementById('fiscalStatus').value || 'Todos';
+
+  var linhas = lista.map(function(r,i){
+    var isSetor = r.locType==='setor';
+    var st2 = r.status||'Concluido';
+    var bg = i%2===0?'#f5f5f5':'#fff';
+    return '<tr style="background:'+bg+'">'+
+      '<td style="text-align:center;width:4%">'+(i+1)+'</td>'+
+      '<td style="text-align:center;width:13%">'+r.date+(r.start?' '+r.start:'')+'</td>'+
+      '<td style="width:12%">'+r.resp+'</td>'+
+      '<td style="width:12%">'+(isSetor?r.local:'')+'</td>'+
+      '<td style="width:12%">'+(!isSetor?r.local:'')+'</td>'+
+      '<td style="width:8%;text-align:center;">'+st2+'</td>'+
+      '<td>'+r.desc+'</td>'+
+      '</tr>';
+  }).join('');
+
+  var w = window.open('','_blank');
+  w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8">'+
+    '<title>Relatorio Fiscal SEMED</title><style>'+
+    '@page{size:A4 landscape;margin:0;}'+
+    'body{font-family:Arial,sans-serif;font-size:10pt;}'+
+    'table.outer{width:100%;border-collapse:collapse;}'+
+    'table.outer>thead{display:table-header-group;}'+
+    'table.outer>tfoot{display:table-footer-group;}'+
+    '.cab{display:flex;justify-content:space-between;align-items:flex-start;'+
+    'padding:8mm 10mm 4mm;border-bottom:1.5px solid #000;}'+
+    '.emp{font-style:italic;font-size:9.5pt;text-align:right;line-height:1.7;}'+
+    'h2{text-align:center;font-size:14pt;font-weight:bold;margin:4px 0 6px;}'+
+    '.subtit{text-align:center;font-size:10pt;color:#555;margin-bottom:8px;}'+
+    '.cont{padding:0 10mm;}'+
+    '.rod{padding:0 10mm 8mm;}'+
+    '.rodape{background:#016535;color:#fff;text-align:center;font-family:Arial;'+
+    'font-size:11pt;font-weight:bold;padding:7px 14px;border-radius:8px;}'+
+    'table.dados{width:100%;border-collapse:collapse;font-size:10pt;}'+
+    'table.dados th{background:#016535;color:#fff;font-weight:bold;padding:6px 4px;border:1px solid #016535;text-align:center;}'+
+    'table.dados td{padding:5px 4px;border:1px solid #ccc;vertical-align:top;}'+
+    'tr{page-break-inside:avoid;}'+
+    '</style></head><body>'+
+    '<table class="outer">'+
+    '<thead><tr><td>'+
+      '<div class="cab"><div>'+logoHtml+'</div>'+
+      '<div class="emp">ARP TECH DA AMAZ\u00d4NIA LTDA<br>CNPJ: 11.615.138/0001-11<br>Inscri\u00e7\u00e3o Estadual: 04.227.027-8</div></div>'+
+      '<h2>RELAT\u00d3RIO DE ATENDIMENTOS SEMED</h2>'+
+      '<div class="subtit">Periodo: '+ini+' a '+fim+' | T\u00e9cnico: '+tec+' | Status: '+stFlt+' | Total: '+lista.length+' registros</div>'+
+    '</td></tr></thead>'+
+    '<tfoot><tr><td class="rod"><div class="rodape">Rua 5 de Setembro, 384, Centro, CEP - 69.800-000 - Humait\u00e1 - AM  |  Fone: (97) 98429-4519  |  E-mail: suporte.arptech@gmail.com</div></td></tr></tfoot>'+
+    '<tbody><tr><td class="cont">'+
+      '<table class="dados"><thead><tr>'+
+        '<th style="width:4%">N\u00ba</th>'+
+        '<th style="width:13%">Data/Hora</th>'+
+        '<th style="width:11%">Respons\u00e1vel</th>'+
+        '<th style="width:12%">Setor</th>'+
+        '<th style="width:12%">Escola</th>'+
+        '<th style="width:8%">Status</th>'+
+        '<th>Descri\u00e7\u00e3o da Atividade</th>'+
+      '</tr></thead><tbody>'+linhas+'</tbody></table>'+
+    '</td></tr></tbody></table>'+
+    '</body></html>');
+  w.document.close();
+  setTimeout(function(){ w.print(); }, 600);
+}
+
+function exportarFiscalDocx(){
+  // Reutiliza o mesmo gerador de DOCX mas com coluna Status adicional
+  var lista = getFiscalLista();
+  if(!lista.length){ alert('Nenhum registro no per\u00edodo.'); return; }
+  // Reusar gerarRelatorioDocx (lista e passada via variavel global temporaria)
+  window._fiscalLista = lista;
+  window._fiscalMode  = true;
+  gerarRelatorioDocx(lista);
+}
+
+function renderLogsAcesso(){
+  var logs = JSON.parse(localStorage.getItem('hml_arp_logs_acesso') || '[]');
+  var html = logs.slice().reverse().slice(0,100).map(function(l,i){
+    return '<div class="record-item"><div class="record-left">'+
+      '<div class="record-name">'+l.usuario+'</div>'+
+      '<div class="record-desc">'+l.acao+'</div>'+
+      '</div><div class="record-meta"><div>'+l.dt+'</div></div></div>';
+  }).join('');
+  document.getElementById('fiscalLogsLista').innerHTML = html ||
+    '<div style="padding:20px;color:#999;">Nenhum log registrado ainda.</div>';
 }
 
 aplicarLogo();
