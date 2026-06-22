@@ -410,6 +410,15 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
 
       <div id="minhaConta" class="tab-content">
         <div class="card">
+          <div class="card-title">Sincronizar Meus Dados</div>
+          <p style="font-size:12px;color:#666;margin-bottom:12px;">
+            Use esta opção caso seus registros mais recentes não estejam aparecendo para outros dispositivos.
+            Isso envia todos os seus dados locais para a nuvem imediatamente.
+          </p>
+          <button class="btn-primary" onclick="sincronizarDadosLocais()">Enviar meus dados para a nuvem agora</button>
+          <div id="syncStatus" style="font-size:12px;margin-top:10px;color:var(--cor-acento);"></div>
+        </div>
+        <div class="card">
           <div class="card-title">Redefinir Minha Senha</div>
           <div class="pwd-rules"><b>Requisitos:</b> m&iacute;nimo 8 caracteres, mai&uacute;scula, min&uacute;scula, n&uacute;mero e caractere especial.</div>
           <div class="form-group"><label class="form-label">Senha atual</label><input type="password" id="mcSenhaAtual" class="form-input"></div>
@@ -460,6 +469,14 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
           <div class="form-group"><label class="form-label">URL de sincroniza&ccedil;&atilde;o</label><input type="text" id="syncUrl" class="form-input" placeholder="https://script.google.com/macros/s/.../exec"></div>
           <button class="btn-primary" onclick="salvarSyncUrl()">Salvar</button>
           <button class="btn-small" style="background:var(--cor-secundaria);color:#fff;margin-left:8px;" onclick="sincronizarAgora()">Sincronizar agora</button>
+        </div>
+        <div class="card">
+          <div class="card-title">Propagar Configura&ccedil;&otilde;es para Todos</div>
+          <p style="font-size:12px;color:#666;margin-bottom:12px;">
+            Ap&oacute;s salvar logo e dados da empresa, clique aqui para que todos os dispositivos recebam as atualiza&ccedil;&otilde;es automaticamente.
+          </p>
+          <button class="btn-primary" onclick="propagarConfiguracoes()">Salvar e propagar para todos agora</button>
+          <div id="propagStatus" style="font-size:12px;margin-top:10px;color:var(--cor-acento);"></div>
         </div>
         <div class="card">
           <div class="card-title">Dados da Empresa (impress&atilde;o e notas)</div>
@@ -1773,6 +1790,28 @@ function redefinirMinhaSenha(){
   alert('Senha redefinida com sucesso!');
 }
 
+function sincronizarDadosLocais(){
+  if(!SYNC_URL){ alert('Sincronização não configurada.'); return; }
+  var el = document.getElementById('syncStatus');
+  el.textContent = 'Enviando...';
+  var estado = coletarEstado();
+  estado._ts = Date.now();
+  localStorage.setItem('arp_sync_ts', String(estado._ts));
+  fetch(SYNC_URL, {
+    method:'POST',
+    headers:{'Content-Type':'text/plain;charset=utf-8'},
+    body: JSON.stringify({action:'save', data: estado})
+  }).then(function(){
+    el.textContent = 'Dados enviados com sucesso! ' + new Date().toLocaleTimeString('pt-BR');
+    // Atualizar arrays em memória
+    try{ records  = JSON.parse(localStorage.getItem('arp_rec')||'[]'); }catch(e){}
+    try{ osOrdens = JSON.parse(localStorage.getItem('arp_os') ||'[]'); }catch(e){}
+    loadDashboard();
+  }).catch(function(){
+    el.textContent = 'Erro ao enviar. Verifique a conexão.';
+  });
+}
+
 function salvarEmailAdmin(){
   var email = document.getElementById('mcEmailAdmin').value.trim();
   if(!email || email.indexOf('@')<0){ alert('E-mail inv\u00e1lido!'); return; }
@@ -1896,6 +1935,24 @@ function salvarLogos(){
 }
 function salvarLogo(){ salvarLogos(); }
 
+function propagarConfiguracoes(){
+  if(!SYNC_URL){ alert('Sincronização não configurada.'); return; }
+  var el = document.getElementById('propagStatus');
+  el.textContent = 'Propagando...';
+  var estado = coletarEstado();
+  estado._ts = Date.now() + 999; // ts ligeiramente maior para forçar pull nos outros
+  localStorage.setItem('arp_sync_ts', String(estado._ts));
+  fetch(SYNC_URL, {
+    method:'POST',
+    headers:{'Content-Type':'text/plain;charset=utf-8'},
+    body: JSON.stringify({action:'save', data: estado})
+  }).then(function(){
+    el.textContent = 'Configurações propagadas! Todos os dispositivos receberão em até 15 segundos.';
+  }).catch(function(){
+    el.textContent = 'Erro ao propagar. Verifique a conexão.';
+  });
+}
+
 function salvarEmpresa(){
   empresa.cnpj = document.getElementById('empCnpj').value.trim();
   empresa.ie = document.getElementById('empIe').value.trim();
@@ -1963,9 +2020,25 @@ function pullNuvem(silencioso){
         return !idsLocais[o.id] && o.origem==='whatsapp';
       });
 
-      // Atualizar dados locais
+      // Merge inteligente: combina registros locais + remotos por ID
+      function mergeArray(chave){
+        var local = [];
+        var remArr = [];
+        try{ local = JSON.parse(localStorage.getItem(chave)||'[]'); }catch(e){}
+        try{ remArr = JSON.parse(remoto[chave]||'[]'); }catch(e){}
+        var mapa = {};
+        local.forEach(function(r){ if(r.id) mapa[r.id]=r; });
+        remArr.forEach(function(r){ if(r.id) mapa[r.id]=r; });
+        return JSON.stringify(Object.values(mapa));
+      }
+
       SYNC_KEYS.forEach(function(k){
-        if(remoto[k]!==undefined) localStorage.setItem(k, remoto[k]);
+        if(remoto[k]===undefined) return;
+        if(k==='arp_rec' || k==='arp_os' || k==='arp_nf'){
+          localStorage.setItem(k, mergeArray(k));
+        } else {
+          localStorage.setItem(k, remoto[k]);
+        }
       });
       localStorage.setItem('arp_sync_ts', String(remoto._ts));
 
