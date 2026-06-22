@@ -170,6 +170,9 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
       <div class="menu-item" onclick="goTab('osConcluidas',this,'OS / Conclu\u00eddas')">Conclu&iacute;das</div>
     </div>
 
+    <div class="menu-item" id="m-atendentes" onclick="goTab('atendentes',this,'Fila de Atendimento')" style="display:none;">
+      Fila de Atendimento <span id="badgePendentes" style="background:#dc2626;color:#fff;border-radius:10px;padding:1px 7px;font-size:10px;margin-left:auto;display:none;">0</span>
+    </div>
     <div class="menu-item" id="m-notas" onclick="goTab('notas',this,'Notas Fiscais')" style="display:none;">Notas Fiscais</div>
     <div class="menu-item" id="m-relatorio" onclick="goTab('relatorio',this,'Relat\u00f3rio Di\u00e1rio')" style="display:none;">Relat&oacute;rio Di&aacute;rio</div>
     <div class="menu-item" id="m-comissoes" onclick="goTab('comissoes',this,'Comiss\u00f5es')">Comiss&otilde;es</div>
@@ -302,6 +305,15 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
             <button class="btn-primary" style="background:var(--cor-secundaria);" onclick="exportarRelatorio('docx')">Exportar .docx</button>
           </div>
           <div id="relPreview" style="margin-top:20px;"></div>
+        </div>
+      </div>
+
+      <div id="atendentes" class="tab-content">
+        <div class="card">
+          <div class="card-title">Fila de Atendimento Humano</div>
+          <p style="font-size:12px;color:#666;margin-bottom:14px;">Clientes aguardando atendimento manual via WhatsApp. Ao assumir, o cliente sera notificado que um tecnico esta em contato.</p>
+          <div id="atendentesList" class="scroll-list"></div>
+          <div style="margin-top:12px;"><button class="btn-primary" onclick="atualizarPendentes()">Atualizar fila</button></div>
         </div>
       </div>
 
@@ -706,6 +718,7 @@ function applyPermissions(){
   show('m-servicos', p==='ADMIN');
   show('m-customizar', p==='ADMIN');
   show('m-notas', temNF());
+  show('m-atendentes', p==='ADMIN' || p==='ARPTECH');
   show('m-conta', true);
   document.getElementById('comAdminCard').style.display = p==='ADMIN' ? 'block' : 'none';
   var comAdmin2 = document.getElementById('comAdminCard2');
@@ -791,6 +804,7 @@ function goTab(tab, el, title){
   if(tab==='locais') renderLocais();
   if(tab==='servicos') renderServicos();
   if(tab==='notas'){ fillNfOs(); renderNotas(); renderNfPerm(); }
+  if(tab==='atendentes') atualizarPendentes();
 }
 
 function toggleSubmenu(el, id){
@@ -1044,6 +1058,140 @@ function abrirPainelObs(id){
   overlay.style.display='flex';
 }
 
+function abrirCadastroClienteOS(osId){
+  var o = null;
+  for(var i=0;i<osOrdens.length;i++){ if(osOrdens[i].id===osId){ o=osOrdens[i]; break; } }
+  if(!o) return;
+  document.getElementById('cadOsId').value = osId;
+  document.getElementById('cadCliNome').value = o.cliente || '';
+  document.getElementById('cadCliTel').value = o.telefone || '';
+  document.getElementById('cadCliEmail').value = o.email || '';
+  document.getElementById('cadCliEnd').value = '';
+  document.getElementById('cadCliEmp').value = o.doc || '';
+  document.getElementById('cadClienteOverlay').style.display='flex';
+}
+
+function atualizarPendentes(){
+  if(!SYNC_URL){ document.getElementById('atendentesList').innerHTML='<div style="padding:12px;color:#999;">Sincronizacao nao configurada.</div>'; return; }
+  fetch(SYNC_URL + (SYNC_URL.indexOf('?')<0?'?':'&') + 'action=load')
+    .then(function(r){ return r.json(); })
+    .then(function(dados){
+      var pendentes = [];
+      try{ pendentes = JSON.parse(dados['hml_wa_pendentes']||'[]'); }catch(e){}
+      var naoLidos = pendentes.filter(function(p){ return !p.lido; });
+
+      // Atualizar badge
+      var badge = document.getElementById('badgePendentes');
+      if(naoLidos.length > 0){
+        badge.textContent = naoLidos.length;
+        badge.style.display='inline';
+      } else {
+        badge.style.display='none';
+      }
+
+      if(!pendentes.length){
+        document.getElementById('atendentesList').innerHTML='<div style="padding:20px;color:#999;text-align:center;">Nenhum cliente aguardando atendimento.</div>';
+        return;
+      }
+
+      var html = pendentes.slice().reverse().map(function(p, i){
+        var realIdx = pendentes.length-1-i;
+        return '<div class="record-item" style="background:'+(p.lido?'#f9f9f9':'#fff9f0')+'">'+
+          '<div class="record-left">'+
+            '<div class="record-name">'+(p.lido?'':'🔴 ')+p.cliente+' — '+p.tel+'</div>'+
+            '<div class="record-desc">"'+p.msg+'"</div>'+
+            '<div style="font-size:10px;color:#999;margin-top:4px;">'+p.dt+'</div>'+
+            '<div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">'+
+              '<button class="btn-small" style="background:var(--cor-acento);color:#fff;" onclick="assumirAtendimento('+realIdx+',\''+p.tel+'\')">Assumir atendimento</button>'+
+              '<button class="btn-small" style="background:var(--cor-secundaria);color:#fff;" onclick="marcarLido('+realIdx+')">Marcar como visto</button>'+
+            '</div>'+
+          '</div>'+
+          '<div class="record-meta"><div>'+p.dt+'</div><div>'+(p.lido?'Visto':'Aguardando')+'</div></div>'+
+        '</div>';
+      }).join('');
+      document.getElementById('atendentesList').innerHTML = html;
+    })
+    .catch(function(){ document.getElementById('atendentesList').innerHTML='<div style="padding:12px;color:#dc2626;">Erro ao carregar. Tente novamente.</div>'; });
+}
+
+function assumirAtendimento(idx, tel){
+  var nome = currentUser ? currentUser.name : 'Tecnico';
+  if(!confirm('Assumir atendimento de '+tel+'?\nO cliente sera notificado.')) return;
+  // Marca como lido e notifica via Apps Script
+  marcarLido(idx);
+  alert('Atendimento assumido!\n\nO cliente '+tel+' sera notificado pelo WhatsApp que '+nome+' esta em atendimento.\n\nEntre em contato diretamente pelo WhatsApp para continuar.');
+}
+
+function marcarLido(idx){
+  if(!SYNC_URL) return;
+  fetch(SYNC_URL + (SYNC_URL.indexOf('?')<0?'?':'&') + 'action=load')
+    .then(function(r){ return r.json(); })
+    .then(function(dados){
+      var pendentes = [];
+      try{ pendentes = JSON.parse(dados['hml_wa_pendentes']||'[]'); }catch(e){}
+      if(pendentes[idx]) pendentes[idx].lido = true;
+      dados['hml_wa_pendentes'] = JSON.stringify(pendentes);
+      dados._ts = Date.now();
+      return fetch(SYNC_URL, {
+        method:'POST',
+        headers:{'Content-Type':'text/plain;charset=utf-8'},
+        body: JSON.stringify({action:'save', data: dados})
+      });
+    })
+    .then(function(){ atualizarPendentes(); })
+    .catch(function(){});
+}
+
+function fecharCadClienteOS(){
+  document.getElementById('cadClienteOverlay').style.display='none';
+}
+
+function salvarCadClienteOS(){
+  var osId  = document.getElementById('cadOsId').value;
+  var nome  = document.getElementById('cadCliNome').value.trim();
+  var tel   = document.getElementById('cadCliTel').value.trim();
+  var email = document.getElementById('cadCliEmail').value.trim();
+  var end   = document.getElementById('cadCliEnd').value.trim();
+  var emp   = document.getElementById('cadCliEmp').value.trim();
+
+  if(!nome){ alert('Informe o nome do cliente!'); return; }
+
+  // Verificar se ja existe por telefone
+  var usuarios_local = JSON.parse(localStorage.getItem('hml_arp_clientes') || '[]');
+  var existe = false;
+  for(var i=0;i<usuarios_local.length;i++){
+    if(usuarios_local[i].telefone && usuarios_local[i].telefone.replace(/\D/g,'').slice(-9) === tel.replace(/\D/g,'').slice(-9)){
+      existe = true; break;
+    }
+  }
+
+  if(!existe){
+    var now = new Date();
+    usuarios_local.push({
+      id: Date.now(), nome: nome, telefone: tel,
+      empresa: emp, email: email, endereco: end,
+      dataCadastro: now.toLocaleDateString('pt-BR')
+    });
+    LS('hml_arp_clientes', JSON.stringify(usuarios_local));
+  }
+
+  // Atualizar OS com dados do cliente
+  for(var j=0;j<osOrdens.length;j++){
+    if(osOrdens[j].id===osId){
+      osOrdens[j].cliente = nome;
+      osOrdens[j].email   = email;
+      osOrdens[j].doc     = emp;
+      osOrdens[j].clienteCadastrado = true;
+      break;
+    }
+  }
+  LS('hml_arp_os', JSON.stringify(osOrdens));
+
+  fecharCadClienteOS();
+  renderOS('aberta'); renderOS('andamento'); renderOS('concluida');
+  alert('Cliente "'+nome+'" cadastrado e vinculado à OS '+osId+'!');
+}
+
 function fecharPainelObs(){
   document.getElementById('obsOverlay').style.display='none';
 }
@@ -1181,7 +1329,10 @@ function osCard(o, acoes){
     '<option'+(o.situacao==='Pe\u00e7a solicitada, aguardando entrega'?' selected':'')+'>Pe\u00e7a solicitada, aguardando entrega</option>'+
     '</select></div>'+
     '<div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">'+acoes+
-    '<button class="btn-small btn-print" onclick="imprimirOS(\''+o.id+'\')">Imprimir</button></div>'+
+    '<button class="btn-small btn-print" onclick="imprimirOS(\''+o.id+'\')">Imprimir</button>'+
+    (o.origem==='whatsapp' || o.atendimentoHumano ? '<button class="btn-small" style="background:#7c3aed;color:#fff;" onclick="abrirCadastroClienteOS(\''+o.id+'\')">Cadastrar Cliente</button>' : '')+
+    (o.atendimentoHumano ? '<span style="background:#f59e0b;color:#fff;padding:5px 10px;border-radius:6px;font-size:10px;font-weight:700;">Aguarda atendente</span>' : '')+
+    '</div>'+
     '</div><div class="record-meta"><div style="font-weight:600">'+o.dataCriacao+'</div>'+(o.dataConclusao?'<div>Concl.: '+o.dataConclusao+'</div>':'')+'</div></div>';
 }
 
@@ -1192,7 +1343,8 @@ function renderOS(tipo){
     if(tipo==='aberta') st = o.status==='Em Aberto';
     else if(tipo==='andamento') st = o.status==='Em Atendimento';
     else st = o.status==='Conclu\u00edda';
-    var own = isAdmin || o.tecnico===currentUser.name;
+    var isArptech = currentUser.profile==='ARPTECH';
+    var own = isAdmin || isArptech || o.tecnico===currentUser.name;
     return st && own;
   }).reverse();
 
@@ -2014,6 +2166,20 @@ function mostrarNotificacao(msg){
 
 // Poll automático a cada 15 segundos
 setInterval(function(){ if(currentUser) pullNuvem(true); }, 15000);
+setInterval(function(){
+  var p = currentUser ? currentUser.profile : '';
+  if(p==='ADMIN'||p==='ARPTECH'){
+    if(SYNC_URL) fetch(SYNC_URL+(SYNC_URL.indexOf('?')<0?'?':'&')+'action=load')
+      .then(function(r){return r.json();})
+      .then(function(d){
+        var pend = []; try{pend=JSON.parse(d['hml_wa_pendentes']||'[]');}catch(e){}
+        var n = pend.filter(function(p){return !p.lido;}).length;
+        var badge = document.getElementById('badgePendentes');
+        if(badge){ badge.textContent=n; badge.style.display=n>0?'inline':'none'; }
+        if(n>0) mostrarNotificacao(n+' cliente(s) aguardando atendimento humano!');
+      }).catch(function(){});
+  }
+}, 30000);
 
 function salvarSyncUrl(){
   var url = document.getElementById('syncUrl').value.trim();
@@ -2362,6 +2528,26 @@ function _gerarDocxComJSZip(lista){
 
 aplicarLogo();
 </script>
+<div id="cadClienteOverlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:500;align-items:center;justify-content:center;padding:16px;">
+  <div style="background:#fff;border-radius:12px;width:100%;max-width:500px;box-shadow:0 10px 40px rgba(0,0,0,0.3);">
+    <div style="padding:18px 20px;border-bottom:1px solid #e1dfdd;display:flex;justify-content:space-between;align-items:center;">
+      <div style="font-size:16px;font-weight:700;color:var(--cor-primaria);">Cadastrar Cliente</div>
+      <button onclick="fecharCadClienteOS()" style="background:none;border:none;font-size:20px;cursor:pointer;color:#666;">&times;</button>
+    </div>
+    <div style="padding:20px;">
+      <input type="hidden" id="cadOsId">
+      <div class="form-group"><label class="form-label">Nome</label><input type="text" id="cadCliNome" class="form-input" placeholder="Nome completo"></div>
+      <div class="form-group"><label class="form-label">Telefone</label><input type="text" id="cadCliTel" class="form-input" readonly style="background:#eef4f2;"></div>
+      <div class="form-group"><label class="form-label">E-mail (opcional)</label><input type="email" id="cadCliEmail" class="form-input"></div>
+      <div class="form-group"><label class="form-label">Endere&ccedil;o (opcional)</label><input type="text" id="cadCliEnd" class="form-input"></div>
+      <div class="form-group"><label class="form-label">Empresa (opcional)</label><input type="text" id="cadCliEmp" class="form-input"></div>
+      <div style="display:flex;gap:10px;margin-top:8px;">
+        <button class="btn-primary" onclick="salvarCadClienteOS()">Cadastrar e Vincular</button>
+        <button class="btn-small" style="background:#888;color:#fff;" onclick="fecharCadClienteOS()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
 <div id="obsOverlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:500;align-items:center;justify-content:center;padding:16px;">
   <div style="background:#fff;border-radius:12px;width:100%;max-width:560px;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 10px 40px rgba(0,0,0,0.3);">
     <div style="padding:18px 20px;border-bottom:1px solid #e1dfdd;display:flex;justify-content:space-between;align-items:center;">
