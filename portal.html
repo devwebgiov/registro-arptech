@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ARP TECH Amazônia — Abertura de Solicitação</title>
+<style>
+:root { --verde:#016535; --azul:#0d3b5c; --azul2:#1a5276; }
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:#f0f4f8; min-height:100vh; }
+
+/* HEADER */
+.top-bar { background:var(--azul); color:#fff; padding:12px 20px; display:flex; align-items:center; gap:14px; }
+.top-bar img { max-height:44px; }
+.top-logo-txt { font-weight:700; font-size:16px; letter-spacing:1px; }
+.top-sub { font-size:11px; color:#9fb6c6; }
+
+/* HERO */
+.hero { background:linear-gradient(135deg,var(--azul) 0%,var(--verde) 100%); color:#fff; padding:36px 20px; text-align:center; }
+.hero h1 { font-size:22px; font-weight:700; margin-bottom:8px; }
+.hero p  { font-size:13px; opacity:.9; max-width:480px; margin:0 auto; }
+
+/* CONTAINER */
+.container { max-width:620px; margin:0 auto; padding:24px 16px 40px; }
+
+/* STEPS */
+.steps { display:flex; justify-content:center; gap:0; margin-bottom:24px; }
+.step { display:flex; align-items:center; gap:6px; font-size:12px; color:#aaa; }
+.step.active { color:var(--verde); font-weight:700; }
+.step.done { color:var(--azul); }
+.step-num { width:26px; height:26px; border-radius:50%; background:#e0e0e0; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; }
+.step.active .step-num { background:var(--verde); color:#fff; }
+.step.done .step-num { background:var(--azul); color:#fff; }
+.step-sep { width:30px; height:2px; background:#e0e0e0; margin:0 4px; }
+.step-sep.done { background:var(--azul); }
+
+/* CARD */
+.card { background:#fff; border-radius:12px; padding:24px; box-shadow:0 2px 12px rgba(0,0,0,0.08); margin-bottom:16px; }
+.card-title { font-size:16px; font-weight:700; color:var(--azul); margin-bottom:6px; }
+.card-sub { font-size:12px; color:#666; margin-bottom:20px; }
+
+.form-group { margin-bottom:16px; }
+.form-label { font-size:12px; font-weight:600; color:var(--azul); display:block; margin-bottom:6px; text-transform:uppercase; }
+.form-input { width:100%; padding:12px 14px; border:2px solid #e0e0e0; border-radius:8px; font-size:14px; font-family:inherit; color:#222; transition:border-color .2s; }
+.form-input:focus { outline:none; border-color:var(--verde); box-shadow:0 0 0 3px rgba(1,101,53,.1); }
+textarea.form-input { min-height:110px; resize:vertical; }
+
+.btn { width:100%; padding:14px; border:none; border-radius:8px; font-size:14px; font-weight:700; cursor:pointer; transition:all .2s; font-family:inherit; }
+.btn-primary { background:var(--verde); color:#fff; }
+.btn-primary:hover { background:#014d28; transform:translateY(-1px); }
+.btn-secondary { background:#f0f4f8; color:var(--azul); border:2px solid #d0d8e0; margin-top:10px; }
+.btn-secondary:hover { background:#e0e8f0; }
+
+.badge-tipo { display:inline-block; padding:5px 12px; border-radius:20px; font-size:11px; font-weight:700; margin-right:6px; margin-bottom:6px; cursor:pointer; border:2px solid transparent; background:#f0f4f8; color:#555; transition:all .2s; }
+.badge-tipo.sel { background:var(--verde); color:#fff; border-color:var(--verde); }
+
+.info-box { background:#e8f5ee; border:1px solid #b2d8c0; border-radius:8px; padding:14px 16px; font-size:13px; color:#1a5c33; margin-bottom:16px; }
+.warn-box { background:#fff8e6; border:1px solid #f3d88a; border-radius:8px; padding:14px 16px; font-size:13px; color:#7a5c00; margin-bottom:16px; }
+
+/* PROTOCOLO */
+.protocolo-box { text-align:center; padding:30px 20px; }
+.protocolo-num { font-size:32px; font-weight:700; color:var(--verde); letter-spacing:2px; margin:14px 0 6px; }
+.protocolo-label { font-size:12px; color:#888; text-transform:uppercase; letter-spacing:1px; }
+.protocolo-info { font-size:13px; color:#555; margin-top:12px; line-height:1.7; }
+.check-icon { font-size:48px; }
+
+/* FOOTER */
+footer { text-align:center; padding:20px; font-size:11px; color:#aaa; }
+
+/* MOBILE */
+@media (max-width:480px) {
+  .hero h1 { font-size:18px; }
+  .card { padding:18px; }
+}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div id="portalTopLogo">
+    <div class="top-logo-txt">ARP TECH</div>
+    <div class="top-sub">Amazônia</div>
+  </div>
+</div>
+
+<div class="hero">
+  <h1>Portal de Solicitações</h1>
+  <p>Abra sua ordem de serviço online de forma rápida e segura. Você receberá uma confirmação pelo WhatsApp.</p>
+</div>
+
+<div class="container">
+
+  <!-- STEPS -->
+  <div class="steps" id="stepsBar">
+    <div class="step active" id="stp1"><div class="step-num">1</div><span>Identificação</span></div>
+    <div class="step-sep" id="sep1"></div>
+    <div class="step" id="stp2"><div class="step-num">2</div><span>Solicitação</span></div>
+    <div class="step-sep" id="sep2"></div>
+    <div class="step" id="stp3"><div class="step-num">3</div><span>Confirmação</span></div>
+  </div>
+
+  <!-- PASSO 1: IDENTIFICAÇÃO -->
+  <div id="step1">
+    <div class="card">
+      <div class="card-title">Identificação</div>
+      <div class="card-sub">Informe seu número de WhatsApp para verificarmos seu cadastro.</div>
+
+      <div class="form-group">
+        <label class="form-label">WhatsApp <span style="color:#dc2626">*</span></label>
+        <input type="tel" id="p1Tel" class="form-input" placeholder="(97) 99999-9999" maxlength="20">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Nome completo <span style="color:#dc2626">*</span></label>
+        <input type="text" id="p1Nome" class="form-input" placeholder="Seu nome">
+      </div>
+      <div class="form-group">
+        <label class="form-label">E-mail (opcional)</label>
+        <input type="email" id="p1Email" class="form-input" placeholder="seu@email.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Empresa / Órgão (opcional)</label>
+        <input type="text" id="p1Empresa" class="form-input" placeholder="Nome da empresa ou órgão">
+      </div>
+      <button class="btn btn-primary" onclick="irPasso2()">Continuar →</button>
+    </div>
+
+    <div class="card" style="font-size:12px;color:#666;padding:16px;">
+      <b style="color:var(--azul);">Horário de atendimento:</b><br>
+      Segunda a Sábado — 08h às 18h<br><br>
+      <b style="color:var(--azul);">Contato:</b><br>
+      (97) 98429-4519 | suporte.arptech@gmail.com
+    </div>
+  </div>
+
+  <!-- PASSO 2: SOLICITAÇÃO -->
+  <div id="step2" style="display:none;">
+    <div id="clienteInfo" class="info-box" style="display:none;"></div>
+    <div class="card">
+      <div class="card-title">Detalhe sua Solicitação</div>
+      <div class="card-sub">Selecione o tipo de serviço e descreva o problema.</div>
+
+      <div class="form-group">
+        <label class="form-label">Tipo de serviço <span style="color:#dc2626">*</span></label>
+        <div id="tiposServico">
+          <span class="badge-tipo" onclick="selTipo(this,'Manutenção de impressora')">Impressora</span>
+          <span class="badge-tipo" onclick="selTipo(this,'Manutenção de computador/notebook')">Computador / Notebook</span>
+          <span class="badge-tipo" onclick="selTipo(this,'Instalação de equipamento')">Instalação</span>
+          <span class="badge-tipo" onclick="selTipo(this,'Rede e internet')">Rede / Internet</span>
+          <span class="badge-tipo" onclick="selTipo(this,'Formatação e backup')">Formatação</span>
+          <span class="badge-tipo" onclick="selTipo(this,'Solicitação de orçamento')">Orçamento</span>
+          <span class="badge-tipo" onclick="selTipo(this,'Outro')">Outro</span>
+        </div>
+        <input type="hidden" id="tipoSel">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Descrição do problema <span style="color:#dc2626">*</span></label>
+        <textarea id="p2Desc" class="form-input" placeholder="Descreva o que está acontecendo com o maior nível de detalhe possível..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Endereço do equipamento (opcional)</label>
+        <input type="text" id="p2End" class="form-input" placeholder="Rua, número, bairro...">
+      </div>
+
+      <button class="btn btn-primary" onclick="enviarOS()">Enviar Solicitação ✓</button>
+      <button class="btn btn-secondary" onclick="voltarPasso1()">← Voltar</button>
+    </div>
+  </div>
+
+  <!-- PASSO 3: PROTOCOLO -->
+  <div id="step3" style="display:none;">
+    <div class="card">
+      <div class="protocolo-box">
+        <div class="check-icon">✅</div>
+        <div class="protocolo-label">Protocolo de atendimento</div>
+        <div class="protocolo-num" id="protNumero"></div>
+        <div class="protocolo-info" id="protInfo"></div>
+      </div>
+    </div>
+    <div class="warn-box">
+      Guarde o número do protocolo para acompanhar sua solicitação.<br>
+      Uma confirmação foi enviada para o seu WhatsApp.
+    </div>
+    <button class="btn btn-secondary" onclick="novaOS()">Abrir outra solicitação</button>
+  </div>
+
+</div>
+
+<footer>
+  ARP TECH Amazônia — Assistência Técnica Especializada<br>
+  Rua 5 de Setembro, 384, Centro — Humaitá/AM | (97) 98429-4519
+</footer>
+
+<script>
+var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwDgddyYswhTh-cV5aQyrSiZcnzLOn8yHUngzOuN_fiXtZLrh19yEP8AiLQsb8sWQtQ/exec';
+var SYNC_URL   = 'https://script.google.com/macros/s/AKfycbwDgddyYswhTh-cV5aQyrSiZcnzLOn8yHUngzOuN_fiXtZLrh19yEP8AiLQsb8sWQtQ/exec';
+
+var dadosCliente = null;
+var tipoServico  = '';
+
+// ─── PASSOS ──────────────────────────────────────────────────────
+function setStep(n){
+  [1,2,3].forEach(function(i){
+    var s = document.getElementById('stp'+i);
+    s.className = 'step' + (i<n?' done':i===n?' active':'');
+    if(i<3){
+      var sep = document.getElementById('sep'+i);
+      sep.className = 'step-sep' + (i<n?' done':'');
+    }
+    var div = document.getElementById('step'+i);
+    if(div) div.style.display = i===n ? 'block' : 'none';
+  });
+}
+
+function irPasso2(){
+  var tel   = (document.getElementById('p1Tel').value||'').trim().replace(/\D/g,'');
+  var nome  = (document.getElementById('p1Nome').value||'').trim();
+  if(tel.length < 10){ alert('Informe um número de WhatsApp válido!'); return; }
+  if(nome.length < 3){ alert('Informe seu nome completo!'); return; }
+
+  dadosCliente = {
+    nome:    nome,
+    tel:     tel,
+    email:   (document.getElementById('p1Email').value||'').trim(),
+    empresa: (document.getElementById('p1Empresa').value||'').trim()
+  };
+
+  document.getElementById('clienteInfo').style.display = 'block';
+  document.getElementById('clienteInfo').textContent =
+    'Olá, ' + nome + '! Preencha os detalhes da sua solicitação abaixo.';
+  setStep(2);
+}
+
+function voltarPasso1(){ setStep(1); tipoServico=''; document.querySelectorAll('.badge-tipo').forEach(function(b){ b.classList.remove('sel'); }); }
+
+function selTipo(el, tipo){
+  document.querySelectorAll('.badge-tipo').forEach(function(b){ b.classList.remove('sel'); });
+  el.classList.add('sel');
+  tipoServico = tipo;
+  document.getElementById('tipoSel').value = tipo;
+}
+
+function enviarOS(){
+  if(!tipoServico){ alert('Selecione o tipo de serviço!'); return; }
+  var desc = (document.getElementById('p2Desc').value||'').trim();
+  if(desc.length < 10){ alert('Descreva o problema com mais detalhes!'); return; }
+  var end = (document.getElementById('p2End').value||'').trim();
+
+  var agora   = new Date();
+  var dataHora= agora.toLocaleDateString('pt-BR') + ' às ' +
+                agora.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  var osId    = 'OS-SITE-' + agora.getTime();
+
+  var os = {
+    id:           osId,
+    cliente:      dadosCliente.nome,
+    doc:          dadosCliente.empresa,
+    telefone:     '+' + (dadosCliente.tel.startsWith('55') ? dadosCliente.tel : '55' + dadosCliente.tel),
+    email:        dadosCliente.email,
+    desc:         desc + (end ? ' | Endereço: ' + end : ''),
+    servico:      tipoServico,
+    tipo:         'externo',
+    materiais:    [],
+    valor:        0,
+    status:       'Em Aberto',
+    situacao:     '',
+    dataCriacao:  agora.toLocaleDateString('pt-BR'),
+    horaCriacao:  agora.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),
+    tecnico:      'Administrador',
+    obs:          '',
+    obsLog:       [],
+    origem:       'Site / Portal Externo',
+    _ts:          agora.getTime()
+  };
+
+  // Salvar no sistema via sync
+  salvarOSNuvem(os, function(ok){
+    // Enviar confirmação WhatsApp (não bloqueia)
+    enviarConfirmacaoWhats(os);
+
+    // Mostrar protocolo
+    document.getElementById('protNumero').textContent = osId;
+    document.getElementById('protInfo').innerHTML =
+      '<b>Tipo:</b> ' + tipoServico + '<br>' +
+      '<b>Abertura:</b> ' + dataHora + '<br>' +
+      '<b>Status:</b> Em Aberto<br><br>' +
+      'Nossa equipe entrará em contato em breve.<br>' +
+      '<b>Dúvidas:</b> (97) 98429-4519';
+    setStep(3);
+  });
+}
+
+function salvarOSNuvem(os, callback){
+  fetch(SYNC_URL + (SYNC_URL.indexOf('?')<0?'?':'&') + 'action=load')
+    .then(function(r){ return r.json(); })
+    .then(function(estado){
+      var arr = [];
+      try{ arr = JSON.parse(estado['hml_arp_os']||'[]'); }catch(e){}
+      arr.push(os);
+      estado['hml_arp_os'] = JSON.stringify(arr);
+      estado._ts = Date.now();
+      return fetch(SYNC_URL, {
+        method:'POST',
+        headers:{'Content-Type':'text/plain;charset=utf-8'},
+        body: JSON.stringify({action:'save', data: estado})
+      });
+    })
+    .then(function(){ callback(true); })
+    .catch(function(){
+      // Mesmo com erro de rede, mostra o protocolo
+      callback(false);
+    });
+}
+
+function enviarConfirmacaoWhats(os){
+  var msg = encodeURIComponent(JSON.stringify({
+    action:  'confirmarOS',
+    tel:     os.telefone,
+    osId:    os.id,
+    servico: os.servico,
+    data:    os.dataCriacao,
+    hora:    os.horaCriacao
+  }));
+  // Envia via GET para o Apps Script (não bloqueia)
+  fetch(SCRIPT_URL + '?action=confirmarOS&tel=' + encodeURIComponent(os.telefone) +
+    '&osId=' + encodeURIComponent(os.id) +
+    '&servico=' + encodeURIComponent(os.servico) +
+    '&data=' + encodeURIComponent(os.dataCriacao + ' ' + os.horaCriacao))
+    .catch(function(){});
+}
+
+function novaOS(){
+  dadosCliente = null;
+  tipoServico  = '';
+  document.getElementById('p1Tel').value   = '';
+  document.getElementById('p1Nome').value  = '';
+  document.getElementById('p1Email').value = '';
+  document.getElementById('p1Empresa').value = '';
+  document.getElementById('p2Desc').value  = '';
+  document.getElementById('p2End').value   = '';
+  document.querySelectorAll('.badge-tipo').forEach(function(b){ b.classList.remove('sel'); });
+  setStep(1);
+}
+</script>
+
+</body>
+</html>
