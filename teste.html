@@ -1406,7 +1406,10 @@ function osCard(o, acoes){
     '<div style="font-size:11px;color:#666;margin-top:6px;">'+(o.doc?'Doc: '+o.doc+' &middot; ':'')+'Tel: '+o.telefone+(o.email?' &middot; '+o.email:'')+' &middot; T\u00e9cnico: '+o.tecnico+(o.valor?' &middot; R$ '+o.valor.toFixed(2):'')+'</div>'+
     matHtml+
     (o.obs?'<div style="font-size:11px;color:#555;margin-top:6px;"><b>Obs:</b> '+o.obs+'</div>':'')+
-    '<div><span class="badge '+stCls+'">'+o.status+'</span>'+tipoBadge+'</div>'+
+    '<div><span class="badge '+stCls+'">'+o.status+'</span>'+tipoBadge+
+    (o.origem==='Site / Portal Externo' ? '<span style="background:#0ea5e9;color:#fff;padding:4px 10px;border-radius:6px;font-size:10px;font-weight:700;margin-left:6px;">Portal Web</span>' : '')+
+    (o.origem==='whatsapp' ? '<span style="background:#25D366;color:#fff;padding:4px 10px;border-radius:6px;font-size:10px;font-weight:700;margin-left:6px;">WhatsApp</span>' : '')+
+    '</div>'+
     '<div style="margin-top:8px;"><select class="form-input" style="padding:7px 10px;font-size:12px;max-width:280px;" onchange="setSituacao(\''+o.id+'\',this.value)">'+
     '<option value=""'+(!o.situacao?' selected':'')+'>Situa\u00e7\u00e3o (opcional)</option>'+
     '<option'+(o.situacao==='Pendente'?' selected':'')+'>Pendente</option>'+
