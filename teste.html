@@ -9,31 +9,37 @@
 * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Roboto',sans-serif; background:#f3f2f1; }
 
-.login-screen { background:linear-gradient(135deg,var(--cor-login) 0%,var(--cor-secundaria) 100%); min-height:100vh; display:flex; align-items:center; justify-content:center; padding:16px; }
-.login-container { background:#fff; border-radius:12px; box-shadow:0 10px 40px rgba(0,0,0,0.2); overflow:hidden; width:100%; max-width:900px; display:grid; grid-template-columns:1fr 1fr; }
-.login-brand { background:linear-gradient(135deg,var(--cor-secundaria) 0%,var(--cor-primaria) 100%); color:#fff; padding:60px 40px; display:flex; flex-direction:column; justify-content:center; }
-.brand-logo { font-size:42px; font-weight:700; margin-bottom:12px; letter-spacing:2px; }
-.brand-logo img { max-width:220px; max-height:70px; }
-.feature { display:flex; gap:12px; align-items:flex-start; font-size:13px; margin-bottom:14px; }
+.login-screen { background:linear-gradient(135deg,#0a2540 0%,#0d3b5c 60%,#0e4a6e 100%); min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px 16px; gap:20px; flex-wrap:wrap; }
+/* Card esquerdo: login */
+.login-container { background:#fff; border-radius:16px; box-shadow:0 16px 48px rgba(0,0,0,0.35); overflow:hidden; width:100%; max-width:660px; display:grid; grid-template-columns:1fr 1fr; }
+.login-brand { background:linear-gradient(160deg,#0d3b5c 0%,#0a2540 100%); color:#fff; padding:52px 36px; display:flex; flex-direction:column; justify-content:center; }
+.brand-logo { font-size:38px; font-weight:700; margin-bottom:8px; letter-spacing:2px; }
+.brand-logo img { max-width:200px; max-height:64px; }
+.feature { display:flex; gap:10px; align-items:center; font-size:13px; margin-bottom:12px; }
 .feature-icon { width:20px; height:20px; background:var(--cor-acento); border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; color:#fff; font-size:11px; font-weight:700; }
-/* Painel direito: login + acesso externo empilhados */
 .login-right { display:flex; flex-direction:column; }
-.login-form { padding:44px 40px 28px; display:flex; flex-direction:column; justify-content:center; border-bottom:2px dashed #e1dfdd; }
-/* Painel de acesso à solicitação externa — mesmo estilo do login-brand */
-.sol-ext-panel { background:linear-gradient(160deg,var(--cor-primaria) 0%,#0a2940 100%); color:#fff; padding:36px 40px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:0; }
-.sol-ext-icon { font-size:48px; margin-bottom:16px; filter:drop-shadow(0 4px 12px rgba(0,0,0,0.3)); }
-.sol-ext-title { font-size:20px; font-weight:700; letter-spacing:.5px; margin-bottom:10px; }
-.sol-ext-sub { font-size:13px; color:rgba(255,255,255,0.78); line-height:1.6; margin-bottom:24px; max-width:280px; }
-.btn-abrir-sol { padding:14px 32px; background:var(--cor-acento); color:#fff; border:none; border-radius:8px; font-size:14px; font-weight:700; cursor:pointer; letter-spacing:.5px; box-shadow:0 4px 16px rgba(0,0,0,0.25); transition:background .2s,transform .1s; }
-.btn-abrir-sol:hover { background:#24623b; transform:translateY(-1px); }
-.sol-ext-note { font-size:11px; color:rgba(255,255,255,0.5); margin-top:14px; }
+.login-form { padding:36px 32px; display:flex; flex-direction:column; justify-content:center; flex:1; }
+/* Card direito: solicitação externa — card separado */
+.sol-card { background:linear-gradient(160deg,#0d3b5c 0%,#0a2540 100%); border-radius:16px; box-shadow:0 16px 48px rgba(0,0,0,0.35); color:#fff; width:100%; max-width:520px; display:grid; grid-template-columns:1fr 1fr; overflow:hidden; }
+.sol-card-left { padding:40px 32px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; border-right:1px solid rgba(255,255,255,0.1); }
+.sol-card-icon { width:80px; height:80px; border-radius:50%; border:3px solid var(--cor-acento); display:flex; align-items:center; justify-content:center; margin:0 auto 18px; }
+.sol-card-icon svg { width:40px; height:40px; }
+.sol-card-title { font-size:18px; font-weight:700; margin-bottom:8px; }
+.sol-card-sub { font-size:12px; color:rgba(255,255,255,0.65); line-height:1.6; }
+.sol-card-right { padding:40px 32px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:16px; }
+.sol-card-right-title { font-size:16px; font-weight:700; color:var(--cor-acento); line-height:1.4; }
+.sol-card-right-sub { font-size:12px; color:rgba(255,255,255,0.7); line-height:1.6; }
+.btn-abrir-sol { width:100%; padding:16px 20px; background:var(--cor-acento); color:#fff; border:none; border-radius:10px; font-size:13px; font-weight:700; cursor:pointer; letter-spacing:.5px; display:flex; align-items:center; justify-content:space-between; gap:8px; box-shadow:0 4px 16px rgba(0,0,0,0.3); transition:background .2s; text-transform:uppercase; }
+.btn-abrir-sol:hover { background:#24623b; }
+.btn-abrir-sol span { flex:1; text-align:center; }
+.sol-card-note { font-size:11px; color:rgba(255,255,255,0.45); display:flex; align-items:center; gap:6px; }
 /* Modal de solicitação */
-.sol-modal-overlay { display:none; position:fixed; inset:0; background:rgba(10,30,50,0.7); z-index:500; align-items:center; justify-content:center; padding:16px; }
+.sol-modal-overlay { display:none; position:fixed; inset:0; background:rgba(5,18,32,0.78); z-index:500; align-items:center; justify-content:center; padding:16px; }
 .sol-modal-overlay.open { display:flex; }
-.sol-modal { background:#fff; border-radius:14px; width:100%; max-width:520px; max-height:92vh; display:flex; flex-direction:column; box-shadow:0 20px 60px rgba(0,0,0,0.4); animation:modalIn .22s ease; }
-@keyframes modalIn { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+.sol-modal { background:#fff; border-radius:14px; width:100%; max-width:520px; max-height:92vh; display:flex; flex-direction:column; box-shadow:0 24px 64px rgba(0,0,0,0.5); animation:modalIn .22s ease; }
+@keyframes modalIn { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
 .sol-modal-header { padding:20px 24px 16px; border-bottom:1px solid #e1dfdd; display:flex; justify-content:space-between; align-items:center; flex-shrink:0; }
-.sol-modal-header-title { font-size:17px; font-weight:700; color:var(--cor-primaria); display:flex; align-items:center; gap:8px; }
+.sol-modal-header-title { font-size:16px; font-weight:700; color:var(--cor-primaria); display:flex; align-items:center; gap:8px; }
 .sol-modal-close { background:none; border:none; font-size:22px; cursor:pointer; color:#888; line-height:1; padding:4px; }
 .sol-modal-close:hover { color:#dc2626; }
 .sol-modal-body { padding:20px 24px; overflow-y:auto; flex:1; }
@@ -142,10 +148,14 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
 .info-note { font-size:11px; color:#92600a; background:#fff8e6; border:1px solid #f3e3b3; border-radius:6px; padding:10px 14px; margin-bottom:14px; line-height:1.6; }
 
 @media (max-width:768px){
+  .login-screen { flex-direction:column; align-items:stretch; padding:16px; gap:14px; }
+  .login-container { max-width:100%; }
   .login-container { grid-template-columns:1fr; }
   .login-brand { display:none; }
-  .login-form { border-bottom:2px dashed #e1dfdd; padding:32px 24px 24px; }
-  .sol-ext-panel { padding:28px 24px; }
+  .login-form { padding:28px 24px; }
+  .sol-card { max-width:100%; grid-template-columns:1fr; }
+  .sol-card-left { border-right:none; border-bottom:1px solid rgba(255,255,255,0.1); padding:28px 24px; }
+  .sol-card-right { padding:24px; }
   .system-wrapper.active { flex-direction:column; }
   .sidebar { position:fixed; left:-260px; top:0; z-index:100; transition:left .25s; width:250px; }
   .sidebar.open { left:0; box-shadow:4px 0 20px rgba(0,0,0,0.3); }
@@ -160,41 +170,63 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
 <body>
 
 <div id="loginScreen" class="login-screen">
-  <div class="login-container">
 
-    <!-- COLUNA ESQUERDA: marca institucional -->
+  <!-- CARD ESQUERDO: Login interno -->
+  <div class="login-container">
     <div class="login-brand">
       <div class="brand-logo" id="brandLogo">ARP TECH</div>
-      <div style="font-size:14px;color:rgba(255,255,255,0.8);margin-bottom:36px;">Amazônia</div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.7);margin-bottom:32px;">Amazônia</div>
       <div class="feature"><div class="feature-icon">&#10003;</div><div>Gerenciamento de Ordens de Serviço</div></div>
       <div class="feature"><div class="feature-icon">&#10003;</div><div>Registro de Atendimento em Tempo Real</div></div>
       <div class="feature"><div class="feature-icon">&#10003;</div><div>Notas, Comissões e Relatórios</div></div>
     </div>
-
-    <!-- COLUNA DIREITA: login interno (topo) + acesso externo (base) -->
     <div class="login-right">
-
-      <!-- Login interno -->
       <div class="login-form">
-        <div style="background:#dc2626;color:#fff;font-size:11px;font-weight:700;text-align:center;padding:6px;border-radius:6px;margin-bottom:14px;">AMBIENTE DE HOMOLOGAÇÃO — NÃO USE PARA PRODUÇÃO</div>
+        <div style="background:#dc2626;color:#fff;font-size:11px;font-weight:700;text-align:center;padding:6px;border-radius:6px;margin-bottom:16px;">AMBIENTE DE HOMOLOGAÇÃO — NÃO USE PARA PRODUÇÃO</div>
         <div class="form-title">Bem-vindo</div>
-        <div class="form-group"><label class="form-label">Usuário</label><input type="text" id="loginUser" class="form-input" autocapitalize="none"></div>
-        <div class="form-group"><label class="form-label">Senha</label><input type="password" id="loginPass" class="form-input"></div>
+        <div class="form-group"><label class="form-label">Usuário</label><input type="text" id="loginUser" class="form-input" placeholder="Digite seu usuário" autocapitalize="none"></div>
+        <div class="form-group"><label class="form-label">Senha</label><input type="password" id="loginPass" class="form-input" placeholder="Digite sua senha"></div>
         <button class="btn-login" onclick="login()">Entrar</button>
         <div style="text-align:center;margin-top:14px;"><span class="link" onclick="esqueciSenha()">Esqueci a senha</span></div>
       </div>
-
-      <!-- Painel de acesso externo — mesmo estilo visual da marca -->
-      <div class="sol-ext-panel">
-        <div class="sol-ext-icon">📋</div>
-        <div class="sol-ext-title">Nova Solicitação</div>
-        <div class="sol-ext-sub">Preencha os dados do atendimento e nossa equipe retornará o mais breve possível.</div>
-        <button class="btn-abrir-sol" onclick="abrirModalSol()">Abrir Solicitação</button>
-        <div class="sol-ext-note">Seus dados serão utilizados apenas para retorno do atendimento.</div>
-      </div>
-
     </div>
   </div>
+
+  <!-- CARD DIREITO: Solicitação externa -->
+  <div class="sol-card">
+    <!-- Metade esquerda: logo + ícone + título -->
+    <div class="sol-card-left">
+      <div style="font-size:22px;font-weight:700;letter-spacing:2px;margin-bottom:2px;" id="solCardLogo">ARP TECH</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.6);margin-bottom:24px;">Solicitações</div>
+      <div class="sol-card-icon">
+        <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="6" y="4" width="24" height="32" rx="3" stroke="#2d7a4a" stroke-width="2.5"/>
+          <line x1="11" y1="13" x2="25" y2="13" stroke="#2d7a4a" stroke-width="2" stroke-linecap="round"/>
+          <line x1="11" y1="19" x2="25" y2="19" stroke="#2d7a4a" stroke-width="2" stroke-linecap="round"/>
+          <line x1="11" y1="25" x2="19" y2="25" stroke="#2d7a4a" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="30" cy="30" r="7" fill="#0d3b5c" stroke="#2d7a4a" stroke-width="2"/>
+          <line x1="30" y1="27" x2="30" y2="33" stroke="#2d7a4a" stroke-width="2" stroke-linecap="round"/>
+          <line x1="27" y1="30" x2="33" y2="30" stroke="#2d7a4a" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="sol-card-title">Nova Solicitação</div>
+      <div class="sol-card-sub">Clique no botão ao lado para abrir uma nova solicitação</div>
+    </div>
+    <!-- Metade direita: texto + botão -->
+    <div class="sol-card-right">
+      <div class="sol-card-right-title">Faça sua solicitação</div>
+      <div class="sol-card-right-sub">Preencha os dados e nossa equipe retornará o mais breve possível.</div>
+      <button class="btn-abrir-sol" onclick="abrirModalSol()">
+        <span>CLIQUE AQUI PARA<br>FAZER UMA SOLICITAÇÃO</span>
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M7 4l5 5-5 5" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="sol-card-note">
+        <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M7 1a6 6 0 100 12A6 6 0 007 1zm0 5v4m0-6v.5" stroke="rgba(255,255,255,0.45)" stroke-width="1.5" stroke-linecap="round"/></svg>
+        Seus dados estão seguros conosco.
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <!-- MODAL DE SOLICITAÇÃO EXTERNA -->
@@ -379,16 +411,27 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
       <div id="solicitacoes" class="tab-content">
         <div class="card">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-            <div class="card-title" style="margin-bottom:0;">Solicita&ccedil;&otilde;es de Atendimento</div>
+            <div class="card-title" style="margin-bottom:0;">Solicitações de Atendimento</div>
             <button class="btn-small" style="background:var(--cor-secundaria);color:#fff;" onclick="renderSolicitacoes()">Atualizar</button>
+          </div>
+          <!-- Sub-abas -->
+          <div style="display:flex;gap:0;margin-bottom:16px;border-bottom:2px solid #e1dfdd;">
+            <button id="solTabTodas" onclick="solMudarAba('todas')"
+              style="padding:9px 20px;font-size:13px;font-weight:600;border:none;background:none;cursor:pointer;color:var(--cor-acento);border-bottom:3px solid var(--cor-acento);margin-bottom:-2px;">
+              Todas as Solicitações
+            </button>
+            <button id="solTabMeus" onclick="solMudarAba('meus')"
+              style="padding:9px 20px;font-size:13px;font-weight:600;border:none;background:none;cursor:pointer;color:#999;border-bottom:3px solid transparent;margin-bottom:-2px;">
+              Meus Atendimentos
+            </button>
           </div>
           <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
             <select id="solFiltroStatus" class="form-input" style="max-width:220px;" onchange="renderSolicitacoes()">
-              <option value="">Todas as solicita&ccedil;&otilde;es</option>
-              <option value="Solicitacao Recebida">Solicita&ccedil;&atilde;o Recebida</option>
-              <option value="Aguardando Tecnico">Aguardando T&eacute;cnico</option>
+              <option value="">Todas as situações</option>
+              <option value="Solicitacao Recebida">Solicitação Recebida</option>
+              <option value="Aguardando Tecnico">Aguardando Técnico</option>
               <option value="Em Atendimento">Em Atendimento</option>
-              <option value="Concluido">Conclu&iacute;do</option>
+              <option value="Concluido">Concluído</option>
               <option value="Cancelado">Cancelado</option>
             </select>
           </div>
@@ -3125,6 +3168,20 @@ function renderLogsAcesso(){
 // SOLICITAÇÕES — fluxo externo
 // =============================================================
 var SOL_PAGE = 0;
+var SOL_ABA  = 'todas'; // 'todas' | 'meus'
+
+function solMudarAba(aba){
+  SOL_ABA  = aba;
+  SOL_PAGE = 0;
+  var btnTodas = document.getElementById('solTabTodas');
+  var btnMeus  = document.getElementById('solTabMeus');
+  var ativo   = 'color:var(--cor-acento);border-bottom:3px solid var(--cor-acento);margin-bottom:-2px;';
+  var inativo = 'color:#999;border-bottom:3px solid transparent;margin-bottom:-2px;';
+  if(btnTodas) btnTodas.style.cssText = 'padding:9px 20px;font-size:13px;font-weight:600;border:none;background:none;cursor:pointer;' + (aba==='todas'?ativo:inativo);
+  if(btnMeus)  btnMeus.style.cssText  = 'padding:9px 20px;font-size:13px;font-weight:600;border:none;background:none;cursor:pointer;' + (aba==='meus'?ativo:inativo);
+  renderSolicitacoes();
+}
+
 var STATUS_CORES = {
   'Solicitacao Recebida': {bg:'#e0f0ff', txt:'#1a4e7a', label:'Solicitação Recebida'},
   'Aguardando Tecnico':   {bg:'#fff3d6', txt:'#92600a', label:'Aguardando Técnico'},
@@ -3142,6 +3199,8 @@ function renderSolicitacoes(){
 
   var lista = solicitacoes.filter(function(s){
     if(filtroStatus && s.status!==filtroStatus) return false;
+    // Filtro da sub-aba "Meus Atendimentos": solicitações assumidas pelo usuário logado
+    if(SOL_ABA==='meus' && s.tecnico !== currentUser.name) return false;
     return true;
   }).slice().reverse();
 
@@ -3182,7 +3241,11 @@ function renderSolicitacoes(){
   }).join('');
 
   document.getElementById('solLista').innerHTML = html ||
-    '<div style="padding:20px;color:#999;text-align:center;">Nenhuma solicitação encontrada.</div>';
+    '<div style="padding:28px;color:#999;text-align:center;">' +
+    (SOL_ABA==='meus'
+      ? '📋 Você ainda não assumiu nenhuma solicitação.<br><small>Use a aba "Todas as Solicitações" para assumir chamados.</small>'
+      : 'Nenhuma solicitação encontrada.') +
+    '</div>';
 
   var pag = '';
   if(total>1){
