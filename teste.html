@@ -162,6 +162,10 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
       <div class="menu-item" onclick="goTab('novoRegistro',this,'Registros / Novo')">Novo</div>
     </div>
 
+    <div class="menu-item" id="m-solicitacoes" onclick="goTab('solicitacoes',this,'Solicita\u00e7\u00f5es')" style="display:none;">
+      Solicita&ccedil;&otilde;es
+      <span id="badgeSol" style="background:#dc2626;color:#fff;border-radius:10px;padding:1px 7px;font-size:10px;margin-left:auto;display:none;">0</span>
+    </div>
     <div class="menu-item" id="m-os" onclick="toggleSubmenu(this,'osSubmenu')">Ordens de Servi&ccedil;o<div class="menu-arrow">&#9660;</div></div>
     <div id="osSubmenu" class="submenu">
       <div class="menu-item" onclick="goTab('osAbrir',this,'OS / Abrir Nova')">Abrir Nova</div>
@@ -255,6 +259,27 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
             </select>
           </div>
           <button class="btn-primary" onclick="salvarRegistro()">Salvar</button>
+        </div>
+      </div>
+
+      <div id="solicitacoes" class="tab-content">
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+            <div class="card-title" style="margin-bottom:0;">Solicita&ccedil;&otilde;es de Atendimento</div>
+            <button class="btn-small" style="background:var(--cor-secundaria);color:#fff;" onclick="renderSolicitacoes()">Atualizar</button>
+          </div>
+          <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
+            <select id="solFiltroStatus" class="form-input" style="max-width:220px;" onchange="renderSolicitacoes()">
+              <option value="">Todas as solicita&ccedil;&otilde;es</option>
+              <option value="Solicitacao Recebida">Solicita&ccedil;&atilde;o Recebida</option>
+              <option value="Aguardando Tecnico">Aguardando T&eacute;cnico</option>
+              <option value="Em Atendimento">Em Atendimento</option>
+              <option value="Concluido">Conclu&iacute;do</option>
+              <option value="Cancelado">Cancelado</option>
+            </select>
+          </div>
+          <div id="solLista" class="scroll-list"></div>
+          <div id="solPag" class="pagination"></div>
         </div>
       </div>
 
@@ -552,6 +577,8 @@ var OS_TIPO = 'interno';
 var EXPIRA_DIAS = 3;
 
 var records = JSON.parse(localStorage.getItem('hml_arp_rec') || '[]');
+var solicitacoes = JSON.parse(localStorage.getItem('hml_arp_sol') || '[]');
+function saveSolicitacoes(){ LS('hml_arp_sol', JSON.stringify(solicitacoes)); }
 var osOrdens = JSON.parse(localStorage.getItem('hml_arp_os') || '[]');
 osOrdens.forEach(function(o){ if(o.status==='Em Andamento'){ o.status='Em Atendimento'; } });
 var notas = JSON.parse(localStorage.getItem('hml_arp_nf') || '[]');
@@ -788,6 +815,7 @@ function applyPermissions(){
     document.getElementById('btnNovoTop').style.display='none';
   }
   show('m-os', p==='ARPTECH' || p==='ADMIN');
+  show('m-solicitacoes', p==='ARPTECH' || p==='ADMIN');
   show('m-comissoes', p==='ARPTECH' || p==='ADMIN');
   show('m-gerenciar', p==='ADMIN');
   show('m-locais', p==='ADMIN');
@@ -875,6 +903,7 @@ function goTab(tab, el, title){
     document.getElementById('newRegData').value = now2.toISOString().split('T')[0];
     document.getElementById('newRegHora').value = now2.toTimeString().slice(0,5);
   }
+  if(tab==='solicitacoes') renderSolicitacoes();
   if(tab==='osEmAberto') renderOS('aberta');
   if(tab==='osAbertas') renderOS('andamento');
   if(tab==='osConcluidas') renderOS('concluida');
@@ -2150,7 +2179,7 @@ function salvarEmpresa(){
 // ===== SINCRONIZACAO ENTRE DISPOSITIVOS =====
 var SYNC_URL_PADRAO = 'https://script.google.com/macros/s/AKfycbwDgddyYswhTh-cV5aQyrSiZcnzLOn8yHUngzOuN_fiXtZLrh19yEP8AiLQsb8sWQtQ/exec';
 var SYNC_URL = localStorage.getItem('hml_arp_sync_url') || SYNC_URL_PADRAO;
-var SYNC_KEYS = ['hml_arp_rec','hml_arp_os','hml_arp_nf','hml_arp_users','hml_arp_orgaos','hml_arp_locais','hml_arp_servicos','hml_arp_empresa','hml_arp_cores','hml_arp_logo','hml_comissao_percent','hml_arp_com_pay','hml_arp_nf_access','hml_arp_admin_email','hml_arp_nf_num'];
+var SYNC_KEYS = ['hml_arp_rec','hml_arp_os','hml_arp_nf','hml_arp_users','hml_arp_orgaos','hml_arp_locais','hml_arp_servicos','hml_arp_empresa','hml_arp_cores','hml_arp_logo','hml_comissao_percent','hml_arp_com_pay','hml_arp_nf_access','hml_arp_admin_email','hml_arp_nf_num','hml_arp_sol'];
 var _syncTimer = null;
 var _sincronizando = false;
 
@@ -2192,16 +2221,16 @@ function pullNuvem(silencioso){
       if(remoto._ts <= localTs){ sessionStorage.removeItem('arp_just_synced'); return; }
       if(sessionStorage.getItem('arp_just_synced')==='1'){ sessionStorage.removeItem('arp_just_synced'); return; }
 
-      // Detectar novas OS vindas do WhatsApp
-      var osRemoto = [];
-      var osLocal  = records ? [] : [];
-      try { osRemoto = JSON.parse(remoto.arp_os || '[]'); } catch(e){}
-      try { osLocal  = JSON.parse(localStorage.getItem('hml_arp_os')||'[]'); } catch(e){}
+      // Detectar novas Solicitacoes vindas do WhatsApp ou Portal
+      var solRemoto = [];
+      var solLocal  = [];
+      try { solRemoto = JSON.parse(remoto['hml_arp_sol'] || '[]'); } catch(e){}
+      try { solLocal  = JSON.parse(localStorage.getItem('hml_arp_sol')||'[]'); } catch(e){}
 
-      var idsLocais = {};
-      osLocal.forEach(function(o){ idsLocais[o.id]=1; });
-      var novasWA = osRemoto.filter(function(o){
-        return !idsLocais[o.id] && o.origem==='whatsapp';
+      var idsSolLocais = {};
+      solLocal.forEach(function(s){ idsSolLocais[s.id]=1; });
+      var novasSol = solRemoto.filter(function(s){
+        return !idsSolLocais[s.id];
       });
 
       // Atualizar dados locais
@@ -2210,20 +2239,22 @@ function pullNuvem(silencioso){
       });
       localStorage.setItem('hml_arp_sync_ts', String(remoto._ts));
 
-      if(novasWA.length > 0 && currentUser){
+      if(novasSol.length > 0 && currentUser){
         // Recarregar arrays em memória sem refresh total
         try{ osOrdens = JSON.parse(localStorage.getItem('hml_arp_os')||'[]'); }catch(e){}
-        try{ records  = JSON.parse(localStorage.getItem('hml_arp_rec')||'[]'); }catch(e){}
+        try{ records      = JSON.parse(localStorage.getItem('hml_arp_rec')||'[]'); }catch(e){}
+        try{ solicitacoes = JSON.parse(localStorage.getItem('hml_arp_sol')||'[]'); }catch(e){}
         // Notificação
-        var msg = novasWA.length===1
-          ? 'Nova OS via WhatsApp! ' + novasWA[0].id + ' - ' + novasWA[0].cliente
-          : novasWA.length + ' novas OS via WhatsApp recebidas!';
+        var msg = novasSol.length===1
+          ? '📋 Nova solicitação: ' + novasSol[0].id + '\n' + novasSol[0].cliente + ' · ' + (novasSol[0].servico||novasSol[0].tipoServico||'')
+          : '📋 ' + novasSol.length + ' novas solicitações recebidas!';
         mostrarNotificacao(msg);
         // Atualizar tela atual
         var tabAtiva = document.querySelector('.tab-content.active');
         if(tabAtiva){
           var id = tabAtiva.id;
           if(id==='dashboard') loadDashboard();
+          if(id==='solicitacoes') renderSolicitacoes();
           if(id==='osEmAberto') renderOS('aberta');
           if(id==='osAbertas') renderOS('andamento');
           if(id==='osConcluidas') renderOS('concluida');
@@ -2254,6 +2285,17 @@ function mostrarNotificacao(msg){
 
 // Poll automático a cada 15 segundos
 setInterval(function(){ if(currentUser) pullNuvem(true); }, 15000);
+setInterval(function(){
+  if(!currentUser) return;
+  var p = currentUser.profile;
+  if(p!=='ADMIN' && p!=='ARPTECH') return;
+  try{ solicitacoes = JSON.parse(localStorage.getItem('hml_arp_sol')||'[]'); }catch(e){}
+  var pendentes = solicitacoes.filter(function(s){
+    return s.status==='Solicitacao Recebida' || s.status==='Aguardando Tecnico';
+  }).length;
+  var badge = document.getElementById('badgeSol');
+  if(badge){ badge.textContent=pendentes; badge.style.display=pendentes>0?'inline':'none'; }
+}, 10000);
 setInterval(function(){
   var p = currentUser ? currentUser.profile : '';
   if(p==='ADMIN'||p==='ARPTECH'){
@@ -2825,6 +2867,166 @@ function renderLogsAcesso(){
   }).join('');
   document.getElementById('fiscalLogsLista').innerHTML = html ||
     '<div style="padding:20px;color:#999;">Nenhum log registrado ainda.</div>';
+}
+
+// =============================================================
+// SOLICITAÇÕES — fluxo externo
+// =============================================================
+var SOL_PAGE = 0;
+var STATUS_CORES = {
+  'Solicitacao Recebida': {bg:'#e0f0ff', txt:'#1a4e7a', label:'Solicitação Recebida'},
+  'Aguardando Tecnico':   {bg:'#fff3d6', txt:'#92600a', label:'Aguardando Técnico'},
+  'Em Atendimento':       {bg:'#d9f2e3', txt:'#14693c', label:'Em Atendimento'},
+  'Concluido':            {bg:'#f0f0f0', txt:'#555',    label:'Concluído'},
+  'Cancelado':            {bg:'#fde8e8', txt:'#b91c1c', label:'Cancelado'}
+};
+
+function renderSolicitacoes(){
+  // Recarregar do localStorage
+  try{ solicitacoes = JSON.parse(localStorage.getItem('hml_arp_sol')||'[]'); }catch(e){}
+
+  var filtroStatus = (document.getElementById('solFiltroStatus')||{value:''}).value;
+  var isAdmin = currentUser.profile==='ADMIN';
+
+  var lista = solicitacoes.filter(function(s){
+    if(filtroStatus && s.status!==filtroStatus) return false;
+    return true;
+  }).slice().reverse();
+
+  var total = Math.ceil(lista.length/50);
+  if(SOL_PAGE>=total) SOL_PAGE=Math.max(0,total-1);
+  var slice = lista.slice(SOL_PAGE*50,(SOL_PAGE+1)*50);
+
+  var html = slice.map(function(s){
+    var sc     = STATUS_CORES[s.status] || {bg:'#f0f0f0', txt:'#555', label:s.status};
+    var jaAssumido = s.tecnico && s.status==='Em Atendimento';
+    var euAssumi   = jaAssumido && s.tecnico===currentUser.name;
+    var podeAssumir= s.status==='Solicitacao Recebida' || s.status==='Aguardando Tecnico';
+
+    var btns = '';
+    if(podeAssumir){
+      btns += '<button class="btn-small" style="background:var(--cor-acento);color:#fff;" onclick="assumirSolicitacao(\''+s.id+'\')">Assumir chamado</button> ';
+    }
+    if(jaAssumido && (euAssumi || isAdmin)){
+      btns += '<button class="btn-small" style="background:var(--cor-secundaria);color:#fff;" onclick="converterParaOS(\''+s.id+'\')">Converter para OS</button> ';
+    }
+    if(isAdmin || (jaAssumido && euAssumi)){
+      btns += '<button class="btn-small" style="background:#6b7280;color:#fff;" onclick="cancelarSolicitacao(\''+s.id+'\')">Cancelar</button>';
+    }
+
+    return '<div class="record-item"><div class="record-left">'+
+      '<div class="record-name">'+s.id+' &middot; '+s.cliente+(s.empresa?' ('+s.empresa+')':'')+'</div>'+
+      '<div style="font-size:11px;color:var(--cor-acento);font-weight:700;margin-top:2px;">'+s.servico+'</div>'+
+      '<div class="record-desc">'+s.descricao+'</div>'+
+      '<div style="font-size:11px;color:#666;margin-top:4px;">Tel: '+s.telefone+(s.email?' &middot; '+s.email:'')+'</div>'+
+      (jaAssumido?'<div style="font-size:11px;color:var(--cor-acento);margin-top:4px;font-weight:600;">Técnico: '+s.tecnico+(s.dtAssumido?' &middot; Assumido em '+s.dtAssumido:'')+'</div>':'')+
+      '<div style="margin-top:8px;"><span style="background:'+sc.bg+';color:'+sc.txt+';padding:5px 12px;border-radius:8px;font-size:10px;font-weight:700;">'+sc.label+'</span>'+
+      ' <span style="background:#e0f0ff;color:#1a4e7a;padding:5px 10px;border-radius:8px;font-size:10px;font-weight:700;">Portal Externo</span></div>'+
+      '<div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">'+btns+'</div>'+
+      '</div><div class="record-meta">'+
+        '<div style="font-weight:600">'+s.dataCriacao+'</div>'+
+        '<div>'+(s.horaCriacao||'--:--')+'</div>'+
+      '</div></div>';
+  }).join('');
+
+  document.getElementById('solLista').innerHTML = html ||
+    '<div style="padding:20px;color:#999;text-align:center;">Nenhuma solicitação encontrada.</div>';
+
+  var pag = '';
+  if(total>1){
+    pag += '<button class="page-btn" onclick="gotoSol('+Math.max(0,SOL_PAGE-1)+')">&#8249;</button>';
+    for(var i=0;i<total;i++)
+      pag += '<button class="page-btn'+(i===SOL_PAGE?' active':'')+'" onclick="gotoSol('+i+')">'+(i+1)+'</button>';
+    pag += '<button class="page-btn" onclick="gotoSol('+Math.min(total-1,SOL_PAGE+1)+')">&#8250;</button>';
+  }
+  document.getElementById('solPag').innerHTML = pag;
+
+  // Badge
+  var pendentes = solicitacoes.filter(function(s){
+    return s.status==='Solicitacao Recebida'||s.status==='Aguardando Tecnico';
+  }).length;
+  var badge = document.getElementById('badgeSol');
+  if(badge){ badge.textContent=pendentes; badge.style.display=pendentes>0?'inline':'none'; }
+}
+
+function gotoSol(i){ SOL_PAGE=i; renderSolicitacoes(); }
+
+function assumirSolicitacao(id){
+  // Verificar se já está sendo atendida
+  var sol = null;
+  for(var i=0;i<solicitacoes.length;i++){ if(solicitacoes[i].id===id){ sol=solicitacoes[i]; break; } }
+  if(!sol) return;
+
+  if(sol.status==='Em Atendimento'){
+    alert('Esta solicitação já está sendo atendida por '+sol.tecnico+'.');
+    return;
+  }
+
+  if(!confirm('Assumir a solicitação '+id+' de '+sol.cliente+'?\nVocê será registrado como responsável.')) return;
+
+  var agora = new Date();
+  sol.tecnico    = currentUser.name;
+  sol.status     = 'Em Atendimento';
+  sol.dtAssumido = agora.toLocaleDateString('pt-BR')+' às '+agora.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  saveSolicitacoes();
+  renderSolicitacoes();
+  alert('Você assumiu a solicitação '+id+'!\nAgora pode convertê-la em Ordem de Serviço.');
+}
+
+function cancelarSolicitacao(id){
+  if(!confirm('Cancelar a solicitação '+id+'?')) return;
+  for(var i=0;i<solicitacoes.length;i++){
+    if(solicitacoes[i].id===id){ solicitacoes[i].status='Cancelado'; break; }
+  }
+  saveSolicitacoes();
+  renderSolicitacoes();
+}
+
+function converterParaOS(id){
+  var sol = null;
+  for(var i=0;i<solicitacoes.length;i++){ if(solicitacoes[i].id===id){ sol=solicitacoes[i]; break; } }
+  if(!sol) return;
+
+  if(sol.osVinculada){
+    alert('Esta solicitação já foi convertida para a OS '+sol.osVinculada+'.');
+    return;
+  }
+
+  if(!confirm('Converter a solicitação '+id+' em Ordem de Serviço?\n\nIsso criará uma OS oficial no sistema.')) return;
+
+  var agora = new Date();
+  var novaOS = {
+    id:          'OS-'+agora.getTime(),
+    cliente:     sol.cliente,
+    doc:         sol.empresa||'',
+    telefone:    sol.telefone,
+    email:       sol.email||'',
+    desc:        sol.descricao||sol.desc||'',
+    servico:     sol.servico||sol.tipoServico||'',
+    tipo:        'externo',
+    materiais:   [],
+    valor:       0,
+    status:      'Em Andamento',
+    situacao:    '',
+    dataCriacao: agora.toLocaleDateString('pt-BR'),
+    tecnico:     sol.tecnico||currentUser.name,
+    obs:         'Convertida da solicitação '+id,
+    obsLog:      [],
+    origem:      'Site / Portal Externo',
+    _ts:         agora.getTime()
+  };
+
+  osOrdens.push(novaOS);
+  LS('hml_arp_os', JSON.stringify(osOrdens));
+
+  // Marcar solicitação como concluída/vinculada
+  sol.status      = 'Concluido';
+  sol.osVinculada = novaOS.id;
+  saveSolicitacoes();
+
+  renderSolicitacoes();
+  renderOS('andamento');
+  alert('OS '+novaOS.id+' criada com sucesso!\nDisponível na aba Ordens de Serviço → Em Andamento.');
 }
 
 aplicarLogo();
