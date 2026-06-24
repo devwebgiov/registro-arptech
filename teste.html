@@ -10,13 +10,26 @@
 body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Roboto',sans-serif; background:#f3f2f1; }
 
 .login-screen { background:linear-gradient(135deg,var(--cor-login) 0%,var(--cor-secundaria) 100%); min-height:100vh; display:flex; align-items:center; justify-content:center; padding:16px; }
-.login-container { background:#fff; border-radius:12px; box-shadow:0 10px 40px rgba(0,0,0,0.2); overflow:hidden; width:100%; max-width:900px; display:grid; grid-template-columns:1fr 1fr; }
+.login-container { background:#fff; border-radius:12px; box-shadow:0 10px 40px rgba(0,0,0,0.2); overflow:hidden; width:100%; max-width:1180px; display:grid; grid-template-columns:1fr 1fr 1fr; }
 .login-brand { background:linear-gradient(135deg,var(--cor-secundaria) 0%,var(--cor-primaria) 100%); color:#fff; padding:60px 40px; display:flex; flex-direction:column; justify-content:center; }
 .brand-logo { font-size:42px; font-weight:700; margin-bottom:12px; letter-spacing:2px; }
 .brand-logo img { max-width:220px; max-height:70px; }
 .feature { display:flex; gap:12px; align-items:flex-start; font-size:13px; margin-bottom:14px; }
 .feature-icon { width:20px; height:20px; background:var(--cor-acento); border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; color:#fff; font-size:11px; font-weight:700; }
-.login-form { padding:50px 40px; display:flex; flex-direction:column; justify-content:center; }
+.login-form { padding:50px 40px; display:flex; flex-direction:column; justify-content:center; border-right:2px dashed #e1dfdd; }
+/* Painel de solicitação externa */
+.sol-ext-form { padding:40px 36px; display:flex; flex-direction:column; justify-content:flex-start; background:#f7faf9; }
+.sol-ext-title { font-size:18px; font-weight:700; color:var(--cor-acento); margin-bottom:4px; display:flex; align-items:center; gap:8px; }
+.sol-ext-sub { font-size:12px; color:#666; margin-bottom:20px; line-height:1.5; }
+.sol-ext-divider { width:100%; height:2px; background:linear-gradient(90deg,var(--cor-acento),transparent); border-radius:2px; margin-bottom:20px; }
+.badge-tipo-ext { display:inline-block; padding:6px 12px; border-radius:16px; font-size:11px; font-weight:600; margin:0 4px 6px 0; cursor:pointer; border:1.5px solid #c8ddd4; background:#fff; color:#2d4a44; transition:all .15s; }
+.badge-tipo-ext:hover { border-color:var(--cor-acento); color:var(--cor-acento); }
+.badge-tipo-ext.sel { background:var(--cor-acento); color:#fff; border-color:var(--cor-acento); }
+.btn-enviar-sol { width:100%; padding:13px 24px; background:linear-gradient(135deg,var(--cor-acento) 0%,#1a5276 100%); color:#fff; border:none; border-radius:6px; font-size:14px; font-weight:600; cursor:pointer; text-transform:uppercase; margin-top:6px; }
+.btn-enviar-sol:disabled { opacity:.6; cursor:not-allowed; }
+.sol-protocolo { background:#eaf6ef; border:1px solid #b2d8c0; border-radius:8px; padding:16px; font-size:13px; color:#14693c; text-align:center; display:none; }
+.sol-protocolo .prot-num { font-size:20px; font-weight:700; font-family:monospace; letter-spacing:2px; margin:8px 0 4px; color:var(--cor-acento); }
+.sol-nova-btn { font-size:12px; color:var(--cor-secundaria); cursor:pointer; text-decoration:underline; display:block; margin-top:10px; }
 .form-title { font-size:24px; font-weight:700; color:var(--cor-primaria); margin-bottom:24px; }
 .form-group { margin-bottom:16px; }
 .form-label { font-size:12px; font-weight:600; color:var(--cor-primaria); display:block; margin-bottom:8px; text-transform:uppercase; }
@@ -112,9 +125,11 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
 .pwd-rules b { color:var(--cor-primaria); }
 .info-note { font-size:11px; color:#92600a; background:#fff8e6; border:1px solid #f3e3b3; border-radius:6px; padding:10px 14px; margin-bottom:14px; line-height:1.6; }
 
-@media (max-width:768px){
+@media (max-width:900px){
   .login-container { grid-template-columns:1fr; }
   .login-brand { display:none; }
+  .login-form { border-right:none; border-bottom:2px dashed #e1dfdd; }
+  .sol-ext-form { background:#f7faf9; }
   .system-wrapper.active { flex-direction:column; }
   .sidebar { position:fixed; left:-260px; top:0; z-index:100; transition:left .25s; width:250px; }
   .sidebar.open { left:0; box-shadow:4px 0 20px rgba(0,0,0,0.3); }
@@ -142,6 +157,55 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
       <div class="form-group"><label class="form-label">Senha</label><input type="password" id="loginPass" class="form-input"></div>
       <button class="btn-login" onclick="login()">Entrar</button>
       <div style="text-align:center;margin-top:16px;"><span class="link" onclick="esqueciSenha()">Esqueci a senha</span></div>
+    </div>
+
+    <!-- PAINEL SOLICITAÇÃO EXTERNA -->
+    <div class="sol-ext-form" id="solExtPanel">
+      <div class="sol-ext-title">📋 Nova Solicitação</div>
+      <div class="sol-ext-sub">Clientes externos: preencha os dados abaixo para solicitar atendimento. Nossa equipe retornará pelo WhatsApp.</div>
+      <div class="sol-ext-divider"></div>
+
+      <!-- Formulário -->
+      <div id="solExtForm">
+        <div class="form-group">
+          <label class="form-label">WhatsApp <span style="color:#dc2626">*</span></label>
+          <input type="tel" id="solTel" class="form-input" placeholder="(97) 99999-9999">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Nome completo <span style="color:#dc2626">*</span></label>
+          <input type="text" id="solNome" class="form-input" placeholder="Seu nome completo">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Empresa / Órgão (opcional)</label>
+          <input type="text" id="solEmpresa" class="form-input" placeholder="Ex: SEMED, nome da empresa...">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tipo de atendimento <span style="color:#dc2626">*</span></label>
+          <div id="solTipos" style="margin-top:4px;">
+            <span class="badge-tipo-ext" onclick="solSelTipo(this,'Manutenção de impressora')">Impressora</span>
+            <span class="badge-tipo-ext" onclick="solSelTipo(this,'Manutenção de computador/notebook')">Computador</span>
+            <span class="badge-tipo-ext" onclick="solSelTipo(this,'Instalação de equipamento')">Instalação</span>
+            <span class="badge-tipo-ext" onclick="solSelTipo(this,'Rede e internet')">Rede / Internet</span>
+            <span class="badge-tipo-ext" onclick="solSelTipo(this,'Formatação e backup')">Formatação</span>
+            <span class="badge-tipo-ext" onclick="solSelTipo(this,'Solicitação de orçamento')">Orçamento</span>
+            <span class="badge-tipo-ext" onclick="solSelTipo(this,'Outro')">Outro</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Descreva o problema <span style="color:#dc2626">*</span></label>
+          <textarea id="solDesc" class="form-input" style="min-height:80px;resize:vertical;" placeholder="Descreva o que está acontecendo..."></textarea>
+        </div>
+        <button class="btn-enviar-sol" id="btnEnviarSol" onclick="enviarSolicitacaoExt()">Enviar Solicitação</button>
+      </div>
+
+      <!-- Protocolo pós-envio -->
+      <div class="sol-protocolo" id="solProtocolo">
+        <div style="font-size:22px;">✅</div>
+        <div style="font-size:13px;color:#666;margin-top:6px;">Protocolo gerado:</div>
+        <div class="prot-num" id="solProtNum"></div>
+        <div style="font-size:12px;color:#555;margin-top:8px;line-height:1.7;" id="solProtInfo"></div>
+        <span class="sol-nova-btn" onclick="novaSolExt()">Fazer nova solicitação</span>
+      </div>
     </div>
   </div>
 </div>
@@ -2323,10 +2387,128 @@ function sincronizarAgora(){
   if(!SYNC_URL){ alert('Configure primeiro a URL de sincroniza\u00e7\u00e3o.'); return; }
   pushNuvem();
   setTimeout(pullNuvem, 1500);
-  alert('Sincroniza\u00e7\u00e3o iniciada!');
+  alert('Sincronização iniciada!');
 }
 
 pullNuvem();
+
+// ===== SOLICITAÇÃO EXTERNA (painel na tela de login) =====
+var _solTipoExt = '';
+
+function solSelTipo(el, tipo){
+  document.querySelectorAll('.badge-tipo-ext').forEach(function(b){ b.classList.remove('sel'); });
+  el.classList.add('sel');
+  _solTipoExt = tipo;
+}
+
+function enviarSolicitacaoExt(){
+  var tel     = (document.getElementById('solTel').value||'').replace(/\D/g,'');
+  var nome    = (document.getElementById('solNome').value||'').trim();
+  var empresa = (document.getElementById('solEmpresa').value||'').trim();
+  var desc    = (document.getElementById('solDesc').value||'').trim();
+
+  if(tel.length < 10){ alert('Informe um WhatsApp válido (com DDD).'); return; }
+  if(nome.length < 3){ alert('Informe seu nome completo.'); return; }
+  if(!_solTipoExt){ alert('Selecione o tipo de atendimento.'); return; }
+  if(desc.length < 10){ alert('Descreva o problema com mais detalhes.'); return; }
+
+  var btn = document.getElementById('btnEnviarSol');
+  btn.textContent = 'Enviando...';
+  btn.disabled = true;
+
+  var agora  = new Date();
+  var dataBR = agora.toLocaleDateString('pt-BR');
+  var horaBR = agora.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  var solId  = 'SOL-' + agora.getTime();
+  var telFmt = '+' + (tel.startsWith('55') ? tel : '55' + tel);
+
+  var sol = {
+    id:          solId,
+    tipo:        'solicitacao',
+    cliente:     nome,
+    empresa:     empresa,
+    telefone:    telFmt,
+    email:       '',
+    servico:     _solTipoExt,
+    tipoServico: _solTipoExt,
+    descricao:   desc,
+    status:      'Aguardando Tecnico',
+    origem:      'Site / Portal Externo',
+    dataCriacao: dataBR,
+    horaCriacao: horaBR,
+    tecnico:     null,
+    dtAssumido:  null,
+    osVinculada: null,
+    _ts:         agora.getTime()
+  };
+
+  // Salvar na nuvem e no localStorage
+  var url = SYNC_URL || localStorage.getItem('hml_arp_sync_url') || '';
+
+  function _finalizarEnvio(ok){
+    // Também salva local
+    var arr = [];
+    try{ arr = JSON.parse(localStorage.getItem('hml_arp_sol')||'[]'); }catch(e){}
+    if(!arr.some(function(s){ return s.id===sol.id; })) arr.push(sol);
+    localStorage.setItem('hml_arp_sol', JSON.stringify(arr));
+
+    // Enviar confirmação WhatsApp via Apps Script
+    if(url){
+      fetch(url + '?action=confirmarSol' +
+        '&tel='     + encodeURIComponent(sol.telefone) +
+        '&solId='   + encodeURIComponent(sol.id) +
+        '&servico=' + encodeURIComponent(sol.servico) +
+        '&data='    + encodeURIComponent(dataBR + ' ' + horaBR)
+      ).catch(function(){});
+    }
+
+    // Exibir protocolo
+    document.getElementById('solExtForm').style.display = 'none';
+    document.getElementById('solProtocolo').style.display = 'block';
+    document.getElementById('solProtNum').textContent = solId;
+    document.getElementById('solProtInfo').innerHTML =
+      '<b>Tipo:</b> ' + _solTipoExt + '<br>' +
+      '<b>Abertura:</b> ' + dataBR + ' às ' + horaBR + '<br>' +
+      '<b>Status:</b> Aguardando técnico<br><br>' +
+      'Você receberá confirmação no WhatsApp em breve.<br>' +
+      '<b>Contato:</b> (97) 98429-4519';
+  }
+
+  if(url){
+    fetch(url + '?action=load')
+      .then(function(r){ return r.json(); })
+      .then(function(estado){
+        var arr = [];
+        try{ arr = JSON.parse(estado['hml_arp_sol']||'[]'); }catch(e){}
+        if(!arr.some(function(s){ return s.id===sol.id; })) arr.push(sol);
+        estado['hml_arp_sol'] = JSON.stringify(arr);
+        estado._ts = Date.now();
+        return fetch(url, {
+          method:'POST',
+          headers:{'Content-Type':'text/plain;charset=utf-8'},
+          body: JSON.stringify({action:'save', data: estado})
+        });
+      })
+      .then(function(){ _finalizarEnvio(true); })
+      .catch(function(){ _finalizarEnvio(false); });
+  } else {
+    _finalizarEnvio(false);
+  }
+}
+
+function novaSolExt(){
+  _solTipoExt = '';
+  ['solTel','solNome','solEmpresa','solDesc'].forEach(function(id){
+    var el = document.getElementById(id); if(el) el.value='';
+  });
+  document.querySelectorAll('.badge-tipo-ext').forEach(function(b){ b.classList.remove('sel'); });
+  document.getElementById('btnEnviarSol').textContent = 'Enviar Solicitação';
+  document.getElementById('btnEnviarSol').disabled = false;
+  document.getElementById('solExtForm').style.display = 'block';
+  document.getElementById('solProtocolo').style.display = 'none';
+}
+
+
 
 
 // ===== RELATORIO DIARIO =====
