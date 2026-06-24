@@ -10,26 +10,42 @@
 body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Roboto',sans-serif; background:#f3f2f1; }
 
 .login-screen { background:linear-gradient(135deg,var(--cor-login) 0%,var(--cor-secundaria) 100%); min-height:100vh; display:flex; align-items:center; justify-content:center; padding:16px; }
-.login-container { background:#fff; border-radius:12px; box-shadow:0 10px 40px rgba(0,0,0,0.2); overflow:hidden; width:100%; max-width:1180px; display:grid; grid-template-columns:1fr 1fr 1fr; }
+.login-container { background:#fff; border-radius:12px; box-shadow:0 10px 40px rgba(0,0,0,0.2); overflow:hidden; width:100%; max-width:900px; display:grid; grid-template-columns:1fr 1fr; }
 .login-brand { background:linear-gradient(135deg,var(--cor-secundaria) 0%,var(--cor-primaria) 100%); color:#fff; padding:60px 40px; display:flex; flex-direction:column; justify-content:center; }
 .brand-logo { font-size:42px; font-weight:700; margin-bottom:12px; letter-spacing:2px; }
 .brand-logo img { max-width:220px; max-height:70px; }
 .feature { display:flex; gap:12px; align-items:flex-start; font-size:13px; margin-bottom:14px; }
 .feature-icon { width:20px; height:20px; background:var(--cor-acento); border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; color:#fff; font-size:11px; font-weight:700; }
-.login-form { padding:50px 40px; display:flex; flex-direction:column; justify-content:center; border-right:2px dashed #e1dfdd; }
-/* Painel de solicitação externa */
-.sol-ext-form { padding:40px 36px; display:flex; flex-direction:column; justify-content:flex-start; background:#f7faf9; }
-.sol-ext-title { font-size:18px; font-weight:700; color:var(--cor-acento); margin-bottom:4px; display:flex; align-items:center; gap:8px; }
-.sol-ext-sub { font-size:12px; color:#666; margin-bottom:20px; line-height:1.5; }
-.sol-ext-divider { width:100%; height:2px; background:linear-gradient(90deg,var(--cor-acento),transparent); border-radius:2px; margin-bottom:20px; }
+/* Painel direito: login + acesso externo empilhados */
+.login-right { display:flex; flex-direction:column; }
+.login-form { padding:44px 40px 28px; display:flex; flex-direction:column; justify-content:center; border-bottom:2px dashed #e1dfdd; }
+/* Painel de acesso à solicitação externa — mesmo estilo do login-brand */
+.sol-ext-panel { background:linear-gradient(160deg,var(--cor-primaria) 0%,#0a2940 100%); color:#fff; padding:36px 40px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:0; }
+.sol-ext-icon { font-size:48px; margin-bottom:16px; filter:drop-shadow(0 4px 12px rgba(0,0,0,0.3)); }
+.sol-ext-title { font-size:20px; font-weight:700; letter-spacing:.5px; margin-bottom:10px; }
+.sol-ext-sub { font-size:13px; color:rgba(255,255,255,0.78); line-height:1.6; margin-bottom:24px; max-width:280px; }
+.btn-abrir-sol { padding:14px 32px; background:var(--cor-acento); color:#fff; border:none; border-radius:8px; font-size:14px; font-weight:700; cursor:pointer; letter-spacing:.5px; box-shadow:0 4px 16px rgba(0,0,0,0.25); transition:background .2s,transform .1s; }
+.btn-abrir-sol:hover { background:#24623b; transform:translateY(-1px); }
+.sol-ext-note { font-size:11px; color:rgba(255,255,255,0.5); margin-top:14px; }
+/* Modal de solicitação */
+.sol-modal-overlay { display:none; position:fixed; inset:0; background:rgba(10,30,50,0.7); z-index:500; align-items:center; justify-content:center; padding:16px; }
+.sol-modal-overlay.open { display:flex; }
+.sol-modal { background:#fff; border-radius:14px; width:100%; max-width:520px; max-height:92vh; display:flex; flex-direction:column; box-shadow:0 20px 60px rgba(0,0,0,0.4); animation:modalIn .22s ease; }
+@keyframes modalIn { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+.sol-modal-header { padding:20px 24px 16px; border-bottom:1px solid #e1dfdd; display:flex; justify-content:space-between; align-items:center; flex-shrink:0; }
+.sol-modal-header-title { font-size:17px; font-weight:700; color:var(--cor-primaria); display:flex; align-items:center; gap:8px; }
+.sol-modal-close { background:none; border:none; font-size:22px; cursor:pointer; color:#888; line-height:1; padding:4px; }
+.sol-modal-close:hover { color:#dc2626; }
+.sol-modal-body { padding:20px 24px; overflow-y:auto; flex:1; }
+.sol-modal-footer { padding:16px 24px; border-top:1px solid #e1dfdd; flex-shrink:0; }
 .badge-tipo-ext { display:inline-block; padding:6px 12px; border-radius:16px; font-size:11px; font-weight:600; margin:0 4px 6px 0; cursor:pointer; border:1.5px solid #c8ddd4; background:#fff; color:#2d4a44; transition:all .15s; }
 .badge-tipo-ext:hover { border-color:var(--cor-acento); color:var(--cor-acento); }
 .badge-tipo-ext.sel { background:var(--cor-acento); color:#fff; border-color:var(--cor-acento); }
-.btn-enviar-sol { width:100%; padding:13px 24px; background:linear-gradient(135deg,var(--cor-acento) 0%,#1a5276 100%); color:#fff; border:none; border-radius:6px; font-size:14px; font-weight:600; cursor:pointer; text-transform:uppercase; margin-top:6px; }
+.btn-enviar-sol { width:100%; padding:13px 24px; background:linear-gradient(135deg,var(--cor-acento) 0%,var(--cor-secundaria) 100%); color:#fff; border:none; border-radius:6px; font-size:14px; font-weight:600; cursor:pointer; }
 .btn-enviar-sol:disabled { opacity:.6; cursor:not-allowed; }
-.sol-protocolo { background:#eaf6ef; border:1px solid #b2d8c0; border-radius:8px; padding:16px; font-size:13px; color:#14693c; text-align:center; display:none; }
-.sol-protocolo .prot-num { font-size:20px; font-weight:700; font-family:monospace; letter-spacing:2px; margin:8px 0 4px; color:var(--cor-acento); }
-.sol-nova-btn { font-size:12px; color:var(--cor-secundaria); cursor:pointer; text-decoration:underline; display:block; margin-top:10px; }
+.sol-protocolo { background:#eaf6ef; border:1px solid #b2d8c0; border-radius:8px; padding:20px; text-align:center; }
+.sol-protocolo .prot-num { font-size:22px; font-weight:700; font-family:monospace; letter-spacing:2px; margin:10px 0 6px; color:var(--cor-acento); }
+.sol-nova-btn { display:inline-block; margin-top:14px; font-size:12px; color:var(--cor-secundaria); cursor:pointer; text-decoration:underline; }
 .form-title { font-size:24px; font-weight:700; color:var(--cor-primaria); margin-bottom:24px; }
 .form-group { margin-bottom:16px; }
 .form-label { font-size:12px; font-weight:600; color:var(--cor-primaria); display:block; margin-bottom:8px; text-transform:uppercase; }
@@ -125,11 +141,11 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
 .pwd-rules b { color:var(--cor-primaria); }
 .info-note { font-size:11px; color:#92600a; background:#fff8e6; border:1px solid #f3e3b3; border-radius:6px; padding:10px 14px; margin-bottom:14px; line-height:1.6; }
 
-@media (max-width:900px){
+@media (max-width:768px){
   .login-container { grid-template-columns:1fr; }
   .login-brand { display:none; }
-  .login-form { border-right:none; border-bottom:2px dashed #e1dfdd; }
-  .sol-ext-form { background:#f7faf9; }
+  .login-form { border-bottom:2px dashed #e1dfdd; padding:32px 24px 24px; }
+  .sol-ext-panel { padding:28px 24px; }
   .system-wrapper.active { flex-direction:column; }
   .sidebar { position:fixed; left:-260px; top:0; z-index:100; transition:left .25s; width:250px; }
   .sidebar.open { left:0; box-shadow:4px 0 20px rgba(0,0,0,0.3); }
@@ -137,6 +153,7 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
   .stats-grid { grid-template-columns:repeat(2,1fr); }
   .material-row { grid-template-columns:1fr; }
   .content { padding:12px; }
+  .sol-modal { max-height:100vh; border-radius:0; }
 }
 </style>
 </head>
@@ -144,69 +161,102 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
 
 <div id="loginScreen" class="login-screen">
   <div class="login-container">
+
+    <!-- COLUNA ESQUERDA: marca institucional -->
     <div class="login-brand">
       <div class="brand-logo" id="brandLogo">ARP TECH</div>
-      <div style="font-size:14px;color:rgba(255,255,255,0.8);margin-bottom:36px;">Amaz&ocirc;nia</div>
-      <div class="feature"><div class="feature-icon">&#10003;</div><div>Gerenciamento de Ordens de Servi&ccedil;o</div></div>
+      <div style="font-size:14px;color:rgba(255,255,255,0.8);margin-bottom:36px;">Amazônia</div>
+      <div class="feature"><div class="feature-icon">&#10003;</div><div>Gerenciamento de Ordens de Serviço</div></div>
       <div class="feature"><div class="feature-icon">&#10003;</div><div>Registro de Atendimento em Tempo Real</div></div>
-      <div class="feature"><div class="feature-icon">&#10003;</div><div>Notas, Comiss&otilde;es e Relat&oacute;rios</div></div>
-    </div>
-    <div class="login-form">
-      <div style="background:#dc2626;color:#fff;font-size:11px;font-weight:700;text-align:center;padding:6px;border-radius:6px;margin-bottom:12px;">AMBIENTE DE HOMOLOGAÇÃO — NÃO USE PARA PRODUÇÃO</div><div class="form-title">Bem-vindo</div>
-      <div class="form-group"><label class="form-label">Usu&aacute;rio</label><input type="text" id="loginUser" class="form-input" autocapitalize="none"></div>
-      <div class="form-group"><label class="form-label">Senha</label><input type="password" id="loginPass" class="form-input"></div>
-      <button class="btn-login" onclick="login()">Entrar</button>
-      <div style="text-align:center;margin-top:16px;"><span class="link" onclick="esqueciSenha()">Esqueci a senha</span></div>
+      <div class="feature"><div class="feature-icon">&#10003;</div><div>Notas, Comissões e Relatórios</div></div>
     </div>
 
-    <!-- PAINEL SOLICITAÇÃO EXTERNA -->
-    <div class="sol-ext-form" id="solExtPanel">
-      <div class="sol-ext-title">📋 Nova Solicitação</div>
-      <div class="sol-ext-sub">Clientes externos: preencha os dados abaixo para solicitar atendimento. Nossa equipe retornará pelo WhatsApp.</div>
-      <div class="sol-ext-divider"></div>
+    <!-- COLUNA DIREITA: login interno (topo) + acesso externo (base) -->
+    <div class="login-right">
 
-      <!-- Formulário -->
-      <div id="solExtForm">
-        <div class="form-group">
-          <label class="form-label">WhatsApp <span style="color:#dc2626">*</span></label>
-          <input type="tel" id="solTel" class="form-input" placeholder="(97) 99999-9999">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Nome completo <span style="color:#dc2626">*</span></label>
-          <input type="text" id="solNome" class="form-input" placeholder="Seu nome completo">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Empresa / Órgão (opcional)</label>
-          <input type="text" id="solEmpresa" class="form-input" placeholder="Ex: SEMED, nome da empresa...">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Tipo de atendimento <span style="color:#dc2626">*</span></label>
-          <div id="solTipos" style="margin-top:4px;">
-            <span class="badge-tipo-ext" onclick="solSelTipo(this,'Manutenção de impressora')">Impressora</span>
-            <span class="badge-tipo-ext" onclick="solSelTipo(this,'Manutenção de computador/notebook')">Computador</span>
-            <span class="badge-tipo-ext" onclick="solSelTipo(this,'Instalação de equipamento')">Instalação</span>
-            <span class="badge-tipo-ext" onclick="solSelTipo(this,'Rede e internet')">Rede / Internet</span>
-            <span class="badge-tipo-ext" onclick="solSelTipo(this,'Formatação e backup')">Formatação</span>
-            <span class="badge-tipo-ext" onclick="solSelTipo(this,'Solicitação de orçamento')">Orçamento</span>
-            <span class="badge-tipo-ext" onclick="solSelTipo(this,'Outro')">Outro</span>
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Descreva o problema <span style="color:#dc2626">*</span></label>
-          <textarea id="solDesc" class="form-input" style="min-height:80px;resize:vertical;" placeholder="Descreva o que está acontecendo..."></textarea>
-        </div>
-        <button class="btn-enviar-sol" id="btnEnviarSol" onclick="enviarSolicitacaoExt()">Enviar Solicitação</button>
+      <!-- Login interno -->
+      <div class="login-form">
+        <div style="background:#dc2626;color:#fff;font-size:11px;font-weight:700;text-align:center;padding:6px;border-radius:6px;margin-bottom:14px;">AMBIENTE DE HOMOLOGAÇÃO — NÃO USE PARA PRODUÇÃO</div>
+        <div class="form-title">Bem-vindo</div>
+        <div class="form-group"><label class="form-label">Usuário</label><input type="text" id="loginUser" class="form-input" autocapitalize="none"></div>
+        <div class="form-group"><label class="form-label">Senha</label><input type="password" id="loginPass" class="form-input"></div>
+        <button class="btn-login" onclick="login()">Entrar</button>
+        <div style="text-align:center;margin-top:14px;"><span class="link" onclick="esqueciSenha()">Esqueci a senha</span></div>
       </div>
 
-      <!-- Protocolo pós-envio -->
-      <div class="sol-protocolo" id="solProtocolo">
-        <div style="font-size:22px;">✅</div>
-        <div style="font-size:13px;color:#666;margin-top:6px;">Protocolo gerado:</div>
+      <!-- Painel de acesso externo — mesmo estilo visual da marca -->
+      <div class="sol-ext-panel">
+        <div class="sol-ext-icon">📋</div>
+        <div class="sol-ext-title">Nova Solicitação</div>
+        <div class="sol-ext-sub">Preencha os dados do atendimento e nossa equipe retornará o mais breve possível.</div>
+        <button class="btn-abrir-sol" onclick="abrirModalSol()">Abrir Solicitação</button>
+        <div class="sol-ext-note">Seus dados serão utilizados apenas para retorno do atendimento.</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DE SOLICITAÇÃO EXTERNA -->
+<div class="sol-modal-overlay" id="solModalOverlay" onclick="fecharModalSolFora(event)">
+  <div class="sol-modal" id="solModal">
+
+    <div class="sol-modal-header">
+      <div class="sol-modal-header-title">📋 Nova Solicitação de Atendimento</div>
+      <button class="sol-modal-close" onclick="fecharModalSol()" title="Fechar">&times;</button>
+    </div>
+
+    <!-- Formulário -->
+    <div class="sol-modal-body" id="solModalBody">
+      <div class="form-group">
+        <label class="form-label">WhatsApp <span style="color:#dc2626">*</span></label>
+        <input type="tel" id="solTel" class="form-input" placeholder="(97) 99999-9999">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Nome completo <span style="color:#dc2626">*</span></label>
+        <input type="text" id="solNome" class="form-input" placeholder="Seu nome completo">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Empresa / Órgão <span style="font-weight:400;color:#999;">(opcional)</span></label>
+        <input type="text" id="solEmpresa" class="form-input" placeholder="Ex: SEMED, nome da empresa...">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Endereço <span style="color:#dc2626">*</span></label>
+        <input type="text" id="solEndereco" class="form-input" placeholder="Rua, número, bairro ou setor...">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tipo de atendimento <span style="color:#dc2626">*</span></label>
+        <div style="margin-top:6px;">
+          <span class="badge-tipo-ext" onclick="solSelTipo(this,'Manutenção de impressora')">Impressora</span>
+          <span class="badge-tipo-ext" onclick="solSelTipo(this,'Manutenção de computador/notebook')">Computador</span>
+          <span class="badge-tipo-ext" onclick="solSelTipo(this,'Instalação de equipamento')">Instalação</span>
+          <span class="badge-tipo-ext" onclick="solSelTipo(this,'Rede e internet')">Rede / Internet</span>
+          <span class="badge-tipo-ext" onclick="solSelTipo(this,'Formatação e backup')">Formatação</span>
+          <span class="badge-tipo-ext" onclick="solSelTipo(this,'Solicitação de orçamento')">Orçamento</span>
+          <span class="badge-tipo-ext" onclick="solSelTipo(this,'Outro')">Outro</span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Descrição do problema <span style="color:#dc2626">*</span></label>
+        <textarea id="solDesc" class="form-input" style="min-height:90px;resize:vertical;" placeholder="Descreva o que está acontecendo com o máximo de detalhes..."></textarea>
+      </div>
+    </div>
+
+    <!-- Protocolo pós-envio (oculto inicialmente) -->
+    <div class="sol-modal-body" id="solProtocoloBox" style="display:none;">
+      <div class="sol-protocolo">
+        <div style="font-size:36px;">✅</div>
+        <div style="font-size:13px;color:#666;margin-top:8px;">Solicitação registrada! Protocolo:</div>
         <div class="prot-num" id="solProtNum"></div>
-        <div style="font-size:12px;color:#555;margin-top:8px;line-height:1.7;" id="solProtInfo"></div>
+        <div style="font-size:12px;color:#555;margin-top:10px;line-height:1.8;" id="solProtInfo"></div>
         <span class="sol-nova-btn" onclick="novaSolExt()">Fazer nova solicitação</span>
       </div>
     </div>
+
+    <div class="sol-modal-footer" id="solModalFooter">
+      <button class="btn-enviar-sol" id="btnEnviarSol" onclick="enviarSolicitacaoExt()">Enviar Solicitação</button>
+    </div>
+
   </div>
 </div>
 
@@ -2392,8 +2442,23 @@ function sincronizarAgora(){
 
 pullNuvem();
 
-// ===== SOLICITAÇÃO EXTERNA (painel na tela de login) =====
+// ===== SOLICITAÇÃO EXTERNA — MODAL =====
 var _solTipoExt = '';
+
+function abrirModalSol(){
+  document.getElementById('solModalOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  setTimeout(function(){ var el=document.getElementById('solTel'); if(el) el.focus(); }, 120);
+}
+
+function fecharModalSol(){
+  document.getElementById('solModalOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function fecharModalSolFora(e){
+  if(e.target === document.getElementById('solModalOverlay')) fecharModalSol();
+}
 
 function solSelTipo(el, tipo){
   document.querySelectorAll('.badge-tipo-ext').forEach(function(b){ b.classList.remove('sel'); });
@@ -2402,13 +2467,15 @@ function solSelTipo(el, tipo){
 }
 
 function enviarSolicitacaoExt(){
-  var tel     = (document.getElementById('solTel').value||'').replace(/\D/g,'');
-  var nome    = (document.getElementById('solNome').value||'').trim();
-  var empresa = (document.getElementById('solEmpresa').value||'').trim();
-  var desc    = (document.getElementById('solDesc').value||'').trim();
+  var tel      = (document.getElementById('solTel').value||'').replace(/\D/g,'');
+  var nome     = (document.getElementById('solNome').value||'').trim();
+  var empresa  = (document.getElementById('solEmpresa').value||'').trim();
+  var endereco = (document.getElementById('solEndereco').value||'').trim();
+  var desc     = (document.getElementById('solDesc').value||'').trim();
 
   if(tel.length < 10){ alert('Informe um WhatsApp válido (com DDD).'); return; }
   if(nome.length < 3){ alert('Informe seu nome completo.'); return; }
+  if(!endereco){ alert('Informe o endereço ou localização.'); return; }
   if(!_solTipoExt){ alert('Selecione o tipo de atendimento.'); return; }
   if(desc.length < 10){ alert('Descreva o problema com mais detalhes.'); return; }
 
@@ -2429,9 +2496,10 @@ function enviarSolicitacaoExt(){
     empresa:     empresa,
     telefone:    telFmt,
     email:       '',
+    endereco:    endereco,
     servico:     _solTipoExt,
     tipoServico: _solTipoExt,
-    descricao:   desc,
+    descricao:   desc + (endereco ? ' | Local: ' + endereco : ''),
     status:      'Aguardando Tecnico',
     origem:      'Site / Portal Externo',
     dataCriacao: dataBR,
@@ -2442,17 +2510,16 @@ function enviarSolicitacaoExt(){
     _ts:         agora.getTime()
   };
 
-  // Salvar na nuvem e no localStorage
   var url = SYNC_URL || localStorage.getItem('hml_arp_sync_url') || '';
 
-  function _finalizarEnvio(ok){
-    // Também salva local
+  function _mostrarProtocolo(){
+    // Salva local
     var arr = [];
     try{ arr = JSON.parse(localStorage.getItem('hml_arp_sol')||'[]'); }catch(e){}
     if(!arr.some(function(s){ return s.id===sol.id; })) arr.push(sol);
     localStorage.setItem('hml_arp_sol', JSON.stringify(arr));
 
-    // Enviar confirmação WhatsApp via Apps Script
+    // Confirmação WhatsApp
     if(url){
       fetch(url + '?action=confirmarSol' +
         '&tel='     + encodeURIComponent(sol.telefone) +
@@ -2462,12 +2529,14 @@ function enviarSolicitacaoExt(){
       ).catch(function(){});
     }
 
-    // Exibir protocolo
-    document.getElementById('solExtForm').style.display = 'none';
-    document.getElementById('solProtocolo').style.display = 'block';
+    // Trocar corpo do modal: esconde form, mostra protocolo
+    document.getElementById('solModalBody').style.display = 'none';
+    document.getElementById('solModalFooter').style.display = 'none';
+    document.getElementById('solProtocoloBox').style.display = 'block';
     document.getElementById('solProtNum').textContent = solId;
     document.getElementById('solProtInfo').innerHTML =
       '<b>Tipo:</b> ' + _solTipoExt + '<br>' +
+      '<b>Endereço:</b> ' + endereco + '<br>' +
       '<b>Abertura:</b> ' + dataBR + ' às ' + horaBR + '<br>' +
       '<b>Status:</b> Aguardando técnico<br><br>' +
       'Você receberá confirmação no WhatsApp em breve.<br>' +
@@ -2489,23 +2558,24 @@ function enviarSolicitacaoExt(){
           body: JSON.stringify({action:'save', data: estado})
         });
       })
-      .then(function(){ _finalizarEnvio(true); })
-      .catch(function(){ _finalizarEnvio(false); });
+      .then(function(){ _mostrarProtocolo(); })
+      .catch(function(){ _mostrarProtocolo(); });
   } else {
-    _finalizarEnvio(false);
+    _mostrarProtocolo();
   }
 }
 
 function novaSolExt(){
   _solTipoExt = '';
-  ['solTel','solNome','solEmpresa','solDesc'].forEach(function(id){
+  ['solTel','solNome','solEmpresa','solEndereco','solDesc'].forEach(function(id){
     var el = document.getElementById(id); if(el) el.value='';
   });
   document.querySelectorAll('.badge-tipo-ext').forEach(function(b){ b.classList.remove('sel'); });
-  document.getElementById('btnEnviarSol').textContent = 'Enviar Solicitação';
-  document.getElementById('btnEnviarSol').disabled = false;
-  document.getElementById('solExtForm').style.display = 'block';
-  document.getElementById('solProtocolo').style.display = 'none';
+  var btn = document.getElementById('btnEnviarSol');
+  if(btn){ btn.textContent='Enviar Solicitação'; btn.disabled=false; }
+  document.getElementById('solModalBody').style.display = 'block';
+  document.getElementById('solModalFooter').style.display = 'block';
+  document.getElementById('solProtocoloBox').style.display = 'none';
 }
 
 
