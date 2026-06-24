@@ -78,6 +78,7 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Roboto',sans-ser
 .badge-rural { background:#fff9e1; color:#8a6d00; }
 .badge-urbana { background:#e8d9f5; color:#5e2e8c; }
 .badge-setor { background:#c5eae8; color:#155e63; }
+.badge-indigena { background:#fce4d6; color:#8b2500; }
 .badge-loc { background:#c5eae8; color:#155e63; }
 .badge-status-aberta { background:#fde8e8; color:#b91c1c; }
 .badge-status-andamento { background:#fff3d6; color:#92600a; }
@@ -227,13 +228,10 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
             <div id="acDropdown" style="display:none;position:absolute;z-index:999;background:#fff;border:2px solid var(--cor-acento);border-radius:8px;max-height:200px;overflow-y:auto;box-shadow:0 4px 12px rgba(0,0,0,0.15);min-width:280px;"></div>
             <input type="hidden" id="newRegLocal">
           </div>
-          <div class="form-group"><label class="form-label">Tipo</label>
-            <select id="newRegType" class="form-input">
-              <option value="" selected disabled>Selecionar</option>
-              <option value="rural">Escola Rural</option>
-              <option value="urbana">Escola Urbana</option>
-              <option value="setor">Setor</option>
-            </select>
+          <div class="form-group">
+            <label class="form-label">Zona</label>
+            <input type="text" id="newRegZonaDisplay" class="form-input" readonly style="background:#eef4f2;color:#333;font-weight:600;" placeholder="Preenchida automaticamente ao selecionar o local">
+            <input type="hidden" id="newRegType">
           </div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
             <div class="form-group"><label class="form-label">Data</label><input type="date" id="newRegData" class="form-input"></div>
@@ -285,16 +283,28 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
 
       <div id="relatorio" class="tab-content">
         <div class="card">
-          <div class="card-title">Relat&oacute;rio Di&aacute;rio de Atividades</div>
+          <div class="card-title">Relatório Diário de Atividades</div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
             <div class="form-group"><label class="form-label">Data inicial</label><input type="date" id="relDataIni" class="form-input"></div>
             <div class="form-group"><label class="form-label">Data final</label><input type="date" id="relDataFim" class="form-input"></div>
           </div>
-          <div class="form-group" id="relRespGroup">
-            <label class="form-label">Respons&aacute;vel (opcional)</label>
-            <select id="relResp" class="form-input">
-              <option value="">Todos</option>
-            </select>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:4px;">
+            <div class="form-group" id="relRespGroup">
+              <label class="form-label">Responsável (opcional)</label>
+              <select id="relResp" class="form-input">
+                <option value="">Todos</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Zona (opcional)</label>
+              <select id="relZona" class="form-input">
+                <option value="">Todas as zonas</option>
+                <option value="urbana">Urbano</option>
+                <option value="rural">Rural</option>
+                <option value="indigena">Indígena</option>
+                <option value="setor">Setor</option>
+              </select>
+            </div>
           </div>
           <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;">
             <button class="btn-primary" onclick="exportarRelatorio('pdf')">Exportar PDF</button>
@@ -371,19 +381,33 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
       <div id="locais" class="tab-content">
         <div class="card">
           <div class="card-title">Cadastrar Local</div>
-          <div class="form-group"><label class="form-label">Nome do local</label><input type="text" id="locNome" class="form-input" placeholder="Ex: E.M. Santa Rita"></div>
-          <div class="form-group"><label class="form-label">Tipo</label>
-            <select id="locTipo" class="form-input">
+          <div class="form-group"><label class="form-label">Nome do local</label><input type="text" id="locNome" class="form-input" placeholder="Ex: E.M. Santa Rita" oninput="previewZonaLocal()"></div>
+          <div class="form-group"><label class="form-label">Zona</label>
+            <select id="locTipo" class="form-input" onchange="previewZonaLocal()">
               <option value="" selected disabled>Selecionar</option>
-              <option value="urbana">Escola Urbana</option>
-              <option value="rural">Escola Rural</option>
+              <option value="urbana">Urbano</option>
+              <option value="rural">Rural</option>
+              <option value="indigena">Indígena</option>
               <option value="setor">Setor</option>
             </select>
           </div>
+          <div id="locZonaPreview" style="display:none;margin-bottom:14px;"></div>
           <button class="btn-primary" onclick="cadastrarLocal()">Cadastrar Local</button>
         </div>
         <div class="card">
-          <div class="card-title">Locais Cadastrados</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
+            <div class="card-title" style="margin-bottom:0;">Locais Cadastrados</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+              <input type="text" id="locBusca" class="form-input" style="max-width:220px;" placeholder="Buscar escola..." oninput="LOCAIS_PAGE=0;renderLocais()">
+              <select id="locFiltroZona" class="form-input" style="max-width:160px;" onchange="LOCAIS_PAGE=0;renderLocais()">
+                <option value="">Todas as zonas</option>
+                <option value="urbana">Urbano</option>
+                <option value="rural">Rural</option>
+                <option value="indigena">Indígena</option>
+                <option value="setor">Setor</option>
+              </select>
+            </div>
+          </div>
           <div id="locaisLista" class="scroll-list"></div>
           <div id="locaisPag" class="pagination"></div>
         </div>
@@ -522,12 +546,89 @@ var orgaos = JSON.parse(localStorage.getItem('arp_orgaos') || 'null') || ['SEMED
 var empresa = JSON.parse(localStorage.getItem('arp_empresa') || 'null') || {cnpj:'', ie:'', email:'', tel:'', end:''};
 
 var DEFAULT_LOCAIS = [
-  {nome:'Divis\u00e3o de Tecnologia da Informa\u00e7\u00e3o - DTI', tipo:'setor'},
-  {nome:'Departamento de Infraestrutura e Log\u00edstica', tipo:'setor'},
-  {nome:'Coordena\u00e7\u00e3o Pedag\u00f3gica', tipo:'setor'},
+  // Setores internos
+  {nome:'Divisão de Tecnologia da Informação - DTI', tipo:'setor'},
+  {nome:'Departamento de Infraestrutura e Logística', tipo:'setor'},
+  {nome:'Coordenação Pedagógica', tipo:'setor'},
   {nome:'Transporte Escolar', tipo:'setor'},
-  {nome:'E.M. EDMEE MONTEIRO BRASIL', tipo:'urbana'},
-  {nome:'Escola Martha Macedo', tipo:'urbana'}
+  // Zona Urbana
+  {nome:'CRECHE MUNICIPAL PROFESSORA JONECY ALVES DE FARIAS', tipo:'urbana', zona:'Urbano'},
+  {nome:'CRECHE MUNICIPAL PROFESSORA LINDA LUCIA DE SOUZA MIRANDA', tipo:'urbana', zona:'Urbano'},
+  {nome:'CRECHE MUNICIPAL PROFESSORA MARIA BONFIM SANTIAGO DA CRUZ', tipo:'urbana', zona:'Urbano'},
+  {nome:'ESCOLA MUNICIPAL CANAA', tipo:'urbana', zona:'Urbano'},
+  {nome:'ESCOLA MUNICIPAL DE EDUCACAO INFANTIL AUREA FERREIRA CACAO', tipo:'urbana', zona:'Urbano'},
+  {nome:'ESCOLA MUNICIPAL DE ENSINO FUNDAMENTAL MARLUCIA GOMES DE OLIVEIRA', tipo:'urbana', zona:'Urbano'},
+  {nome:'ESCOLA MUNICIPAL DOM BOSCO', tipo:'urbana', zona:'Urbano'},
+  {nome:'ESCOLA MUNICIPAL EDMEE MONTEIRO BRASIL', tipo:'urbana', zona:'Urbano'},
+  {nome:'ESCOLA MUNICIPAL GILBERTO MESTRINHO', tipo:'urbana', zona:'Urbano'},
+  {nome:'ESCOLA MUNICIPAL IRMA MARIA CARMEM CRONENBOLD', tipo:'urbana', zona:'Urbano'},
+  {nome:'ESCOLA MUNICIPAL JOSE CEZARIO MENEZES DE BARROS', tipo:'urbana', zona:'Urbano'},
+  {nome:'ESCOLA MUNICIPAL LINDALVA GUERRA DE SOUZA', tipo:'urbana', zona:'Urbano'},
+  {nome:'ESCOLA MUNICIPAL NOSSA SENHORA DO CARMO', tipo:'urbana', zona:'Urbano'},
+  {nome:'ESCOLA MUNICIPAL PROFESSORA MARTHA MACEDO DA SILVA', tipo:'urbana', zona:'Urbano'},
+  {nome:'ESCOLA MUNICIPAL ROSA DE SAROM', tipo:'urbana', zona:'Urbano'},
+  {nome:'ESCOLA MUNICIPAL SAO FRANCISCO', tipo:'urbana', zona:'Urbano'},
+  {nome:'ESCOLA MUNICIPAL TANCREDO NEVES', tipo:'urbana', zona:'Urbano'},
+  // Zona Rural
+  {nome:'ESCOLA MUNICIPAL ANTONIETA ATAIDE II', tipo:'rural', zona:'Rural'},
+  {nome:'ESCOLA MUNICIPAL BOM SAMARITANO', tipo:'rural', zona:'Rural'},
+  {nome:'ESCOLA MUNICIPAL CRISTO REI', tipo:'rural', zona:'Rural'},
+  {nome:'ESCOLA MUNICIPAL DIVINO ESPIRITO SANTO', tipo:'rural', zona:'Rural'},
+  {nome:'ESCOLA MUNICIPAL DOM BOSCO (RURAL)', tipo:'rural', zona:'Rural'},
+  {nome:'ESCOLA MUNICIPAL DOMINGOS RIBEIRO', tipo:'rural', zona:'Rural'},
+  {nome:'ESCOLA MUNICIPAL EDMEE BRASIL', tipo:'rural', zona:'Rural'},
+  {nome:'ESCOLA MUNICIPAL FLUVIAL OSMARINA MELO DE OLIVEIRA', tipo:'rural', zona:'Rural'},
+  {nome:'ESCOLA MUNICIPAL HELENA SOFIA CHAVES RICA', tipo:'rural', zona:'Rural'},
+  {nome:'ESCOLA MUNICIPAL IGARAPE GRANDE', tipo:'rural', zona:'Rural'},
+  {nome:'ESCOLA MUNICIPAL IRMA CLARA JACOB', tipo:'rural', zona:'Rural'},
+  {nome:'ESCOLA MUNICIPAL JESUS DE NAZARE', tipo:'rural', zona:'Rural'},
+  {nome:'ESCOLA MUNICIPAL JOAO DA CRUZ', tipo:'rural', zona:'Rural'},
+  {nome:'ESCOLA MUNICIPAL JOAQUIM GOMES', tipo:'rural', zona:'Rural'},
+  {nome:'ESCOLA MUNICIPAL JOSE DE SOUZA MOTA', tipo:'rural', zona:'Rural'},
+  {nome:'ESCOLA MUNICIPAL JOSE MENEZES TIUBA', tipo:'rural', zona:'Rural'},
+  {nome:'ESCOLA MUNICIPAL JULIO DA MOTA', tipo:'rural', zona:'Rural'},
+  {nome:'ESCOLA MUNICIPAL MAICIZINHO', tipo:'rural', zona:'Rural'},
+  {nome:'ESCOLA MUNICIPAL MANOEL TIAGO FERREIRA', tipo:'rural', zona:'Rural'},
+  {nome:'ESCOLA MUNICIPAL MARLY LOBATO NERY', tipo:'rural', zona:'Rural'},
+  {nome:'ESCOLA MUNICIPAL NOSSA SENHORA APARECIDA (LAGO DO PURUZINHO)', tipo:'rural', zona:'Rural'},
+  {nome:'ESCOLA MUNICIPAL NOSSA SENHORA DAS DORES', tipo:'rural', zona:'Rural'},
+  {nome:'ESCOLA MUNICIPAL NOSSA SENHORA DE CIVITA', tipo:'rural', zona:'Rural'},
+  {nome:'ESCOLA MUNICIPAL NOSSA SENHORA DO ROSARIO', tipo:'rural', zona:'Rural'},
+  {nome:'ESCOLA MUNICIPAL NOVA ESPERANCA', tipo:'rural', zona:'Rural'},
+  {nome:'ESCOLA MUNICIPAL PADRE LUIZ BERNARD', tipo:'rural', zona:'Rural'},
+  {nome:'ESCOLA MUNICIPAL PROFESSORA AUREA STELA MARIUBA MARQUES', tipo:'rural', zona:'Rural'},
+  {nome:'ESCOLA MUNICIPAL PROFESSORA MARLUCE DE CARVALHO LOBATO SOUZA', tipo:'rural', zona:'Rural'},
+  {nome:'ESCOLA MUNICIPAL RURAL MARIA DO CARMO FERREIRA', tipo:'rural', zona:'Rural'},
+  {nome:'ESCOLA MUNICIPAL SANTA BARBARA', tipo:'rural', zona:'Rural'},
+  {nome:'ESCOLA MUNICIPAL SANTA LUZIA', tipo:'rural', zona:'Rural'},
+  {nome:'ESCOLA MUNICIPAL SANTA RITA (LUZITANA)', tipo:'rural', zona:'Rural'},
+  {nome:'ESCOLA MUNICIPAL SANTA RITA (PACOVAL)', tipo:'rural', zona:'Rural'},
+  {nome:'ESCOLA MUNICIPAL SANTA ROSA', tipo:'rural', zona:'Rural'},
+  {nome:'ESCOLA MUNICIPAL SANTO ANTONIO', tipo:'rural', zona:'Rural'},
+  {nome:'ESCOLA MUNICIPAL SAO BENEDITO', tipo:'rural', zona:'Rural'},
+  {nome:'ESCOLA MUNICIPAL SAO DOMINGOS SAVIO', tipo:'rural', zona:'Rural'},
+  {nome:'ESCOLA MUNICIPAL SAO FRANCISCO (LAGO DE URUAPIARA)', tipo:'rural', zona:'Rural'},
+  {nome:'ESCOLA MUNICIPAL SAO FRANCISCO (LAGO DO ANTONIO)', tipo:'rural', zona:'Rural'},
+  {nome:'ESCOLA MUNICIPAL SAO JOAO BOSCO', tipo:'rural', zona:'Rural'},
+  {nome:'ESCOLA MUNICIPAL SAO JORGE (RURAL)', tipo:'rural', zona:'Rural'},
+  {nome:'ESCOLA MUNICIPAL SAO MIGUEL', tipo:'rural', zona:'Rural'},
+  {nome:'ESCOLA MUNICIPAL SAO RAIMUNDO (PARANA)', tipo:'rural', zona:'Rural'},
+  {nome:'ESCOLA MUNICIPAL SAO RAIMUNDO (SAO RAIMUNDO)', tipo:'rural', zona:'Rural'},
+  {nome:'ESCOLA MUNICIPAL SENADOR JEFERSON PERES', tipo:'rural', zona:'Rural'},
+  {nome:'ESCOLA MUNICIPAL VEREADOR MANOEL DE OLIVEIRA SANTOS', tipo:'rural', zona:'Rural'},
+  {nome:'ESCOLA MUNICIPAL VILA RICA', tipo:'rural', zona:'Rural'},
+  // Zona Indígena
+  {nome:'ESCOLA MUNICIPAL INDIGENA ARENDATO', tipo:'indigena', zona:'Indígena'},
+  {nome:'ESCOLA MUNICIPAL INDIGENA CUJUBIM', tipo:'indigena', zona:'Indígena'},
+  {nome:'ESCOLA MUNICIPAL INDIGENA FRANCISCO MEIRELLES', tipo:'indigena', zona:'Indígena'},
+  {nome:'ESCOLA MUNICIPAL INDIGENA IDHETE', tipo:'indigena', zona:'Indígena'},
+  {nome:'ESCOLA MUNICIPAL INDIGENA KAPEGKAKAY', tipo:'indigena', zona:'Indígena'},
+  {nome:'ESCOLA MUNICIPAL INDIGENA MBOAWA', tipo:'indigena', zona:'Indígena'},
+  {nome:'ESCOLA MUNICIPAL INDIGENA NOSSA SENHORA APARECIDA', tipo:'indigena', zona:'Indígena'},
+  {nome:'ESCOLA MUNICIPAL INDIGENA NOVE DE JANEIRO', tipo:'indigena', zona:'Indígena'},
+  {nome:'ESCOLA MUNICIPAL INDIGENA SAO JORGE', tipo:'indigena', zona:'Indígena'},
+  {nome:'ESCOLA MUNICIPAL INDIGENA SAO JOSE', tipo:'indigena', zona:'Indígena'},
+  {nome:'ESCOLA MUNICIPAL INDIGENA SAO SEBASTIAO', tipo:'indigena', zona:'Indígena'}
 ];
 var locais = JSON.parse(localStorage.getItem('arp_locais') || 'null') || DEFAULT_LOCAIS;
 
@@ -682,9 +783,11 @@ function filtrarLocaisAC(q){
 }
 function selecionarLocal(idx){
   var loc = locais[idx];
+  var ti  = tipoInfo(loc.tipo);
   document.getElementById('newRegLocalBusca').value = loc.nome;
   document.getElementById('newRegLocal').value = String(idx);
-  document.getElementById('newRegType').value = loc.tipo;
+  document.getElementById('newRegType').value  = loc.tipo;
+  document.getElementById('newRegZonaDisplay').value = ti.label;
   document.getElementById('acDropdown').style.display='none';
 }
 
@@ -817,8 +920,9 @@ function toggleSubmenu(el, id){
 }
 
 function tipoInfo(t){
-  if(t==='rural') return {label:'Escola Rural', cls:'badge-rural'};
-  if(t==='urbana') return {label:'Escola Urbana', cls:'badge-urbana'};
+  if(t==='rural')    return {label:'Zona Rural',    cls:'badge-rural'};
+  if(t==='urbana')   return {label:'Zona Urbana',   cls:'badge-urbana'};
+  if(t==='indigena') return {label:'Zona Indígena', cls:'badge-indigena'};
   return {label:'Setor', cls:'badge-setor'};
 }
 
@@ -854,8 +958,13 @@ function editarRegistro(id){
   for(var j=0;j<locais.length;j++){ if(locais[j].nome===r.local){ idxLoc=j; break; } }
   document.getElementById('newRegLocalBusca').value='';
   fillLocais();
-  if(idxLoc>=0) document.getElementById('newRegLocal').value = String(idxLoc);
+  if(idxLoc>=0){
+    document.getElementById('newRegLocal').value = String(idxLoc);
+    document.getElementById('newRegLocalBusca').value = locais[idxLoc].nome;
+  }
   document.getElementById('newRegType').value = r.locType || '';
+  var tiEdit = tipoInfo(r.locType || '');
+  document.getElementById('newRegZonaDisplay').value = r.locType ? tiEdit.label : '';
   var pd = (r.date||'').split('/');
   if(pd.length===3) document.getElementById('newRegData').value = pd[2]+'-'+pd[1]+'-'+pd[0];
   document.getElementById('newRegHora').value = r.start || '';
@@ -1819,16 +1928,27 @@ function salvarEmailAdmin(){
   alert('E-mail de recupera\u00e7\u00e3o salvo!');
 }
 
+function previewZonaLocal(){
+  var tipo = document.getElementById('locTipo').value;
+  var prev = document.getElementById('locZonaPreview');
+  if(!tipo || tipo==='setor'){ prev.style.display='none'; return; }
+  var ti = tipoInfo(tipo);
+  prev.style.display='block';
+  prev.innerHTML = '<span style="font-size:12px;color:#555;">Zona identificada: </span><span class="badge '+ti.cls+'">'+ti.label+'</span>';
+}
+
 function cadastrarLocal(){
   var nome = document.getElementById('locNome').value.trim();
   var tipo = document.getElementById('locTipo').value;
-  if(!nome || !tipo){ alert('Preencha nome e tipo!'); return; }
-  for(var i=0;i<locais.length;i++){ if(locais[i].nome.toLowerCase()===nome.toLowerCase()){ alert('Local j\u00e1 cadastrado!'); return; } }
-  locais.push({nome:nome, tipo:tipo});
+  if(!nome || !tipo){ alert('Preencha nome e zona!'); return; }
+  for(var i=0;i<locais.length;i++){ if(locais[i].nome.toLowerCase()===nome.toLowerCase()){ alert('Local já cadastrado!'); return; } }
+  var ti = tipoInfo(tipo);
+  locais.push({nome:nome, tipo:tipo, zona:ti.label.replace('Zona ','')});
   saveLocais();
   fillLocais();
   document.getElementById('locNome').value='';
   document.getElementById('locTipo').selectedIndex=0;
+  document.getElementById('locZonaPreview').style.display='none';
   renderLocais();
   alert('Local cadastrado!');
 }
@@ -1842,7 +1962,13 @@ function excluirLocal(idx){
 }
 
 function renderLocais(){
-  var lista = locais.map(function(l,i){ return {l:l, i:i}; });
+  var busca     = (document.getElementById('locBusca')||{value:''}).value.toLowerCase().trim();
+  var filtroZona= (document.getElementById('locFiltroZona')||{value:''}).value;
+  var lista = locais.map(function(l,i){ return {l:l, i:i}; }).filter(function(x){
+    if(filtroZona && x.l.tipo !== filtroZona) return false;
+    if(busca && x.l.nome.toLowerCase().indexOf(busca)<0) return false;
+    return true;
+  });
   var total = Math.ceil(lista.length / PER_PAGE);
   if(LOCAIS_PAGE>=total) LOCAIS_PAGE=Math.max(0,total-1);
   var slice = lista.slice(LOCAIS_PAGE*PER_PAGE,(LOCAIS_PAGE+1)*PER_PAGE);
@@ -1853,7 +1979,7 @@ function renderLocais(){
       '<div><span class="badge '+ti.cls+'">'+ti.label+'</span></div>'+
       '</div><button class="btn-danger" onclick="excluirLocal('+x.i+')">Excluir</button></div>';
   }).join('');
-  document.getElementById('locaisLista').innerHTML = html || '<div style="padding:20px;color:#999;">Nenhum local cadastrado.</div>';
+  document.getElementById('locaisLista').innerHTML = html || '<div style="padding:20px;color:#999;">Nenhum local encontrado.</div>';
   document.getElementById('locaisPag').innerHTML = pagButtons(total, LOCAIS_PAGE, 'gotoLocais');
 }
 
@@ -2135,15 +2261,17 @@ function parseDateBR(s){
 }
 
 function filtrarRelatorio(){
-  var ini = new Date(document.getElementById('relDataIni').value+'T00:00:00');
-  var fim = new Date(document.getElementById('relDataFim').value+'T23:59:59');
+  var ini  = new Date(document.getElementById('relDataIni').value+'T00:00:00');
+  var fim  = new Date(document.getElementById('relDataFim').value+'T23:59:59');
   var resp = document.getElementById('relResp').value;
+  var zona = (document.getElementById('relZona')||{value:''}).value;
   if(currentUser.profile==='SEMED') resp = currentUser.name;
   return records.filter(function(r){
     var d = parseDateBR(r.date);
     if(!d) return false;
     if(d<ini || d>fim) return false;
     if(resp && r.resp!==resp) return false;
+    if(zona && r.locType!==zona) return false;
     return true;
   }).sort(function(a,b){
     var da=parseDateBR(a.date), db=parseDateBR(b.date);
