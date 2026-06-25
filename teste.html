@@ -33,8 +33,17 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Roboto',sans-ser
 .btn-abrir-sol:hover { background:#24623b; }
 .btn-abrir-sol span { flex:1; text-align:center; }
 .sol-card-note { font-size:11px; color:rgba(255,255,255,0.45); display:flex; align-items:center; gap:6px; }
-/* Modal de solicitação */
-.sol-modal-overlay { display:none; position:fixed; inset:0; background:rgba(5,18,32,0.78); z-index:500; align-items:center; justify-content:center; padding:16px; }
+/* Modal transferência de OS */
+.transf-modal-overlay { display:none; position:fixed; inset:0; background:rgba(10,30,50,0.72); z-index:600; align-items:center; justify-content:center; padding:16px; }
+.transf-modal-overlay.open { display:flex; }
+.transf-modal { background:#fff; border-radius:14px; width:100%; max-width:460px; box-shadow:0 24px 64px rgba(0,0,0,0.4); animation:modalIn .2s ease; overflow:hidden; }
+.transf-modal-header { background:linear-gradient(135deg,var(--cor-primaria) 0%,var(--cor-secundaria) 100%); color:#fff; padding:18px 22px; display:flex; justify-content:space-between; align-items:center; }
+.transf-modal-header h3 { font-size:15px; font-weight:700; margin:0; }
+.transf-modal-close { background:none; border:none; color:rgba(255,255,255,0.75); font-size:22px; cursor:pointer; line-height:1; padding:2px 6px; }
+.transf-modal-close:hover { color:#fff; }
+.transf-modal-body { padding:22px; }
+.transf-info { background:#f0f4f8; border-radius:8px; padding:12px 14px; font-size:13px; margin-bottom:18px; color:#333; line-height:1.7; }
+.transf-info b { color:var(--cor-primaria); } display:none; position:fixed; inset:0; background:rgba(5,18,32,0.78); z-index:500; align-items:center; justify-content:center; padding:16px; }
 .sol-modal-overlay.open { display:flex; }
 .sol-modal { background:#fff; border-radius:14px; width:100%; max-width:520px; max-height:92vh; display:flex; flex-direction:column; box-shadow:0 24px 64px rgba(0,0,0,0.5); animation:modalIn .22s ease; }
 @keyframes modalIn { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
@@ -229,7 +238,46 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
 
 </div>
 
-<!-- MODAL DE SOLICITAÇÃO EXTERNA -->
+<!-- MODAL TRANSFERÊNCIA DE OS -->
+<div class="transf-modal-overlay" id="transfModalOverlay" onclick="fecharTransfModal(event)">
+  <div class="transf-modal" id="transfModal">
+    <div class="transf-modal-header">
+      <h3>🔄 Transferir Ordem de Serviço</h3>
+      <button class="transf-modal-close" onclick="fecharTransfModal()">&times;</button>
+    </div>
+    <div class="transf-modal-body">
+      <div class="transf-info" id="transfOsInfo"></div>
+      <div class="form-group">
+        <label class="form-label">Transferir para <span style="color:#dc2626">*</span></label>
+        <select id="transfTecnico" class="form-input">
+          <option value="" disabled selected>Selecione o técnico</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Motivo da transferência <span style="color:#dc2626">*</span></label>
+        <select id="transfMotivo" class="form-input" onchange="toggleTransfMotivoOutro()">
+          <option value="" disabled selected>Selecione o motivo</option>
+          <option>Férias</option>
+          <option>Folga</option>
+          <option>Afastamento médico / Atestado</option>
+          <option>Imprevisto operacional</option>
+          <option>Redistribuição de carga</option>
+          <option>Outro</option>
+        </select>
+      </div>
+      <div class="form-group" id="transfMotivoOutroGrp" style="display:none;">
+        <label class="form-label">Especifique o motivo</label>
+        <input type="text" id="transfMotivoOutro" class="form-input" placeholder="Descreva o motivo...">
+      </div>
+      <div style="display:flex;gap:10px;margin-top:6px;">
+        <button class="btn-primary" style="flex:1;" onclick="confirmarTransferencia()">Confirmar Transferência</button>
+        <button class="btn-secondary" style="flex:1;" onclick="fecharTransfModal()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de solicitação existente -->
 <div class="sol-modal-overlay" id="solModalOverlay" onclick="fecharModalSolFora(event)">
   <div class="sol-modal" id="solModal">
 
@@ -1589,7 +1637,12 @@ function osCard(o, acoes){
     '<div class="record-name">'+o.id+' &middot; '+o.cliente+'</div>'+
     (o.servico?'<div style="font-size:11px;color:var(--cor-acento);font-weight:700;margin-top:2px;">'+o.servico+'</div>':'')+
     '<div class="record-desc">'+o.desc+'</div>'+
-    '<div style="font-size:11px;color:#666;margin-top:6px;">'+(o.doc?'Doc: '+o.doc+' &middot; ':'')+'Tel: '+o.telefone+(o.email?' &middot; '+o.email:'')+' &middot; T\u00e9cnico: '+o.tecnico+(o.valor?' &middot; R$ '+o.valor.toFixed(2):'')+'</div>'+
+    '<div style="font-size:11px;color:#666;margin-top:6px;">'+(o.doc?'Doc: '+o.doc+' &middot; ':'')+'Tel: '+o.telefone+(o.email?' &middot; '+o.email:'')+' &middot; Técnico: <b>'+o.tecnico+'</b>'+(o.valor?' &middot; R$ '+o.valor.toFixed(2):'')+'</div>'+
+    (o.transferencias && o.transferencias.length ? (function(){
+      var ult = o.transferencias[o.transferencias.length-1];
+      return '<div style="font-size:11px;background:#f0f4ff;border-left:3px solid #7c3aed;padding:5px 9px;margin-top:6px;border-radius:0 4px 4px 0;color:#444;">'+
+        '🔄 <b>Transferido de:</b> '+ult.tecnicoAnterior+' → <b>'+ult.tecnicoNovo+'</b> &nbsp;|&nbsp; '+ult.data+(ult.motivo?' &nbsp;|&nbsp; Motivo: '+ult.motivo:'')+'</div>';
+    })() : '')+
     matHtml+
     (o.obs?'<div style="font-size:11px;color:#555;margin-top:6px;"><b>Obs:</b> '+o.obs+'</div>':'')+
     '<div><span class="badge '+stCls+'">'+o.status+'</span>'+tipoBadge+
@@ -1629,7 +1682,12 @@ function renderOS(tipo){
   if(tipo==='aberta'){ page=OSA_PAGE; contentId='osEmAbertoContent'; pagId='osEmAbertoPag'; fnName='gotoOsa';
     acoesFn=function(o){ return '<button class="btn-small" style="background:var(--cor-acento);color:#fff;" onclick="iniciarOS(\''+o.id+'\')">Iniciar Atendimento</button>'+btnMat(o)+btnExcluir(o); }; }
   else if(tipo==='andamento'){ page=OSAND_PAGE; contentId='osAbertasContent'; pagId='osAbertasPag'; fnName='gotoOsand';
-    acoesFn=function(o){ return '<button class="btn-small" style="background:var(--cor-acento);color:#fff;" onclick="concluirOS(\''+o.id+'\')">Concluir</button>'+btnMat(o)+btnObs(o)+btnExcluir(o); }; }
+    acoesFn=function(o){
+      var btnTransf = (isAdmin)
+        ? '<button class="btn-small" style="background:#7c3aed;color:#fff;" onclick="abrirTransfModal(\''+o.id+'\')">🔄 Transferir</button>'
+        : '';
+      return '<button class="btn-small" style="background:var(--cor-acento);color:#fff;" onclick="concluirOS(\''+o.id+'\')">Concluir</button>'+btnMat(o)+btnObs(o)+btnTransf+btnExcluir(o);
+    }; }
   else { page=OSC_PAGE; contentId='osConcluiContent'; pagId='osConcluiPag'; fnName='gotoOsc';
     acoesFn=function(o){ return btnExcluir(o); }; }
 
@@ -1685,7 +1743,8 @@ function imprimirOS(id){
     (o.email?'<tr><th>E-mail</th><td>'+o.email+'</td></tr>':'')+
     (o.servico?'<tr><th>Servi\u00e7o</th><td>'+o.servico+'</td></tr>':'')+
     '<tr><th>Tipo</th><td>'+(o.tipo==='externo'?'Externo':'Interno')+'</td></tr>'+
-    '<tr><th>T\u00e9cnico</th><td>'+o.tecnico+'</td></tr>'+
+    '<tr><th>Técnico</th><td>'+o.tecnico+'</td></tr>'+
+    (o.transferencias && o.transferencias.length ? '<tr><th>Transferências</th><td>'+o.transferencias.map(function(t){ return t.tecnicoAnterior+' → '+t.tecnicoNovo+' ('+t.data+(t.motivo?', '+t.motivo:'')+')'; }).join('<br>')+'</td></tr>' : '')+
     '<tr><th>Abertura</th><td>'+o.dataCriacao+'</td></tr>'+
     (o.dataConclusao?'<tr><th>Conclus\u00e3o</th><td>'+o.dataConclusao+'</td></tr>':'')+
     '<tr><th>Status</th><td>'+o.status+'</td></tr>'+
@@ -2485,7 +2544,104 @@ function sincronizarAgora(){
 
 pullNuvem();
 
-// ===== SOLICITAÇÃO EXTERNA — MODAL =====
+// ===== TRANSFERÊNCIA DE OS =====
+var _transfOsId = null;
+
+function abrirTransfModal(id){
+  var o = osOrdens.find(function(x){ return x.id===id; });
+  if(!o) return;
+  _transfOsId = id;
+
+  // Preencher info da OS
+  document.getElementById('transfOsInfo').innerHTML =
+    '<b>OS:</b> '+o.id+'<br>'+
+    '<b>Cliente:</b> '+o.cliente+'<br>'+
+    '<b>Responsável atual:</b> '+o.tecnico+'<br>'+
+    '<b>Serviço:</b> '+(o.servico||o.desc||'—');
+
+  // Preencher técnicos disponíveis (exceto o atual)
+  var sel = document.getElementById('transfTecnico');
+  var tecnicos = usuarios.filter(function(u){
+    return (u.profile==='ARPTECH' || u.profile==='ADMIN') && u.name !== o.tecnico;
+  });
+  sel.innerHTML = '<option value="" disabled selected>Selecione o técnico</option>' +
+    tecnicos.map(function(u){ return '<option value="'+u.name+'">'+u.name+' ('+u.profile+')</option>'; }).join('');
+
+  // Limpar campos
+  document.getElementById('transfMotivo').selectedIndex = 0;
+  document.getElementById('transfMotivoOutro').value = '';
+  document.getElementById('transfMotivoOutroGrp').style.display = 'none';
+
+  document.getElementById('transfModalOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function fecharTransfModal(e){
+  if(e && e.target !== document.getElementById('transfModalOverlay')) return;
+  document.getElementById('transfModalOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+  _transfOsId = null;
+}
+
+function toggleTransfMotivoOutro(){
+  var v = document.getElementById('transfMotivo').value;
+  document.getElementById('transfMotivoOutroGrp').style.display = v==='Outro' ? 'block' : 'none';
+}
+
+function confirmarTransferencia(){
+  if(!_transfOsId) return;
+  var novoTec = document.getElementById('transfTecnico').value;
+  var motivo  = document.getElementById('transfMotivo').value;
+  var outro   = document.getElementById('transfMotivoOutro').value.trim();
+
+  if(!novoTec){ alert('Selecione o técnico para transferência!'); return; }
+  if(!motivo) { alert('Selecione o motivo da transferência!'); return; }
+  if(motivo==='Outro' && !outro){ alert('Especifique o motivo!'); return; }
+
+  var motivoFinal = motivo==='Outro' ? outro : motivo;
+  var agora = new Date();
+  var dtFmt = agora.toLocaleDateString('pt-BR')+' '+agora.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+
+  var o = osOrdens.find(function(x){ return x.id===_transfOsId; });
+  if(!o) return;
+
+  // Inicializar histórico se não existe
+  if(!o.transferencias) o.transferencias = [];
+  if(!o.obsLog) o.obsLog = [];
+
+  var tecAnterior = o.tecnico;
+
+  // Registrar transferência
+  o.transferencias.push({
+    tecnicoAnterior: tecAnterior,
+    tecnicoNovo:     novoTec,
+    data:            dtFmt,
+    motivo:          motivoFinal,
+    realizadoPor:    currentUser.name
+  });
+
+  // Atualizar técnico responsável
+  o.tecnico = novoTec;
+
+  // Registrar no log de observações para rastreabilidade
+  o.obsLog.push({
+    user:  currentUser.name,
+    dt:    dtFmt,
+    texto: '🔄 OS transferida de '+tecAnterior+' para '+novoTec+'. Motivo: '+motivoFinal+'.',
+    tipo:  'transferencia'
+  });
+
+  LS('hml_arp_os', JSON.stringify(osOrdens));
+
+  document.getElementById('transfModalOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+  _transfOsId = null;
+
+  renderOS('andamento');
+  mostrarNotificacao('✅ OS '+o.id+' transferida para '+novoTec);
+}
+
+
 var _solTipoExt = '';
 
 function abrirModalSol(){
