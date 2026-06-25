@@ -125,18 +125,11 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
   .sidebar { position:fixed; left:-280px; top:0; z-index:200; width:260px; height:100dvh; height:100vh; box-shadow:none; transition:left .25s ease; overflow-y:auto; }
   .sidebar.open { left:0; box-shadow:6px 0 24px rgba(0,0,0,0.4); }
   .menu-toggle { display:inline-block; }
-  /* Header mobile: fixo no topo para não sumir */
   .header { position:sticky; top:0; z-index:50; background:#fff; }
-  /* Content não fica atrás do header */
   .content { padding:12px; padding-top:8px; }
   .stats-grid { grid-template-columns:repeat(2,1fr); }
   .material-row { grid-template-columns:1fr; }
-  /* Garantir que botão Sair fique visível mesmo em telas pequenas */
-  .sidebar { padding-bottom:20px; }
-  .btn-logout { margin:0 16px; width:calc(100% - 32px); }
-  /* Scroll horizontal em tabelas */
   .scroll-right { overflow-x:auto; -webkit-overflow-scrolling:touch; }
-  /* Formulários ocupam 100% */
   .form-input, .btn-primary, .btn-secondary { font-size:16px; } /* evita zoom auto no iOS */
 }
 </style>
@@ -168,7 +161,13 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
   <div class="sidebar" id="sidebar">
     <div class="sidebar-header">
       <div class="logo-text" id="sideLogo">ARP TECH</div>
-      <div style="font-size:11px;color:#9fb6c6;margin-top:4px;">Amaz&ocirc;nia</div>
+      <div style="font-size:11px;color:#9fb6c6;margin-top:4px;">Amazônia</div>
+    </div>
+
+    <!-- Usuário e botão Sair — sempre visível no topo do menu -->
+    <div style="padding:12px 16px 14px;border-bottom:1px solid rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:space-between;gap:10px;">
+      <div id="userInfo" style="color:#fff;font-size:12px;line-height:1.4;"></div>
+      <button class="btn-logout" onclick="logout()" style="white-space:nowrap;flex-shrink:0;padding:7px 14px;font-size:12px;">Sair</button>
     </div>
 
     <div class="menu-item" id="m-dashboard" onclick="goTab('dashboard',this,'Dashboard')">Dashboard</div>
@@ -196,10 +195,6 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
     <div class="menu-item" id="m-customizar" onclick="goTab('customizar',this,'Customizar Sistema')" style="display:none;">Customizar Sistema</div>
     <div class="menu-item" id="m-conta" onclick="goTab('minhaConta',this,'Minha Conta')">Minha Conta</div>
 
-    <div style="margin-top:auto;padding:18px;border-top:1px solid rgba(255,255,255,0.1);font-size:12px;">
-      <div id="userInfo" style="color:#fff;margin-bottom:12px;"></div>
-      <button class="btn-logout" onclick="logout()">Sair</button>
-    </div>
   </div>
 
   <div class="main">
