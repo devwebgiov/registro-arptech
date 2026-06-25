@@ -113,16 +113,31 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
 .pwd-rules b { color:var(--cor-primaria); }
 .info-note { font-size:11px; color:#92600a; background:#fff8e6; border:1px solid #f3e3b3; border-radius:6px; padding:10px 14px; margin-bottom:14px; line-height:1.6; }
 
+/* Overlay escuro atrás da sidebar no mobile */
+.sidebar-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:99; }
+.sidebar-overlay.open { display:block; }
+
 @media (max-width:768px){
   .login-container { grid-template-columns:1fr; }
   .login-brand { display:none; }
   .system-wrapper.active { flex-direction:column; }
-  .sidebar { position:fixed; left:-260px; top:0; z-index:100; transition:left .25s; width:250px; }
-  .sidebar.open { left:0; box-shadow:4px 0 20px rgba(0,0,0,0.3); }
+  /* Sidebar: cobre tela inteira em altura, z-index acima do overlay */
+  .sidebar { position:fixed; left:-280px; top:0; z-index:200; width:260px; height:100dvh; height:100vh; box-shadow:none; transition:left .25s ease; overflow-y:auto; }
+  .sidebar.open { left:0; box-shadow:6px 0 24px rgba(0,0,0,0.4); }
   .menu-toggle { display:inline-block; }
+  /* Header mobile: fixo no topo para não sumir */
+  .header { position:sticky; top:0; z-index:50; background:#fff; }
+  /* Content não fica atrás do header */
+  .content { padding:12px; padding-top:8px; }
   .stats-grid { grid-template-columns:repeat(2,1fr); }
   .material-row { grid-template-columns:1fr; }
-  .content { padding:12px; }
+  /* Garantir que botão Sair fique visível mesmo em telas pequenas */
+  .sidebar { padding-bottom:20px; }
+  .btn-logout { margin:0 16px; width:calc(100% - 32px); }
+  /* Scroll horizontal em tabelas */
+  .scroll-right { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+  /* Formulários ocupam 100% */
+  .form-input, .btn-primary, .btn-secondary { font-size:16px; } /* evita zoom auto no iOS */
 }
 </style>
 </head>
@@ -140,7 +155,7 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
     <div class="login-form">
       <div class="form-title">Bem-vindo</div>
       <div class="form-group"><label class="form-label">Usu&aacute;rio</label><input type="text" id="loginUser" class="form-input" autocapitalize="none"></div>
-      <div class="form-group"><label class="form-label">Senha</label><input type="password" id="loginPass" class="form-input"></div>
+      <div class="form-group"><label class="form-label">Senha</label><div style="position:relative;"><input type="password" id="loginPass" class="form-input" placeholder="Digite sua senha" style="padding-right:44px;"><button type="button" onclick="toggleSenhaLogin()" tabindex="-1" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#888;padding:4px;line-height:1;" title="Mostrar/ocultar senha"><svg id="icOlhoFechado" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg><svg id="icOlhoAberto" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div></div>
       <button class="btn-login" onclick="login()">Entrar</button>
       <div style="text-align:center;margin-top:16px;"><span class="link" onclick="esqueciSenha()">Esqueci a senha</span></div>
     </div>
@@ -148,6 +163,8 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
 </div>
 
 <div id="systemWrapper" class="system-wrapper">
+  <!-- Overlay escuro para fechar sidebar no mobile -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="fecharSidebar()"></div>
   <div class="sidebar" id="sidebar">
     <div class="sidebar-header">
       <div class="logo-text" id="sideLogo">ARP TECH</div>
@@ -682,7 +699,29 @@ function senhaExpirada(u){
   return (Date.now() - u.passSetAt) / 86400000 > EXPIRA_DIAS;
 }
 
-function toggleSidebar(){ document.getElementById('sidebar').classList.toggle('open'); }
+function toggleSidebar(){
+  var sb  = document.getElementById('sidebar');
+  var ov  = document.getElementById('sidebarOverlay');
+  var aberta = sb.classList.toggle('open');
+  if(ov) ov.classList.toggle('open', aberta);
+  document.body.style.overflow = aberta ? 'hidden' : '';
+}
+function fecharSidebar(){
+  var sb = document.getElementById('sidebar');
+  var ov = document.getElementById('sidebarOverlay');
+  sb.classList.remove('open');
+  if(ov) ov.classList.remove('open');
+  document.body.style.overflow = '';
+}
+function toggleSenhaLogin(){
+  var inp = document.getElementById('loginPass');
+  var ico1 = document.getElementById('icOlhoFechado');
+  var ico2 = document.getElementById('icOlhoAberto');
+  var visivel = inp.type === 'text';
+  inp.type = visivel ? 'password' : 'text';
+  if(ico1) ico1.style.display = visivel ? '' : 'none';
+  if(ico2) ico2.style.display = visivel ? 'none' : '';
+}
 
 function esqueciSenha(){
   var u = (document.getElementById('loginUser').value||'').trim().toLowerCase();
@@ -726,7 +765,7 @@ function resetUI(){
   document.getElementById('nfPermCard').style.display='none';
   document.getElementById('osTecGroup').style.display='none';
   document.getElementById('userInfo').innerHTML='';
-  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebar').classList.remove('open'); var _ov=document.getElementById('sidebarOverlay'); if(_ov) _ov.classList.remove('open'); document.body.style.overflow='';
   DASH_PAGE=0; LIST_PAGE=0; OSC_PAGE=0; OSA_PAGE=0; OSAND_PAGE=0; LOCAIS_PAGE=0; NF_PAGE=0;
 }
 
@@ -741,6 +780,12 @@ function login(){
     alert('Sua senha tempor\u00e1ria expirou. Contate o Administrador.');
     return;
   }
+  localStorage.setItem('arp_session_login', found.login);
+  localStorage.setItem('arp_session_ts', String(Date.now()));
+  _iniciarSessao(found);
+}
+
+function _iniciarSessao(found){
   resetUI();
   currentUser = found;
   document.getElementById('loginScreen').style.display='none';
@@ -753,8 +798,34 @@ function login(){
   }
 }
 
+function _restaurarSessao(){
+  var loginSalvo = localStorage.getItem('arp_session_login');
+  var tsSalvo    = parseInt(localStorage.getItem('arp_session_ts')||'0');
+  if(!loginSalvo) return false;
+  if(Date.now() - tsSalvo > 12*60*60*1000){
+    localStorage.removeItem('arp_session_login');
+    localStorage.removeItem('arp_session_ts');
+    return false;
+  }
+  var listaAtual = JSON.parse(localStorage.getItem('arp_users')||'null') || usuarios;
+  var found = null;
+  for(var i=0;i<listaAtual.length;i++){
+    if(listaAtual[i].login.toLowerCase()===loginSalvo.toLowerCase()){ found=listaAtual[i]; break; }
+  }
+  if(!found || senhaExpirada(found)){
+    localStorage.removeItem('arp_session_login');
+    localStorage.removeItem('arp_session_ts');
+    return false;
+  }
+  localStorage.setItem('arp_session_ts', String(Date.now()));
+  _iniciarSessao(found);
+  return true;
+}
+
 function logout(){
-  currentUser=null;
+  currentUser = null;
+  localStorage.removeItem('arp_session_login');
+  localStorage.removeItem('arp_session_ts');
   resetUI();
   document.getElementById('loginScreen').style.display='flex';
   document.getElementById('systemWrapper').classList.remove('active');
@@ -885,7 +956,7 @@ function goTab(tab, el, title){
   document.getElementById('pageTitle').innerHTML = title || tab;
   document.querySelectorAll('.menu-item').forEach(function(m){ m.classList.remove('active'); });
   if(el && el.classList) el.classList.add('active');
-  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebar').classList.remove('open'); var _ov=document.getElementById('sidebarOverlay'); if(_ov) _ov.classList.remove('open'); document.body.style.overflow='';
   atualizarBotaoNovo(tab);
   if(tab==='dashboard') loadDashboard();
   if(tab==='registrosList') renderListTab();
@@ -2187,8 +2258,25 @@ function pullNuvem(silencioso){
           if(id==='osConcluidas') renderOS('concluida');
         }
       } else if(!silencioso){
-        sessionStorage.setItem('arp_just_synced','1');
-        location.reload();
+        // Recarregar arrays em memória e atualizar UI sem reload de página
+        try{ records  = JSON.parse(localStorage.getItem('arp_rec')||'[]'); }catch(e){}
+        try{ osOrdens = JSON.parse(localStorage.getItem('arp_os')||'[]'); }catch(e){}
+        try{ notas    = JSON.parse(localStorage.getItem('arp_nf')||'[]'); }catch(e){}
+        try{ locais   = JSON.parse(localStorage.getItem('arp_locais')||'null') || locais; }catch(e){}
+        try{ usuarios = JSON.parse(localStorage.getItem('arp_users')||'null') || usuarios; }catch(e){}
+        if(currentUser){
+          var tabAtiva2 = document.querySelector('.tab-content.active');
+          if(tabAtiva2){
+            var id2 = tabAtiva2.id;
+            if(id2==='dashboard')    loadDashboard();
+            if(id2==='listaRegistros') renderListTab();
+            if(id2==='osEmAberto')   renderOS('aberta');
+            if(id2==='osAbertas')    renderOS('andamento');
+            if(id2==='osConcluidas') renderOS('concluida');
+            if(id2==='locais')       renderLocais();
+          }
+          mostrarNotificacao('🔄 Dados atualizados da nuvem.');
+        }
       }
     })
     .catch(function(){});
@@ -2210,8 +2298,8 @@ function mostrarNotificacao(msg){
   el._t=setTimeout(function(){ if(el.parentNode) el.remove(); }, 8000);
 }
 
-// Poll automático a cada 15 segundos
-setInterval(function(){ if(currentUser) pullNuvem(true); }, 15000);
+// Poll automático a cada 10 segundos
+setInterval(function(){ if(currentUser) pullNuvem(true); }, 10000);
 
 function salvarSyncUrl(){
   var url = document.getElementById('syncUrl').value.trim();
@@ -2228,7 +2316,12 @@ function sincronizarAgora(){
   alert('Sincroniza\u00e7\u00e3o iniciada!');
 }
 
-pullNuvem();
+// Pull imediato ao carregar — busca dados mais recentes antes de exibir UI
+pullNuvem(true);
+
+// Restaurar sessão persistida (aguarda pull inicial para ter lista de users atualizada)
+setTimeout(function(){ if(!currentUser) _restaurarSessao(); }, 900);
+
 
 
 // ===== RELATORIO DIARIO =====
