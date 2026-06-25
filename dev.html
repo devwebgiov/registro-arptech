@@ -2188,7 +2188,7 @@ var _sincronizando = false;
 function marcarSujo(){
   if(!SYNC_URL) return;
   if(_syncTimer) clearTimeout(_syncTimer);
-  _syncTimer = setTimeout(pushNuvem, 2500);
+  _syncTimer = setTimeout(pushNuvem, 500);
 }
 
 function coletarEstado(){
@@ -2200,7 +2200,7 @@ function coletarEstado(){
   return estado;
 }
 
-function pushNuvem(){
+function pushNuvem(callbackOk){
   if(!SYNC_URL || _sincronizando) return;
   _sincronizando = true;
   var estado = coletarEstado();
@@ -2209,44 +2209,98 @@ function pushNuvem(){
     method:'POST',
     headers:{'Content-Type':'text/plain;charset=utf-8'},
     body: JSON.stringify({action:'save', data: estado})
-  }).then(function(){ _sincronizando=false; })
-    .catch(function(){ _sincronizando=false; });
+  }).then(function(r){ return r.text(); })
+    .then(function(){
+      _sincronizando = false;
+      if(typeof callbackOk==='function') callbackOk(true);
+      // Pull imediato pós-push para outros dispositivos receberem
+      setTimeout(function(){ pullNuvem(true); }, 800);
+    })
+    .catch(function(){
+      _sincronizando = false;
+      if(typeof callbackOk==='function') callbackOk(false);
+    });
+}
+
+// ---- IDs de registros conhecidos localmente (para detectar novidades) ----
+var _idsRecConhecidos = {};
+var _idsOsConhecidos  = {};
+
+function _indexarConhecidos(){
+  try{ JSON.parse(localStorage.getItem('arp_rec')||'[]').forEach(function(r){ if(r.id) _idsRecConhecidos[r.id]=1; }); }catch(e){}
+  try{ JSON.parse(localStorage.getItem('arp_os')||'[]').forEach(function(o){ if(o.id) _idsOsConhecidos[o.id]=1; }); }catch(e){}
+}
+_indexarConhecidos();
+
+function _atualizarUI(novosRecs, novasOs){
+  // Recarregar tudo em memória
+  try{ records  = JSON.parse(localStorage.getItem('arp_rec')||'[]'); }catch(e){}
+  try{ osOrdens = JSON.parse(localStorage.getItem('arp_os')||'[]'); }catch(e){}
+  try{ notas    = JSON.parse(localStorage.getItem('arp_nf')||'[]'); }catch(e){}
+  try{ locais   = JSON.parse(localStorage.getItem('arp_locais')||'null') || locais; }catch(e){}
+  try{ usuarios = JSON.parse(localStorage.getItem('arp_users')||'null') || usuarios; }catch(e){}
+  _indexarConhecidos();
+  if(!currentUser) return;
+  // Atualizar aba ativa
+  var tabAtiva = document.querySelector('.tab-content.active');
+  if(tabAtiva){
+    var id = tabAtiva.id;
+    if(id==='dashboard')      loadDashboard();
+    if(id==='listaRegistros') renderListTab();
+    if(id==='registrosList')  renderListTab();
+    if(id==='osEmAberto')     renderOS('aberta');
+    if(id==='osAbertas')      renderOS('andamento');
+    if(id==='osConcluidas')   renderOS('concluida');
+    if(id==='locais')         renderLocais();
+  }
+  // Notificação apenas se há algo novo real
+  if(novosRecs.length > 0 || novasOs.length > 0){
+    var msgs = [];
+    if(novosRecs.length===1) msgs.push('📋 Novo registro: ' + novosRecs[0].resp + ' — ' + novosRecs[0].local);
+    else if(novosRecs.length>1) msgs.push('📋 ' + novosRecs.length + ' novos registros sincronizados');
+    novasOs.forEach(function(os){
+      msgs.push('🔧 Nova OS: ' + os.id + (os.origem==='whatsapp'?' (WhatsApp)':''));
+    });
+    if(msgs.length) mostrarNotificacao(msgs.join('\n'));
+  }
 }
 
 function pullNuvem(silencioso){
   if(!SYNC_URL) return;
-  fetch(SYNC_URL + (SYNC_URL.indexOf('?')<0?'?':'&') + 'action=load')
+  // Cache-buster: timestamp no parâmetro evita cache do navegador e do Google Drive
+  var cb = '&_cb=' + Date.now();
+  fetch(SYNC_URL + (SYNC_URL.indexOf('?')<0?'?':'&') + 'action=load' + cb, {cache:'no-store'})
     .then(function(r){ return r.json(); })
     .then(function(remoto){
       if(!remoto || !remoto._ts) return;
-      var localTs = parseInt(localStorage.getItem('arp_sync_ts')||'0');
-      if(remoto._ts <= localTs){ sessionStorage.removeItem('arp_just_synced'); return; }
-      if(sessionStorage.getItem('arp_just_synced')==='1'){ sessionStorage.removeItem('arp_just_synced'); return; }
 
-      // Detectar novas OS vindas do WhatsApp
-      var osRemoto = [];
-      var osLocal  = records ? [] : [];
-      try { osRemoto = JSON.parse(remoto.arp_os || '[]'); } catch(e){}
-      try { osLocal  = JSON.parse(localStorage.getItem('arp_os')||'[]'); } catch(e){}
-
-      var idsLocais = {};
-      osLocal.forEach(function(o){ idsLocais[o.id]=1; });
-      var novasWA = osRemoto.filter(function(o){
-        return !idsLocais[o.id] && o.origem==='whatsapp';
-      });
-
-      // Merge inteligente: combina registros locais + remotos por ID
+      // Merge sempre — não bloquear por timestamp local
+      // O timestamp local só é usado para detectar se TEMOS dados mais novos para ENVIAR
       function mergeArray(chave){
         var local = [];
         var remArr = [];
-        try{ local = JSON.parse(localStorage.getItem(chave)||'[]'); }catch(e){}
-        try{ remArr = JSON.parse(remoto[chave]||'[]'); }catch(e){}
+        try{ local  = JSON.parse(localStorage.getItem(chave)||'[]'); }catch(e){}
+        try{ remArr = JSON.parse(remoto[chave]||'[]');              }catch(e){}
         var mapa = {};
-        local.forEach(function(r){ if(r.id) mapa[r.id]=r; });
+        // Remoto primeiro — local sobrescreve (dados do dispositivo atual têm prioridade)
         remArr.forEach(function(r){ if(r.id) mapa[r.id]=r; });
+        local.forEach(function(r){ if(r.id) mapa[r.id]=r; });
         return JSON.stringify(Object.values(mapa));
       }
 
+      // Detectar o que é NOVO antes de salvar
+      var novosRecs = [];
+      var novasOs   = [];
+      try{
+        var remRecs = JSON.parse(remoto.arp_rec||'[]');
+        novosRecs = remRecs.filter(function(r){ return r.id && !_idsRecConhecidos[r.id]; });
+      }catch(e){}
+      try{
+        var remOs = JSON.parse(remoto.arp_os||'[]');
+        novasOs = remOs.filter(function(o){ return o.id && !_idsOsConhecidos[o.id]; });
+      }catch(e){}
+
+      // Gravar tudo no localStorage
       SYNC_KEYS.forEach(function(k){
         if(remoto[k]===undefined) return;
         if(k==='arp_rec' || k==='arp_os' || k==='arp_nf'){
@@ -2257,44 +2311,11 @@ function pullNuvem(silencioso){
       });
       localStorage.setItem('arp_sync_ts', String(remoto._ts));
 
-      if(novasWA.length > 0 && currentUser){
-        // Recarregar arrays em memória sem refresh total
-        try{ osOrdens = JSON.parse(localStorage.getItem('arp_os')||'[]'); }catch(e){}
-        try{ records  = JSON.parse(localStorage.getItem('arp_rec')||'[]'); }catch(e){}
-        // Notificação
-        var msg = novasWA.length===1
-          ? 'Nova OS via WhatsApp! ' + novasWA[0].id + ' - ' + novasWA[0].cliente
-          : novasWA.length + ' novas OS via WhatsApp recebidas!';
-        mostrarNotificacao(msg);
-        // Atualizar tela atual
-        var tabAtiva = document.querySelector('.tab-content.active');
-        if(tabAtiva){
-          var id = tabAtiva.id;
-          if(id==='dashboard') loadDashboard();
-          if(id==='osEmAberto') renderOS('aberta');
-          if(id==='osAbertas') renderOS('andamento');
-          if(id==='osConcluidas') renderOS('concluida');
-        }
+      // Atualizar UI se: há dados novos OU pull não-silencioso
+      if(novosRecs.length > 0 || novasOs.length > 0){
+        _atualizarUI(novosRecs, novasOs);
       } else if(!silencioso){
-        // Recarregar arrays em memória e atualizar UI sem reload de página
-        try{ records  = JSON.parse(localStorage.getItem('arp_rec')||'[]'); }catch(e){}
-        try{ osOrdens = JSON.parse(localStorage.getItem('arp_os')||'[]'); }catch(e){}
-        try{ notas    = JSON.parse(localStorage.getItem('arp_nf')||'[]'); }catch(e){}
-        try{ locais   = JSON.parse(localStorage.getItem('arp_locais')||'null') || locais; }catch(e){}
-        try{ usuarios = JSON.parse(localStorage.getItem('arp_users')||'null') || usuarios; }catch(e){}
-        if(currentUser){
-          var tabAtiva2 = document.querySelector('.tab-content.active');
-          if(tabAtiva2){
-            var id2 = tabAtiva2.id;
-            if(id2==='dashboard')    loadDashboard();
-            if(id2==='listaRegistros') renderListTab();
-            if(id2==='osEmAberto')   renderOS('aberta');
-            if(id2==='osAbertas')    renderOS('andamento');
-            if(id2==='osConcluidas') renderOS('concluida');
-            if(id2==='locais')       renderLocais();
-          }
-          mostrarNotificacao('🔄 Dados atualizados da nuvem.');
-        }
+        _atualizarUI([], []);
       }
     })
     .catch(function(){});
@@ -2329,9 +2350,15 @@ function salvarSyncUrl(){
 
 function sincronizarAgora(){
   if(!SYNC_URL){ alert('Configure primeiro a URL de sincroniza\u00e7\u00e3o.'); return; }
-  pushNuvem();
-  setTimeout(pullNuvem, 1500);
-  alert('Sincroniza\u00e7\u00e3o iniciada!');
+  mostrarNotificacao('\u23eb Enviando dados para a nuvem...');
+  pushNuvem(function(ok){
+    if(ok){
+      mostrarNotificacao('\u2705 Dados enviados! Buscando atualizações...');
+      setTimeout(function(){ pullNuvem(false); }, 1200);
+    } else {
+      mostrarNotificacao('\u274c Erro ao enviar. Verifique sua conexão.');
+    }
+  });
 }
 
 // Pull imediato ao carregar — busca dados mais recentes antes de exibir UI
