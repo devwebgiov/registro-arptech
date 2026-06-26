@@ -562,15 +562,39 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
               Meus Atendimentos
             </button>
           </div>
-          <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
-            <select id="solFiltroStatus" class="form-input" style="max-width:220px;" onchange="renderSolicitacoes()">
-              <option value="">Todas as situações</option>
-              <option value="Solicitacao Recebida">Solicitação Recebida</option>
-              <option value="Aguardando Tecnico">Aguardando Técnico</option>
-              <option value="Em Atendimento">Em Atendimento</option>
-              <option value="Concluido">Concluído</option>
-              <option value="Cancelado">Cancelado</option>
-            </select>
+          <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:flex-end;">
+            <!-- Filtro status: todos os perfis -->
+            <div>
+              <div style="font-size:10px;font-weight:700;color:var(--cor-primaria);text-transform:uppercase;margin-bottom:4px;">Situação</div>
+              <select id="solFiltroStatus" class="form-input" style="min-width:180px;" onchange="renderSolicitacoes()">
+                <option value="">Todas as situações</option>
+                <option value="Solicitacao Recebida">Solicitação Recebida</option>
+                <option value="Aguardando Tecnico">Aguardando Técnico</option>
+                <option value="Em Atendimento">Em Atendimento</option>
+                <option value="Concluido">Concluído</option>
+                <option value="Cancelado">Cancelado</option>
+              </select>
+            </div>
+            <!-- Filtro período: ARPTECH e ADMIN -->
+            <div>
+              <div style="font-size:10px;font-weight:700;color:var(--cor-primaria);text-transform:uppercase;margin-bottom:4px;">Data início</div>
+              <input type="date" id="solFiltroDataIni" class="form-input" style="min-width:150px;" onchange="renderSolicitacoes()">
+            </div>
+            <div>
+              <div style="font-size:10px;font-weight:700;color:var(--cor-primaria);text-transform:uppercase;margin-bottom:4px;">Data fim</div>
+              <input type="date" id="solFiltroDataFim" class="form-input" style="min-width:150px;" onchange="renderSolicitacoes()">
+            </div>
+            <!-- Filtro técnico: somente ADMIN -->
+            <div id="solFiltroTecnicoGrp" style="display:none;">
+              <div style="font-size:10px;font-weight:700;color:var(--cor-primaria);text-transform:uppercase;margin-bottom:4px;">Técnico</div>
+              <select id="solFiltroTecnico" class="form-input" style="min-width:180px;" onchange="renderSolicitacoes()">
+                <option value="">Todos os técnicos</option>
+              </select>
+            </div>
+            <!-- Botão limpar filtros -->
+            <div style="padding-top:18px;">
+              <button class="btn-small" onclick="limparFiltrosSol()" style="height:38px;">✕ Limpar</button>
+            </div>
           </div>
           <div id="solLista" class="scroll-list"></div>
           <div id="solPag" class="pagination"></div>
@@ -1220,7 +1244,12 @@ function goTab(tab, el, title){
     document.getElementById('newRegData').value = now2.toISOString().split('T')[0];
     document.getElementById('newRegHora').value = now2.toTimeString().slice(0,5);
   }
-  if(tab==='solicitacoes') renderSolicitacoes();
+  if(tab==='solicitacoes'){
+    // Resetar dropdown de técnicos para repopular com lista atualizada
+    var selTec = document.getElementById('solFiltroTecnico');
+    if(selTec) selTec.innerHTML = '<option value="">Todos os técnicos</option>';
+    renderSolicitacoes();
+  }
   if(tab==='osEmAberto') renderOS('aberta');
   if(tab==='osAbertas') renderOS('andamento');
   if(tab==='osConcluidas') renderOS('concluida');
@@ -3473,6 +3502,12 @@ function solMudarAba(aba){
   renderSolicitacoes();
 }
 
+function limparFiltrosSol(){
+  var ids = ['solFiltroStatus','solFiltroDataIni','solFiltroDataFim','solFiltroTecnico'];
+  ids.forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
+  renderSolicitacoes();
+}
+
 var STATUS_CORES = {
   'Solicitacao Recebida': {bg:'#e0f0ff', txt:'#1a4e7a', label:'Solicitação Recebida'},
   'Aguardando Tecnico':   {bg:'#fff3d6', txt:'#92600a', label:'Aguardando Técnico'},
@@ -3485,13 +3520,60 @@ function renderSolicitacoes(){
   // Recarregar do localStorage
   try{ solicitacoes = JSON.parse(localStorage.getItem('hml_arp_sol')||'[]'); }catch(e){}
 
-  var filtroStatus = (document.getElementById('solFiltroStatus')||{value:''}).value;
-  var isAdmin = currentUser.profile==='ADMIN';
+  var isAdmin  = currentUser.profile === 'ADMIN';
+  var isTec    = currentUser.profile === 'ARPTECH';
+
+  // Mostrar/ocultar filtro de técnico conforme perfil
+  var grpTec = document.getElementById('solFiltroTecnicoGrp');
+  if(grpTec) grpTec.style.display = isAdmin ? 'block' : 'none';
+
+  // Popular dropdown de técnicos (Admin apenas, evita repopular desnecessariamente)
+  if(isAdmin){
+    var selTec = document.getElementById('solFiltroTecnico');
+    if(selTec && selTec.options.length <= 1){
+      var tecnicos = usuarios.filter(function(u){ return u.profile==='ARPTECH' || u.profile==='ADMIN'; });
+      tecnicos.forEach(function(u){
+        var op = document.createElement('option');
+        op.value = u.name; op.textContent = u.name + ' (' + u.profile + ')';
+        selTec.appendChild(op);
+      });
+    }
+  }
+
+  // Ler valores dos filtros
+  var filtroStatus  = (document.getElementById('solFiltroStatus')||{value:''}).value;
+  var filtroDataIni = (document.getElementById('solFiltroDataIni')||{value:''}).value;
+  var filtroDataFim = (document.getElementById('solFiltroDataFim')||{value:''}).value;
+  var filtroTecnico = isAdmin ? (document.getElementById('solFiltroTecnico')||{value:''}).value : '';
+
+  // Converter datas de filtro para comparação
+  function parseFiltroData(str){ return str ? new Date(str + 'T00:00:00') : null; }
+  var dtIni = parseFiltroData(filtroDataIni);
+  var dtFim = filtroDataFim ? new Date(filtroDataFim + 'T23:59:59') : null;
+
+  // Parsear data no formato dd/MM/yyyy
+  function parseSolData(str){
+    if(!str) return null;
+    var p = str.split('/');
+    if(p.length===3) return new Date(p[2]+'-'+p[1]+'-'+p[0]+'T00:00:00');
+    return null;
+  }
 
   var lista = solicitacoes.filter(function(s){
-    if(filtroStatus && s.status!==filtroStatus) return false;
-    // Filtro da sub-aba "Meus Atendimentos": solicitações assumidas pelo usuário logado
-    if(SOL_ABA==='meus' && s.tecnico !== currentUser.name) return false;
+    // Filtro status
+    if(filtroStatus && s.status !== filtroStatus) return false;
+    // Filtro aba
+    if(SOL_ABA === 'meus' && s.tecnico !== currentUser.name) return false;
+    // Filtro período
+    if(dtIni || dtFim){
+      var ds = parseSolData(s.dataCriacao);
+      if(ds){
+        if(dtIni && ds < dtIni) return false;
+        if(dtFim && ds > dtFim) return false;
+      }
+    }
+    // Filtro técnico (Admin apenas)
+    if(filtroTecnico && s.tecnico !== filtroTecnico) return false;
     return true;
   }).slice().reverse();
 
