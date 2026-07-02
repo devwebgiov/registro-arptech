@@ -2179,7 +2179,8 @@ function salvarEmpresa(){
 }
 
 // ===== SINCRONIZACAO ENTRE DISPOSITIVOS =====
-var SYNC_URL_PADRAO = 'https://script.google.com/macros/s/AKfycbzhWXLxXv_6KvsawxNWnbfMVwQr9pzC5Joc_SIgiFGCwVAK1a3RhhyMzc2bODDxkf9A/exec';
+// >>> SUBSTITUIR APÓS MIGRAÇÃO <<< URL do Apps Script de PRODUÇÃO (conta devwebgio@gmail.com)
+var SYNC_URL_PADRAO = 'https://script.google.com/macros/s/AKfycbz2KHOAf7dDaUVRdCPwnGowjGIizG5OMfeg08gUXekV43l63bHD6LNOjr2qb9bvu12XZw/exec';
 var SYNC_URL = localStorage.getItem('arp_sync_url') || SYNC_URL_PADRAO;
 var SYNC_KEYS = ['arp_rec','arp_os','arp_nf','arp_users','arp_orgaos','arp_locais','arp_servicos','arp_empresa','arp_cores','arp_logo','comissao_percent','arp_com_pay','arp_nf_access','arp_admin_email','arp_nf_num'];
 var _syncTimer = null;
