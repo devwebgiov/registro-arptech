@@ -283,8 +283,9 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
     <div class="login-modal-body">
       <div style="background:#dc2626;color:#fff;font-size:11px;font-weight:700;text-align:center;padding:6px 10px;border-radius:6px;margin-bottom:18px;">AMBIENTE DE HOMOLOGAÇÃO — NÃO USE PARA PRODUÇÃO</div>
       <div class="form-group">
-        <label class="form-label">Usuário</label>
-        <input type="text" id="loginUser" class="form-input" placeholder="Digite seu usuário" autocapitalize="none" autocomplete="username">
+        <label class="form-label">E-mail</label>
+        <input type="text" id="loginUser" class="form-input" placeholder="Digite seu e-mail" autocapitalize="none" autocomplete="username" inputmode="email">
+        <div style="font-size:11px;color:#888;margin-top:4px;">Você também pode entrar com seu usuário ou CPF.</div>
       </div>
       <div class="form-group">
         <label class="form-label">Senha</label>
@@ -306,7 +307,31 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
     </div>
     <div class="login-modal-footer">
       <button class="btn-login" style="width:100%;" onclick="login()">Entrar</button>
-      <div style="text-align:center;margin-top:14px;"><span class="link" onclick="esqueciSenha()">Esqueci a senha</span></div>
+      <div style="text-align:center;margin-top:14px;display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
+        <span class="link" onclick="esqueciSenha()">Esqueci a senha</span>
+        <span class="link" onclick="abrirRecuperarEmail()">Esqueci meu e-mail</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL RECUPERAR E-MAIL -->
+<div class="login-modal-overlay" id="recEmailOverlay" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="login-modal">
+    <div class="login-modal-header">
+      <div class="login-modal-header-title">🔑 Recuperar e-mail</div>
+      <button class="login-modal-close" onclick="document.getElementById('recEmailOverlay').classList.remove('open')">&times;</button>
+    </div>
+    <div class="login-modal-body">
+      <p style="font-size:13px;color:#555;margin-bottom:16px;line-height:1.6;">Informe seu <b>CPF</b> ou <b>número de WhatsApp</b> cadastrado. Mostraremos parte do e-mail associado à sua conta.</p>
+      <div class="form-group">
+        <label class="form-label">CPF ou WhatsApp</label>
+        <input type="text" id="recEmailInput" class="form-input" placeholder="CPF ou (97) 99999-9999" inputmode="numeric">
+      </div>
+      <div id="recEmailResultado" style="display:none;background:#eaf6ef;border:1px solid #b2d8c0;border-radius:8px;padding:14px;font-size:14px;color:#14693c;text-align:center;margin-top:8px;"></div>
+    </div>
+    <div class="login-modal-footer">
+      <button class="btn-login" style="width:100%;" onclick="recuperarEmail()">Buscar</button>
     </div>
   </div>
 </div>
@@ -758,8 +783,11 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
           <div class="card-title">Cadastrar Usu&aacute;rio</div>
           <div class="pwd-rules"><b>Requisitos da senha:</b> m&iacute;nimo 8 caracteres, com mai&uacute;scula, min&uacute;scula, n&uacute;mero e caractere especial. Senha tempor&aacute;ria expira em <b>3 dias</b>.</div>
           <div class="form-group"><label class="form-label">Nome</label><input type="text" id="gNome" class="form-input"></div>
-          <div class="form-group"><label class="form-label">Usu&aacute;rio (login)</label><input type="text" id="gLogin" class="form-input" autocapitalize="none"></div>
-          <div class="form-group"><label class="form-label">Senha tempor&aacute;ria</label><input type="text" id="gSenha" class="form-input"></div>
+          <div class="form-group"><label class="form-label">Usuário (login)</label><input type="text" id="gLogin" class="form-input" autocapitalize="none"></div>
+          <div class="form-group"><label class="form-label">E-mail</label><input type="email" id="gEmail" class="form-input" placeholder="usuario@email.com" autocapitalize="none"></div>
+          <div class="form-group"><label class="form-label">CPF <span style="font-weight:400;color:#999;">(para recuperação)</span></label><input type="text" id="gCpf" class="form-input" placeholder="000.000.000-00" inputmode="numeric"></div>
+          <div class="form-group"><label class="form-label">WhatsApp <span style="font-weight:400;color:#999;">(para recuperação)</span></label><input type="tel" id="gTelefone" class="form-input" placeholder="(97) 99999-9999"></div>
+          <div class="form-group"><label class="form-label">Senha temporária</label><input type="text" id="gSenha" class="form-input"></div>
           <div class="form-group"><label class="form-label">Perfil / &Oacute;rg&atilde;o</label>
             <div style="display:flex;gap:8px;">
               <select id="gPerfil" class="form-input" style="flex:1;"></select>
@@ -772,7 +800,7 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
           <div class="card-title">Usu&aacute;rios Cadastrados</div>
           <div style="overflow-x:auto;">
             <table class="users">
-              <thead><tr><th>Nome</th><th>Login</th><th>Perfil</th><th>Status senha</th><th>A&ccedil;&otilde;es</th></tr></thead>
+              <thead><tr><th>Nome</th><th>Login</th><th>E-mail</th><th>Perfil</th><th>Status senha</th><th>Ações</th></tr></thead>
               <tbody id="usersTable"></tbody>
             </table>
           </div>
@@ -907,12 +935,12 @@ function saveRelAccess(){ localStorage.setItem('hml_arp_rel_access', JSON.string
 function temRelatorio(){ return currentUser.profile==='ADMIN' || relAccess.indexOf(currentUser.login)>=0; }
 
 var DEFAULT_USERS = [
-  {login:'ayrton',   name:'Ayrton',        pass:'ayrton123',    profile:'SEMED',   mustChange:false},
-  {login:'giovanna', name:'Giovanna',      pass:'giovanna123',  profile:'SEMED',   mustChange:false},
-  {login:'neudson',  name:'Neudson',       pass:'neudson123',   profile:'ARPTECH', mustChange:false},
-  {login:'rodrigo',  name:'Rodrigo',       pass:'rodrigo123',   profile:'ARPTECH', mustChange:false},
-  {login:'admin',    name:'Administrador', pass:'admin@arptech',profile:'ADMIN',   mustChange:false},
-  {login:'fiscal',   name:'Fiscal SEMED',  pass:'Fiscal@2026!', profile:'FISCAL',  mustChange:true}
+  {login:'ayrton',   name:'Ayrton',        pass:'ayrton123',    profile:'SEMED',   email:'', cpf:'', telefone:'', mustChange:false},
+  {login:'giovanna', name:'Giovanna',      pass:'giovanna123',  profile:'SEMED',   email:'', cpf:'', telefone:'', mustChange:false},
+  {login:'neudson',  name:'Neudson',       pass:'neudson123',   profile:'ARPTECH', email:'', cpf:'', telefone:'', mustChange:false},
+  {login:'rodrigo',  name:'Rodrigo',       pass:'rodrigo123',   profile:'ARPTECH', email:'', cpf:'', telefone:'', mustChange:false},
+  {login:'admin',    name:'Administrador', pass:'admin@arptech',profile:'ADMIN',   email:'', cpf:'', telefone:'', mustChange:false},
+  {login:'fiscal',   name:'Fiscal SEMED',  pass:'Fiscal@2026!', profile:'FISCAL',  email:'', cpf:'', telefone:'', mustChange:true}
 ];
 var usuarios = JSON.parse(localStorage.getItem('hml_arp_users') || 'null') || DEFAULT_USERS;
 var orgaos = JSON.parse(localStorage.getItem('hml_arp_orgaos') || 'null') || ['SEMED','ARPTECH','FISCAL'];
@@ -1045,17 +1073,87 @@ function resetUI(){
   DASH_PAGE=0; LIST_PAGE=0; OSC_PAGE=0; OSA_PAGE=0; OSAND_PAGE=0; LOCAIS_PAGE=0; NF_PAGE=0;
 }
 
+function abrirRecuperarEmail(){
+  document.getElementById('recEmailInput').value='';
+  document.getElementById('recEmailResultado').style.display='none';
+  document.getElementById('recEmailOverlay').classList.add('open');
+  setTimeout(function(){ var el=document.getElementById('recEmailInput'); if(el) el.focus(); }, 120);
+}
+
+function mascararEmail(email){
+  if(!email || email.indexOf('@')<0) return email||'';
+  var partes = email.split('@');
+  var user = partes[0];
+  var dominio = partes[1];
+  var visivel = user.length <= 2 ? user.charAt(0) : user.slice(0,2);
+  return visivel + '*'.repeat(Math.max(4, user.length - visivel.length)) + '@' + dominio;
+}
+
+function recuperarEmail(){
+  var v = (document.getElementById('recEmailInput').value||'').trim();
+  var soDigitos = v.replace(/\D/g,'');
+  var resDiv = document.getElementById('recEmailResultado');
+  if(soDigitos.length < 10){
+    alert('Informe um CPF (11 dígitos) ou WhatsApp válido.');
+    return;
+  }
+  var found = null;
+  for(var i=0;i<usuarios.length;i++){
+    var usr = usuarios[i];
+    var cpfU = (usr.cpf||'').replace(/\D/g,'');
+    var telU = (usr.telefone||'').replace(/\D/g,'');
+    if((cpfU && cpfU === soDigitos) || (telU && telU.slice(-9) === soDigitos.slice(-9))){
+      found = usr; break;
+    }
+  }
+  resDiv.style.display='block';
+  if(!found || !found.email){
+    resDiv.style.background='#fde8e8'; resDiv.style.borderColor='#f5b5b5'; resDiv.style.color='#b91c1c';
+    resDiv.innerHTML = (found && !found.email)
+      ? 'Encontramos sua conta, mas não há e-mail cadastrado.<br>Contate o Administrador.'
+      : 'Nenhuma conta encontrada com esses dados.<br>Contate o Administrador.';
+    return;
+  }
+  resDiv.style.background='#eaf6ef'; resDiv.style.borderColor='#b2d8c0'; resDiv.style.color='#14693c';
+  resDiv.innerHTML = 'E-mail cadastrado:<br><b style="font-size:16px;">'+mascararEmail(found.email)+'</b>';
+}
+
 function login(){
   var u = (document.getElementById('loginUser').value||'').trim().toLowerCase();
   var p = document.getElementById('loginPass').value;
-  if(!u || !p){ alert('Preencha usu\u00e1rio e senha!'); return; }
+  if(!u || !p){ alert('Preencha e-mail e senha!'); return; }
+
+  // Detectar tipo de identificador: e-mail, CPF ou usuário
+  var ehEmail = u.indexOf('@') >= 0;
+  var soDigitos = u.replace(/\D/g,'');
+  var ehCpf = !ehEmail && soDigitos.length === 11;
+
+  // Se parece e-mail, validar formato
+  if(ehEmail){
+    var reEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if(!reEmail.test(u)){ alert('Formato de e-mail inválido. Verifique e tente novamente.'); return; }
+  }
+
   var found = null;
-  for(var i=0;i<usuarios.length;i++){ if(usuarios[i].login.toLowerCase()===u && usuarios[i].pass===p){ found=usuarios[i]; break; } }
-  if(!found){ alert('Usu\u00e1rio ou senha incorretos!'); return; }
-  if(senhaExpirada(found)){
-    alert('Sua senha tempor\u00e1ria expirou. Contate o Administrador.');
+  for(var i=0;i<usuarios.length;i++){
+    var usr = usuarios[i];
+    var matchLogin = usr.login && usr.login.toLowerCase() === u;
+    var matchEmail = ehEmail && usr.email && usr.email.toLowerCase() === u;
+    var matchCpf   = ehCpf && usr.cpf && usr.cpf.replace(/\D/g,'') === soDigitos;
+    if((matchLogin || matchEmail || matchCpf) && usr.pass === p){ found = usr; break; }
+  }
+
+  if(!found){
+    // Mensagem específica conforme o tipo tentado
+    var comoTentou = ehEmail ? 'E-mail' : (ehCpf ? 'CPF' : 'Usuário');
+    alert(comoTentou + ' ou senha incorretos!');
     return;
   }
+  if(senhaExpirada(found)){
+    alert('Sua senha temporária expirou. Contate o Administrador.');
+    return;
+  }
+  registrarLogAcesso(found.name, 'LOGIN');
   resetUI();
   currentUser = found;
   // Fechar modal de login e mostrar sistema
@@ -1070,7 +1168,6 @@ function login(){
   var _nm=document.getElementById('userNome');   if(_nm) _nm.textContent=found.name||found.login;
   var _pf=document.getElementById('userPerfil'); if(_pf) _pf.textContent=found.profile||'';
   var _ui=document.getElementById('userInfo');   if(_ui) _ui.innerHTML=found.name+'<br><small style="color:#9fb6c6">'+found.profile+'</small>';
-  registrarLogAcesso(found.name, 'LOGIN');
   applyPermissions();
   if(found.mustChange){
     alert('Você usa senha temporária. Redefina em "Minha Conta" em até '+EXPIRA_DIAS+' dias.');
@@ -2321,18 +2418,25 @@ function novoOrgao(){
 function cadastrarUsuario(){
   var nome = document.getElementById('gNome').value.trim();
   var loginU = document.getElementById('gLogin').value.trim().toLowerCase();
+  var email = document.getElementById('gEmail').value.trim().toLowerCase();
+  var cpf = document.getElementById('gCpf').value.replace(/\D/g,'');
+  var telefone = document.getElementById('gTelefone').value.trim();
   var senha = document.getElementById('gSenha').value;
   var perfil = document.getElementById('gPerfil').value;
-  if(!nome || !loginU || !senha){ alert('Preencha todos os campos!'); return; }
-  if(!senhaForte(senha)){ alert('Senha fraca! M\u00edn. 8 caracteres com mai\u00fascula, min\u00fascula, n\u00famero e especial.'); return; }
-  for(var i=0;i<usuarios.length;i++){ if(usuarios[i].login===loginU){ alert('Login j\u00e1 existe!'); return; } }
-  usuarios.push({login:loginU, name:nome, pass:senha, profile:perfil, mustChange:true, passSetAt:Date.now()});
+  if(!nome || !loginU || !senha){ alert('Preencha nome, login e senha!'); return; }
+  if(email){
+    var reEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if(!reEmail.test(email)){ alert('E-mail inválido!'); return; }
+    for(var j=0;j<usuarios.length;j++){ if(usuarios[j].email && usuarios[j].email.toLowerCase()===email){ alert('Este e-mail já está cadastrado!'); return; } }
+  }
+  if(cpf && cpf.length !== 11){ alert('CPF deve ter 11 dígitos!'); return; }
+  if(!senhaForte(senha)){ alert('Senha fraca! Mín. 8 caracteres com maiúscula, minúscula, número e especial.'); return; }
+  for(var i=0;i<usuarios.length;i++){ if(usuarios[i].login===loginU){ alert('Login já existe!'); return; } }
+  usuarios.push({login:loginU, name:nome, pass:senha, profile:perfil, email:email, cpf:cpf, telefone:telefone, mustChange:true, passSetAt:Date.now()});
   saveUsers();
-  document.getElementById('gNome').value='';
-  document.getElementById('gLogin').value='';
-  document.getElementById('gSenha').value='';
+  ['gNome','gLogin','gEmail','gCpf','gTelefone','gSenha'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
   renderUsuarios();
-  alert('Usu\u00e1rio cadastrado! Senha tempor\u00e1ria v\u00e1lida por '+EXPIRA_DIAS+' dias.');
+  alert('Usuário cadastrado! Senha temporária válida por '+EXPIRA_DIAS+' dias.');
 }
 
 function excluirUsuario(loginU){
@@ -2373,11 +2477,43 @@ function renderUsuarios(){
   var html = usuarios.map(function(u){
     var sel = '<select class="form-input" style="padding:6px 8px;font-size:12px;" onchange="mudarPerfil(\''+u.login+'\',this.value)">'+
       opts.map(function(o){ return '<option value="'+o+'"'+(u.profile===o?' selected':'')+'>'+o+'</option>'; }).join('')+'</select>';
-    return '<tr><td>'+u.name+'</td><td>'+u.login+'</td><td>'+sel+'</td><td>'+statusSenha(u)+'</td>'+
-      '<td style="white-space:nowrap;"><button class="btn-small" style="background:var(--cor-secundaria);color:#fff;margin-right:6px;" onclick="redefinirSenha(\''+u.login+'\')">Redefinir senha</button>'+
+    var emailTxt = u.email ? u.email : '<span style="color:#bbb;">—</span>';
+    return '<tr><td>'+u.name+'</td><td>'+u.login+'</td><td style="font-size:12px;">'+emailTxt+'</td><td>'+sel+'</td><td>'+statusSenha(u)+'</td>'+
+      '<td style="white-space:nowrap;">'+
+      '<button class="btn-small" style="background:#0d3b5c;color:#fff;margin-right:6px;" onclick="editarContatoUsuario(\''+u.login+'\')">Editar contato</button>'+
+      '<button class="btn-small" style="background:var(--cor-secundaria);color:#fff;margin-right:6px;" onclick="redefinirSenha(\''+u.login+'\')">Redefinir senha</button>'+
       '<button class="btn-danger" onclick="excluirUsuario(\''+u.login+'\')">Excluir</button></td></tr>';
   }).join('');
   document.getElementById('usersTable').innerHTML = html;
+}
+
+function editarContatoUsuario(loginU){
+  var u = null;
+  for(var i=0;i<usuarios.length;i++){ if(usuarios[i].login===loginU){ u=usuarios[i]; break; } }
+  if(!u) return;
+
+  var novoEmail = prompt('E-mail de "'+u.name+'":', u.email||'');
+  if(novoEmail===null) return; // cancelou
+  novoEmail = novoEmail.trim().toLowerCase();
+  if(novoEmail){
+    var reEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if(!reEmail.test(novoEmail)){ alert('E-mail inválido!'); return; }
+    for(var j=0;j<usuarios.length;j++){ if(usuarios[j].login!==loginU && usuarios[j].email && usuarios[j].email.toLowerCase()===novoEmail){ alert('E-mail já usado por outro usuário!'); return; } }
+  }
+  var novoCpf = prompt('CPF de "'+u.name+'" (só números):', u.cpf||'');
+  if(novoCpf===null) return;
+  novoCpf = novoCpf.replace(/\D/g,'');
+  if(novoCpf && novoCpf.length!==11){ alert('CPF deve ter 11 dígitos!'); return; }
+  var novoTel = prompt('WhatsApp de "'+u.name+'":', u.telefone||'');
+  if(novoTel===null) return;
+
+  var antes = 'email:'+(u.email||'—')+' cpf:'+(u.cpf||'—')+' tel:'+(u.telefone||'—');
+  u.email = novoEmail; u.cpf = novoCpf; u.telefone = novoTel.trim();
+  var depois = 'email:'+(u.email||'—')+' cpf:'+(u.cpf||'—')+' tel:'+(u.telefone||'—');
+  saveUsers();
+  registrarLogAcesso(currentUser.name, 'EDITOU CONTATO de '+u.name+' ['+antes+' -> '+depois+']');
+  renderUsuarios();
+  alert('Contato atualizado e registrado no log de auditoria.');
 }
 
 function redefinirMinhaSenha(){
@@ -2558,8 +2694,41 @@ function coletarEstado(){
 
 function pushNuvem(){
   if(!SYNC_URL || _sincronizando) return;
-  _sincronizando = true;
+
   var estado = coletarEstado();
+
+  // ── PROTEÇÃO ANTI-SOBRESCRITA ──
+  var recLocal = [];
+  var osLocal  = [];
+  try{ recLocal = JSON.parse(localStorage.getItem('hml_arp_rec')||'[]'); }catch(e){}
+  try{ osLocal  = JSON.parse(localStorage.getItem('hml_arp_os')||'[]'); }catch(e){}
+
+  if(recLocal.length === 0 && osLocal.length === 0){
+    _sincronizando = true;
+    fetch(SYNC_URL + (SYNC_URL.indexOf('?')<0?'?':'&') + 'action=load&_cb=' + Date.now(), {cache:'no-store'})
+      .then(function(r){ return r.json(); })
+      .then(function(remoto){
+        _sincronizando = false;
+        var recRemoto = [];
+        try{ recRemoto = JSON.parse((remoto && remoto['hml_arp_rec']) || '[]'); }catch(e){}
+        var osRemoto = [];
+        try{ osRemoto = JSON.parse((remoto && remoto['hml_arp_os']) || '[]'); }catch(e){}
+        if(recRemoto.length > 0 || osRemoto.length > 0){
+          console.warn('[ARP HML] Push abortado: local vazio, nuvem tem dados. Restaurando.');
+          pullNuvem(false);
+        } else {
+          _enviarEstadoHml(estado);
+        }
+      })
+      .catch(function(){ _sincronizando = false; });
+    return;
+  }
+
+  _enviarEstadoHml(estado);
+}
+
+function _enviarEstadoHml(estado){
+  _sincronizando = true;
   localStorage.setItem('hml_arp_sync_ts', String(estado._ts));
   fetch(SYNC_URL, {
     method:'POST',
