@@ -289,13 +289,7 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
         <div class="form-group">
           <label class="form-label">E-mail</label>
           <input type="text" id="loginUser" class="form-input" placeholder="Digite seu e-mail" autocapitalize="none" autocomplete="username" inputmode="email">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Enviar código por</label>
-          <div style="display:flex;gap:8px;">
-            <button type="button" id="otpCanalEmail" class="toggle-btn sel" onclick="otpSelecionarCanal('email')">📧 E-mail</button>
-            <button type="button" id="otpCanalWhats" class="toggle-btn" onclick="otpSelecionarCanal('whatsapp')">💬 WhatsApp</button>
-          </div>
+          <div style="font-size:12px;color:#888;margin-top:8px;line-height:1.5;">📧 Enviaremos um código de acesso de 6 dígitos para o seu e-mail.</div>
         </div>
       </div>
 
@@ -1193,13 +1187,12 @@ function resetarTimeoutInatividade(){
 }
 
 // ===== AUTENTICAÇÃO POR OTP (código enviado a e-mail ou WhatsApp) =====
-var _otpCanal = 'email';
+var _otpCanal = 'email';  // Autenticação por e-mail (WhatsApp desativado)
 var _otpEmail = '';
 
 function otpSelecionarCanal(canal){
-  _otpCanal = canal;
-  document.getElementById('otpCanalEmail').classList.toggle('sel', canal==='email');
-  document.getElementById('otpCanalWhats').classList.toggle('sel', canal==='whatsapp');
+  // Mantido por compatibilidade — o sistema usa apenas e-mail para o código.
+  _otpCanal = 'email';
 }
 
 function otpMostrarMsg(texto, tipo){
