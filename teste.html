@@ -282,33 +282,42 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
     </div>
     <div class="login-modal-body">
       <div style="background:#dc2626;color:#fff;font-size:11px;font-weight:700;text-align:center;padding:6px 10px;border-radius:6px;margin-bottom:18px;">AMBIENTE DE HOMOLOGAÇÃO — NÃO USE PARA PRODUÇÃO</div>
-      <div class="form-group">
-        <label class="form-label">E-mail</label>
-        <input type="text" id="loginUser" class="form-input" placeholder="Digite seu e-mail" autocapitalize="none" autocomplete="username" inputmode="email">
-        <div style="font-size:11px;color:#888;margin-top:4px;">Você também pode entrar com seu usuário ou CPF.</div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Senha</label>
-        <div class="pwd-wrap">
-          <input type="password" id="loginPass" class="form-input" placeholder="Digite sua senha" autocomplete="current-password">
-          <button type="button" class="pwd-eye" onclick="toggleSenhaLogin()" tabindex="-1" title="Mostrar/ocultar senha">
-            <svg id="eyeClosed" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/>
-              <path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/>
-              <line x1="1" y1="1" x2="23" y2="23"/>
-            </svg>
-            <svg id="eyeOpen" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-              <circle cx="12" cy="12" r="3"/>
-            </svg>
-          </button>
+
+      <!-- ETAPA 1: informar e-mail -->
+      <div id="otpEtapa1">
+        <div class="form-group">
+          <label class="form-label">E-mail</label>
+          <input type="text" id="loginUser" class="form-input" placeholder="Digite seu e-mail" autocapitalize="none" autocomplete="username" inputmode="email">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Enviar código por</label>
+          <div style="display:flex;gap:8px;">
+            <button type="button" id="otpCanalEmail" class="toggle-btn sel" onclick="otpSelecionarCanal('email')">📧 E-mail</button>
+            <button type="button" id="otpCanalWhats" class="toggle-btn" onclick="otpSelecionarCanal('whatsapp')">💬 WhatsApp</button>
+          </div>
         </div>
       </div>
+
+      <!-- ETAPA 2: informar código -->
+      <div id="otpEtapa2" style="display:none;">
+        <p style="font-size:13px;color:#555;margin-bottom:14px;line-height:1.6;">Enviamos um código de 6 dígitos para <b id="otpDestinoLabel"></b>. Digite abaixo (válido por 5 minutos).</p>
+        <div class="form-group">
+          <label class="form-label">Código de verificação</label>
+          <input type="text" id="otpCodigo" class="form-input" placeholder="000000" inputmode="numeric" maxlength="6" style="letter-spacing:8px;font-size:22px;text-align:center;font-weight:700;">
+        </div>
+        <div style="text-align:center;font-size:12px;color:#888;">
+          <span id="otpReenviar" class="link" onclick="otpReenviarCodigo()">Reenviar código</span>
+          &nbsp;·&nbsp;
+          <span class="link" onclick="otpVoltarEtapa1()">Trocar e-mail</span>
+        </div>
+      </div>
+
+      <div id="otpMsg" style="display:none;font-size:13px;text-align:center;padding:10px;border-radius:8px;margin-top:12px;"></div>
     </div>
     <div class="login-modal-footer">
-      <button class="btn-login" style="width:100%;" onclick="login()">Entrar</button>
-      <div style="text-align:center;margin-top:14px;display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
-        <span class="link" onclick="esqueciSenha()">Esqueci a senha</span>
+      <button class="btn-login" id="otpBtnContinuar" style="width:100%;" onclick="otpSolicitar()">Continuar</button>
+      <button class="btn-login" id="otpBtnValidar" style="width:100%;display:none;" onclick="otpValidar()">Entrar</button>
+      <div style="text-align:center;margin-top:14px;">
         <span class="link" onclick="abrirRecuperarEmail()">Esqueci meu e-mail</span>
       </div>
     </div>
@@ -780,14 +789,12 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
 
       <div id="gerenciar" class="tab-content">
         <div class="card">
-          <div class="card-title">Cadastrar Usu&aacute;rio</div>
-          <div class="pwd-rules"><b>Requisitos da senha:</b> m&iacute;nimo 8 caracteres, com mai&uacute;scula, min&uacute;scula, n&uacute;mero e caractere especial. Senha tempor&aacute;ria expira em <b>3 dias</b>.</div>
+          <div class="card-title">Cadastrar Usuário</div>
+          <div class="info-note">🔐 O acesso é feito por <b>código enviado ao e-mail ou WhatsApp</b> (sem senha). Informe pelo menos Nome, E-mail e Perfil. CPF e WhatsApp são opcionais (usados para recuperação de acesso).</div>
           <div class="form-group"><label class="form-label">Nome</label><input type="text" id="gNome" class="form-input"></div>
-          <div class="form-group"><label class="form-label">Usuário (login)</label><input type="text" id="gLogin" class="form-input" autocapitalize="none"></div>
           <div class="form-group"><label class="form-label">E-mail</label><input type="email" id="gEmail" class="form-input" placeholder="usuario@email.com" autocapitalize="none"></div>
-          <div class="form-group"><label class="form-label">CPF <span style="font-weight:400;color:#999;">(para recuperação)</span></label><input type="text" id="gCpf" class="form-input" placeholder="000.000.000-00" inputmode="numeric"></div>
-          <div class="form-group"><label class="form-label">WhatsApp <span style="font-weight:400;color:#999;">(para recuperação)</span></label><input type="tel" id="gTelefone" class="form-input" placeholder="(97) 99999-9999"></div>
-          <div class="form-group"><label class="form-label">Senha temporária</label><input type="text" id="gSenha" class="form-input"></div>
+          <div class="form-group"><label class="form-label">CPF <span style="font-weight:400;color:#999;">(opcional)</span></label><input type="text" id="gCpf" class="form-input" placeholder="000.000.000-00" inputmode="numeric"></div>
+          <div class="form-group"><label class="form-label">WhatsApp <span style="font-weight:400;color:#999;">(opcional, para receber código)</span></label><input type="tel" id="gTelefone" class="form-input" placeholder="(97) 99999-9999"></div>
           <div class="form-group"><label class="form-label">Perfil / &Oacute;rg&atilde;o</label>
             <div style="display:flex;gap:8px;">
               <select id="gPerfil" class="form-input" style="flex:1;"></select>
@@ -849,17 +856,15 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
 
       <div id="minhaConta" class="tab-content">
         <div class="card">
-          <div class="card-title">Redefinir Minha Senha</div>
-          <div class="pwd-rules"><b>Requisitos:</b> m&iacute;nimo 8 caracteres, mai&uacute;scula, min&uacute;scula, n&uacute;mero e caractere especial.</div>
-          <div class="form-group"><label class="form-label">Senha atual</label><input type="password" id="mcSenhaAtual" class="form-input"></div>
-          <div class="form-group"><label class="form-label">Nova senha</label><input type="password" id="mcNovaSenha" class="form-input"></div>
-          <div class="form-group"><label class="form-label">Confirmar nova senha</label><input type="password" id="mcConfSenha" class="form-input"></div>
-          <button class="btn-primary" onclick="redefinirMinhaSenha()">Salvar Nova Senha</button>
+          <div class="card-title">Meus Dados de Acesso</div>
+          <div class="info-note">🔐 O acesso é feito por <b>código enviado ao seu e-mail ou WhatsApp</b>. Mantenha estes dados atualizados para receber o código.</div>
+          <div class="form-group"><label class="form-label">E-mail</label><input type="email" id="mcEmail" class="form-input" placeholder="voce@email.com" autocapitalize="none"></div>
+          <div class="form-group"><label class="form-label">WhatsApp <span style="font-weight:400;color:#999;">(para receber código)</span></label><input type="tel" id="mcTelefone" class="form-input" placeholder="(97) 99999-9999"></div>
+          <button class="btn-primary" onclick="salvarMeusDados()">Salvar Meus Dados</button>
         </div>
-        <div class="card" id="mcEmailCard" style="display:none;">
-          <div class="card-title">E-mail de Recupera&ccedil;&atilde;o (Administrador)</div>
-          <div class="form-group"><label class="form-label">E-mail</label><input type="email" id="mcEmailAdmin" class="form-input" placeholder="admin@empresa.com"></div>
-          <button class="btn-primary" onclick="salvarEmailAdmin()">Salvar E-mail</button>
+        <div class="card" id="mcUltimoAcessoCard">
+          <div class="card-title">Último Acesso</div>
+          <div id="mcUltimoAcesso" style="font-size:13px;color:#555;line-height:1.8;">—</div>
         </div>
       </div>
 
@@ -1059,7 +1064,6 @@ function resetUI(){
   });
   document.getElementById('btnNovoTop').style.display='none';
   document.getElementById('comAdminCard').style.display='none';
-  document.getElementById('mcEmailCard').style.display='none';
   document.getElementById('nfPermCard').style.display='none';
   document.getElementById('osTecGroup').style.display='none';
   // Limpar card de perfil
@@ -1097,99 +1101,214 @@ function recuperarEmail(){
     alert('Informe um CPF (11 dígitos) ou WhatsApp válido.');
     return;
   }
+  resDiv.style.display='block';
+  resDiv.style.background='#eef4f2'; resDiv.style.borderColor='#ccc'; resDiv.style.color='#555';
+  resDiv.innerHTML = 'Buscando...';
+
+  // Primeiro tenta pelo servidor (dados sincronizados)
+  var url = SYNC_URL + (SYNC_URL.indexOf('?')<0?'?':'&') +
+    'action=recuperarEmailOTP&contato=' + encodeURIComponent(soDigitos) + '&_cb=' + Date.now();
+  fetch(url, {cache:'no-store'})
+    .then(function(r){ return r.json(); })
+    .then(function(res){
+      if(res.ok){
+        resDiv.style.background='#eaf6ef'; resDiv.style.borderColor='#b2d8c0'; resDiv.style.color='#14693c';
+        resDiv.innerHTML = 'E-mail cadastrado:<br><b style="font-size:16px;">'+res.emailMascarado+'</b>';
+      } else {
+        // fallback local
+        recuperarEmailLocal(soDigitos, resDiv);
+      }
+    })
+    .catch(function(){ recuperarEmailLocal(soDigitos, resDiv); });
+}
+
+function recuperarEmailLocal(soDigitos, resDiv){
   var found = null;
   for(var i=0;i<usuarios.length;i++){
     var usr = usuarios[i];
     var cpfU = (usr.cpf||'').replace(/\D/g,'');
     var telU = (usr.telefone||'').replace(/\D/g,'');
-    if((cpfU && cpfU === soDigitos) || (telU && telU.slice(-9) === soDigitos.slice(-9))){
-      found = usr; break;
-    }
+    if((cpfU && cpfU === soDigitos) || (telU && telU.slice(-9) === soDigitos.slice(-9))){ found = usr; break; }
   }
-  resDiv.style.display='block';
   if(!found || !found.email){
     resDiv.style.background='#fde8e8'; resDiv.style.borderColor='#f5b5b5'; resDiv.style.color='#b91c1c';
     resDiv.innerHTML = (found && !found.email)
-      ? 'Encontramos sua conta, mas não há e-mail cadastrado.<br>Contate o Administrador.'
-      : 'Nenhuma conta encontrada com esses dados.<br>Contate o Administrador.';
+      ? 'Conta encontrada, mas sem e-mail.<br>Contate o Administrador.'
+      : 'Nenhuma conta encontrada com esses dados.';
     return;
   }
   resDiv.style.background='#eaf6ef'; resDiv.style.borderColor='#b2d8c0'; resDiv.style.color='#14693c';
   resDiv.innerHTML = 'E-mail cadastrado:<br><b style="font-size:16px;">'+mascararEmail(found.email)+'</b>';
 }
 
-function login(){
-  var u = (document.getElementById('loginUser').value||'').trim().toLowerCase();
-  var p = document.getElementById('loginPass').value;
-  if(!u || !p){ alert('Preencha e-mail e senha!'); return; }
+// ===== ENCERRAMENTO AUTOMÁTICO POR INATIVIDADE =====
+var _timeoutInatividade = null;
+var INATIVIDADE_MIN = 30; // encerra sessão após 30 min sem atividade
 
-  // Detectar tipo de identificador: e-mail, CPF ou usuário
-  var ehEmail = u.indexOf('@') >= 0;
-  var soDigitos = u.replace(/\D/g,'');
-  var ehCpf = !ehEmail && soDigitos.length === 11;
+function iniciarTimeoutInatividade(){
+  ['click','keydown','mousemove','touchstart','scroll'].forEach(function(ev){
+    document.addEventListener(ev, resetarTimeoutInatividade, {passive:true});
+  });
+  resetarTimeoutInatividade();
+}
+function resetarTimeoutInatividade(){
+  if(!currentUser) return;
+  if(_timeoutInatividade) clearTimeout(_timeoutInatividade);
+  _timeoutInatividade = setTimeout(function(){
+    if(currentUser){
+      alert('Sessão encerrada por inatividade. Faça login novamente.');
+      logout();
+    }
+  }, INATIVIDADE_MIN * 60000);
+}
 
-  // Se parece e-mail, validar formato
-  if(ehEmail){
-    var reEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if(!reEmail.test(u)){ alert('Formato de e-mail inválido. Verifique e tente novamente.'); return; }
-  }
+// ===== AUTENTICAÇÃO POR OTP (código enviado a e-mail ou WhatsApp) =====
+var _otpCanal = 'email';
+var _otpEmail = '';
 
-  var found = null;
-  for(var i=0;i<usuarios.length;i++){
-    var usr = usuarios[i];
-    var matchLogin = usr.login && usr.login.toLowerCase() === u;
-    var matchEmail = ehEmail && usr.email && usr.email.toLowerCase() === u;
-    var matchCpf   = ehCpf && usr.cpf && usr.cpf.replace(/\D/g,'') === soDigitos;
-    if((matchLogin || matchEmail || matchCpf) && usr.pass === p){ found = usr; break; }
-  }
+function otpSelecionarCanal(canal){
+  _otpCanal = canal;
+  document.getElementById('otpCanalEmail').classList.toggle('sel', canal==='email');
+  document.getElementById('otpCanalWhats').classList.toggle('sel', canal==='whatsapp');
+}
 
-  if(!found){
-    // Mensagem específica conforme o tipo tentado
-    var comoTentou = ehEmail ? 'E-mail' : (ehCpf ? 'CPF' : 'Usuário');
-    alert(comoTentou + ' ou senha incorretos!');
-    return;
-  }
-  if(senhaExpirada(found)){
-    alert('Sua senha temporária expirou. Contate o Administrador.');
-    return;
-  }
-  registrarLogAcesso(found.name, 'LOGIN');
+function otpMostrarMsg(texto, tipo){
+  var d = document.getElementById('otpMsg');
+  d.style.display='block';
+  d.textContent = texto;
+  if(tipo==='erro'){ d.style.background='#fde8e8'; d.style.color='#b91c1c'; }
+  else if(tipo==='ok'){ d.style.background='#eaf6ef'; d.style.color='#14693c'; }
+  else { d.style.background='#eef4f2'; d.style.color='#555'; }
+}
+function otpLimparMsg(){ var d=document.getElementById('otpMsg'); d.style.display='none'; }
+
+function otpSolicitar(){
+  var email = (document.getElementById('loginUser').value||'').trim().toLowerCase();
+  if(!email){ otpMostrarMsg('Informe seu e-mail.', 'erro'); return; }
+  var reEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if(!reEmail.test(email)){ otpMostrarMsg('Formato de e-mail inválido.', 'erro'); return; }
+
+  _otpEmail = email;
+  var btn = document.getElementById('otpBtnContinuar');
+  btn.disabled = true; btn.textContent = 'Enviando...';
+  otpMostrarMsg('Enviando código, aguarde...', 'info');
+
+  var url = SYNC_URL + (SYNC_URL.indexOf('?')<0?'?':'&') +
+    'action=solicitarOTP&email=' + encodeURIComponent(email) +
+    '&canal=' + encodeURIComponent(_otpCanal) + '&_cb=' + Date.now();
+
+  fetch(url, {cache:'no-store'})
+    .then(function(r){ return r.json(); })
+    .then(function(res){
+      btn.disabled = false; btn.textContent = 'Continuar';
+      if(!res.ok){ otpMostrarMsg(res.erro || 'Não foi possível enviar o código.', 'erro'); return; }
+      // Ir para etapa 2
+      document.getElementById('otpEtapa1').style.display='none';
+      document.getElementById('otpEtapa2').style.display='block';
+      document.getElementById('otpBtnContinuar').style.display='none';
+      document.getElementById('otpBtnValidar').style.display='block';
+      document.getElementById('otpDestinoLabel').textContent = res.mensagem ? res.mensagem.replace('Código enviado para ','') : email;
+      otpLimparMsg();
+      setTimeout(function(){ var el=document.getElementById('otpCodigo'); if(el) el.focus(); }, 120);
+    })
+    .catch(function(){
+      btn.disabled = false; btn.textContent = 'Continuar';
+      otpMostrarMsg('Erro de conexão. Tente novamente.', 'erro');
+    });
+}
+
+function otpReenviarCodigo(){
+  otpMostrarMsg('Reenviando...', 'info');
+  otpSolicitarSilencioso();
+}
+function otpSolicitarSilencioso(){
+  var url = SYNC_URL + (SYNC_URL.indexOf('?')<0?'?':'&') +
+    'action=solicitarOTP&email=' + encodeURIComponent(_otpEmail) +
+    '&canal=' + encodeURIComponent(_otpCanal) + '&_cb=' + Date.now();
+  fetch(url, {cache:'no-store'}).then(function(r){return r.json();}).then(function(res){
+    otpMostrarMsg(res.ok ? 'Novo código enviado.' : (res.erro||'Falha ao reenviar.'), res.ok?'ok':'erro');
+  }).catch(function(){ otpMostrarMsg('Erro de conexão.', 'erro'); });
+}
+
+function otpVoltarEtapa1(){
+  document.getElementById('otpEtapa1').style.display='block';
+  document.getElementById('otpEtapa2').style.display='none';
+  document.getElementById('otpBtnContinuar').style.display='block';
+  document.getElementById('otpBtnValidar').style.display='none';
+  document.getElementById('otpCodigo').value='';
+  otpLimparMsg();
+}
+
+function otpValidar(){
+  var codigo = (document.getElementById('otpCodigo').value||'').trim();
+  if(codigo.length !== 6){ otpMostrarMsg('Digite os 6 dígitos do código.', 'erro'); return; }
+
+  var btn = document.getElementById('otpBtnValidar');
+  btn.disabled = true; btn.textContent = 'Verificando...';
+  otpMostrarMsg('Verificando código...', 'info');
+
+  var url = SYNC_URL + (SYNC_URL.indexOf('?')<0?'?':'&') +
+    'action=validarOTP&email=' + encodeURIComponent(_otpEmail) +
+    '&codigo=' + encodeURIComponent(codigo) + '&_cb=' + Date.now();
+
+  fetch(url, {cache:'no-store'})
+    .then(function(r){ return r.json(); })
+    .then(function(res){
+      btn.disabled = false; btn.textContent = 'Entrar';
+      if(!res.ok){ otpMostrarMsg(res.erro || 'Código inválido.', 'erro'); return; }
+      // Sucesso — localizar usuário local pelo e-mail e entrar
+      var found = null;
+      for(var i=0;i<usuarios.length;i++){
+        if(usuarios[i].email && usuarios[i].email.toLowerCase() === _otpEmail){ found = usuarios[i]; break; }
+      }
+      // Se não achar local (sync atrasado), usa dados vindos do servidor
+      if(!found && res.usuario){ found = res.usuario; }
+      if(!found){ otpMostrarMsg('Conta não encontrada neste dispositivo. Sincronize e tente novamente.', 'erro'); return; }
+      // Guardar dados do último acesso
+      try{
+        localStorage.setItem('hml_arp_ultimo_acesso', JSON.stringify({email:_otpEmail, em:res.acessoEm||'', ip:res.ip||''}));
+      }catch(e){}
+      otpEntrarNoSistema(found);
+    })
+    .catch(function(){
+      btn.disabled = false; btn.textContent = 'Entrar';
+      otpMostrarMsg('Erro de conexão. Tente novamente.', 'erro');
+    });
+}
+
+function otpEntrarNoSistema(found){
+  registrarLogAcesso(found.name, 'LOGIN (OTP)');
   resetUI();
   currentUser = found;
-  // Fechar modal de login e mostrar sistema
   var lmo = document.getElementById('loginModalOverlay');
   if(lmo) lmo.classList.remove('open');
   document.body.style.overflow = '';
   document.getElementById('loginScreen').style.display='none';
   document.getElementById('systemWrapper').classList.add('active');
-  // Preencher card de perfil
   var ini = (found.name||'?').charAt(0).toUpperCase();
   var _av=document.getElementById('userAvatar'); if(_av) _av.textContent=ini;
   var _nm=document.getElementById('userNome');   if(_nm) _nm.textContent=found.name||found.login;
   var _pf=document.getElementById('userPerfil'); if(_pf) _pf.textContent=found.profile||'';
   var _ui=document.getElementById('userInfo');   if(_ui) _ui.innerHTML=found.name+'<br><small style="color:#9fb6c6">'+found.profile+'</small>';
   applyPermissions();
-  if(found.mustChange){
-    alert('Você usa senha temporária. Redefina em "Minha Conta" em até '+EXPIRA_DIAS+' dias.');
-    goTab('minhaConta', document.getElementById('m-conta'), 'Minha Conta');
-  }
+  // Resetar o modal para o próximo login
+  otpVoltarEtapa1();
+  document.getElementById('loginUser').value='';
+  iniciarTimeoutInatividade();
 }
 
 function logout(){
   if(currentUser) registrarLogAcesso(currentUser.name, 'LOGOUT');
   currentUser=null;
   resetUI();
+  if(_timeoutInatividade){ clearTimeout(_timeoutInatividade); _timeoutInatividade=null; }
   // Retornar à tela inicial com os dois cards (modal fechado)
   var lmo = document.getElementById('loginModalOverlay');
   if(lmo) lmo.classList.remove('open');
   document.getElementById('loginScreen').style.display='flex';
   document.getElementById('systemWrapper').classList.remove('active');
-  document.getElementById('loginUser').value='';
-  document.getElementById('loginPass').value='';
-  // Resetar ícone de olho
-  var ec = document.getElementById('eyeClosed'); if(ec) ec.style.display='';
-  var eo = document.getElementById('eyeOpen');   if(eo) eo.style.display='none';
-  var lp = document.getElementById('loginPass'); if(lp) lp.type='password';
+  var lu = document.getElementById('loginUser'); if(lu) lu.value='';
+  if(typeof otpVoltarEtapa1==='function') otpVoltarEtapa1();
 }
 
 function fillLocais(){}
@@ -1265,12 +1384,10 @@ function applyPermissions(){
   document.getElementById('comAdminCard').style.display = p==='ADMIN' ? 'block' : 'none';
   var comAdmin2 = document.getElementById('comAdminCard2');
   if(comAdmin2) comAdmin2.style.display = (p==='ADMIN'||p==='ARPTECH') ? 'block' : 'none';
-  document.getElementById('mcEmailCard').style.display = p==='ADMIN' ? 'block' : 'none';
   document.getElementById('nfPermCard').style.display = p==='ADMIN' ? 'block' : 'none';
   document.getElementById('relPermCard').style.display = p==='ADMIN' ? 'block' : 'none';
   if(p==='ADMIN'){
     document.getElementById('comPercent').value = COMISSAO_PERCENT;
-    document.getElementById('mcEmailAdmin').value = localStorage.getItem('hml_arp_admin_email') || '';
   }
 
   var inp = document.getElementById('newRegResp');
@@ -1328,6 +1445,7 @@ function goTab(tab, el, title){
   document.getElementById('sidebar').classList.remove('open');
   atualizarBotaoNovo(tab);
   if(tab==='dashboard') loadDashboard();
+  if(tab==='minhaConta') carregarMeusDados();
   if(tab==='registrosList') renderListTab();
   if(tab==='novoRegistro' && el){
     EDIT_REG_ID = null;
@@ -2417,26 +2535,25 @@ function novoOrgao(){
 
 function cadastrarUsuario(){
   var nome = document.getElementById('gNome').value.trim();
-  var loginU = document.getElementById('gLogin').value.trim().toLowerCase();
   var email = document.getElementById('gEmail').value.trim().toLowerCase();
   var cpf = document.getElementById('gCpf').value.replace(/\D/g,'');
   var telefone = document.getElementById('gTelefone').value.trim();
-  var senha = document.getElementById('gSenha').value;
   var perfil = document.getElementById('gPerfil').value;
-  if(!nome || !loginU || !senha){ alert('Preencha nome, login e senha!'); return; }
-  if(email){
-    var reEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if(!reEmail.test(email)){ alert('E-mail inválido!'); return; }
-    for(var j=0;j<usuarios.length;j++){ if(usuarios[j].email && usuarios[j].email.toLowerCase()===email){ alert('Este e-mail já está cadastrado!'); return; } }
-  }
+  if(!nome || !email){ alert('Preencha nome e e-mail!'); return; }
+  var reEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if(!reEmail.test(email)){ alert('E-mail inválido!'); return; }
+  for(var j=0;j<usuarios.length;j++){ if(usuarios[j].email && usuarios[j].email.toLowerCase()===email){ alert('Este e-mail já está cadastrado!'); return; } }
   if(cpf && cpf.length !== 11){ alert('CPF deve ter 11 dígitos!'); return; }
-  if(!senhaForte(senha)){ alert('Senha fraca! Mín. 8 caracteres com maiúscula, minúscula, número e especial.'); return; }
-  for(var i=0;i<usuarios.length;i++){ if(usuarios[i].login===loginU){ alert('Login já existe!'); return; } }
-  usuarios.push({login:loginU, name:nome, pass:senha, profile:perfil, email:email, cpf:cpf, telefone:telefone, mustChange:true, passSetAt:Date.now()});
+  // Login derivado do e-mail (parte antes do @), garantindo unicidade
+  var baseLogin = email.split('@')[0].replace(/[^a-z0-9]/g,'');
+  var loginU = baseLogin, n = 1;
+  while(usuarios.some(function(u){ return u.login===loginU; })){ loginU = baseLogin + (++n); }
+  usuarios.push({login:loginU, name:nome, pass:'', profile:perfil, email:email, cpf:cpf, telefone:telefone, mustChange:false});
   saveUsers();
-  ['gNome','gLogin','gEmail','gCpf','gTelefone','gSenha'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
+  ['gNome','gEmail','gCpf','gTelefone'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
   renderUsuarios();
-  alert('Usuário cadastrado! Senha temporária válida por '+EXPIRA_DIAS+' dias.');
+  registrarLogAcesso(currentUser.name, 'CADASTROU usuário '+nome+' ('+email+')');
+  alert('Usuário cadastrado! O acesso será feito por código enviado ao e-mail/WhatsApp.');
 }
 
 function excluirUsuario(loginU){
@@ -2516,31 +2633,43 @@ function editarContatoUsuario(loginU){
   alert('Contato atualizado e registrado no log de auditoria.');
 }
 
-function redefinirMinhaSenha(){
-  var atual = document.getElementById('mcSenhaAtual').value;
-  var nova = document.getElementById('mcNovaSenha').value;
-  var conf = document.getElementById('mcConfSenha').value;
-  if(atual !== currentUser.pass){ alert('Senha atual incorreta!'); return; }
-  if(nova !== conf){ alert('As senhas n\u00e3o coincidem!'); return; }
-  if(!senhaForte(nova)){ alert('A nova senha n\u00e3o atende aos requisitos!'); return; }
+function salvarMeusDados(){
+  var email = document.getElementById('mcEmail').value.trim().toLowerCase();
+  var telefone = document.getElementById('mcTelefone').value.trim();
+  if(!email){ alert('Informe seu e-mail!'); return; }
+  var reEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if(!reEmail.test(email)){ alert('E-mail inválido!'); return; }
+  // Verificar duplicidade de e-mail
+  for(var j=0;j<usuarios.length;j++){
+    if(usuarios[j].login!==currentUser.login && usuarios[j].email && usuarios[j].email.toLowerCase()===email){
+      alert('Este e-mail já está em uso por outro usuário!'); return;
+    }
+  }
+  var antes = 'email:'+(currentUser.email||'—')+' tel:'+(currentUser.telefone||'—');
   for(var i=0;i<usuarios.length;i++){
     if(usuarios[i].login===currentUser.login){
-      usuarios[i].pass=nova; usuarios[i].mustChange=false; delete usuarios[i].passSetAt;
-      currentUser = usuarios[i]; break;
+      usuarios[i].email=email; usuarios[i].telefone=telefone;
+      currentUser=usuarios[i]; break;
     }
   }
   saveUsers();
-  document.getElementById('mcSenhaAtual').value='';
-  document.getElementById('mcNovaSenha').value='';
-  document.getElementById('mcConfSenha').value='';
-  alert('Senha redefinida com sucesso!');
+  registrarLogAcesso(currentUser.name, 'ALTEROU PRÓPRIOS DADOS ['+antes+' -> email:'+email+' tel:'+(telefone||'—')+']');
+  alert('Dados salvos! Você receberá o código de acesso nesses contatos.');
 }
 
-function salvarEmailAdmin(){
-  var email = document.getElementById('mcEmailAdmin').value.trim();
-  if(!email || email.indexOf('@')<0){ alert('E-mail inv\u00e1lido!'); return; }
-  LS('hml_arp_admin_email', email);
-  alert('E-mail de recupera\u00e7\u00e3o salvo!');
+function carregarMeusDados(){
+  var el1=document.getElementById('mcEmail'); if(el1) el1.value=currentUser.email||'';
+  var el2=document.getElementById('mcTelefone'); if(el2) el2.value=currentUser.telefone||'';
+  // Último acesso
+  var box=document.getElementById('mcUltimoAcesso');
+  if(box){
+    try{
+      var ua=JSON.parse(localStorage.getItem('hml_arp_ultimo_acesso')||'null');
+      if(ua && ua.email===(currentUser.email||'').toLowerCase()){
+        box.innerHTML='Data/hora: <b>'+(ua.em||'—')+'</b>'+(ua.ip?'<br>IP: <b>'+ua.ip+'</b>':'');
+      } else { box.textContent='Nenhum registro neste dispositivo.'; }
+    }catch(e){ box.textContent='—'; }
+  }
 }
 
 function cadastrarLocal(){
