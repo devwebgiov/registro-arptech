@@ -197,8 +197,9 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
   .lcard { padding:32px 24px 28px; }
   .login-top-logo { margin-bottom:28px; }
   .login-top-logo .logo-mark { font-size:28px; }
-  .login-modal,.sol-modal { max-height:100dvh; max-height:100vh; border-radius:12px; }
+  .login-modal,.sol-modal,.transf-modal { max-height:100dvh; max-height:100vh; border-radius:12px; }
   .login-modal-body,.sol-modal-body { padding:20px; }
+  .transf-modal-body { padding:18px; max-height:82vh; }
   .login-modal-footer,.sol-modal-footer { padding:4px 20px 20px; }
   .form-input { font-size:16px; }
   .lcard-btn,.btn-enviar-sol,.btn-login { font-size:15px; }
@@ -379,6 +380,35 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
       <div style="display:flex;gap:10px;margin-top:6px;">
         <button class="btn-primary" style="flex:1;" onclick="confirmarTransferencia()">Confirmar Transferência</button>
         <button class="btn-secondary" style="flex:1;" onclick="fecharTransfModal()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR USUÁRIO -->
+<div class="transf-modal-overlay" id="editUserOverlay" onclick="if(event.target===this)fecharEditUser()">
+  <div class="transf-modal" style="max-width:520px;">
+    <div class="transf-modal-header">
+      <h3>✏️ Editar Usuário</h3>
+      <button class="transf-modal-close" onclick="fecharEditUser()">&times;</button>
+    </div>
+    <div class="transf-modal-body" style="max-height:75vh;overflow-y:auto;">
+      <input type="hidden" id="euLogin">
+      <div class="form-group"><label class="form-label">Nome completo</label><input type="text" id="euNome" class="form-input"></div>
+      <div class="form-group"><label class="form-label">Login <span style="font-weight:400;color:#999;">(interno)</span></label><input type="text" id="euLoginView" class="form-input" disabled style="background:#f0f0f0;color:#888;"></div>
+      <div class="form-group"><label class="form-label">E-mail</label><input type="email" id="euEmail" class="form-input" placeholder="usuario@email.com" autocapitalize="none"></div>
+      <div class="form-group"><label class="form-label">CPF <span style="font-weight:400;color:#999;">(opcional)</span></label><input type="text" id="euCpf" class="form-input" placeholder="000.000.000-00" inputmode="numeric"></div>
+      <div class="form-group"><label class="form-label">WhatsApp</label><input type="tel" id="euTelefone" class="form-input" placeholder="(97) 99999-9999"></div>
+      <div class="form-group"><label class="form-label">Perfil / Órgão</label><select id="euPerfil" class="form-input"></select></div>
+      <div class="form-group"><label class="form-label">Status</label>
+        <div class="toggle-group">
+          <button type="button" id="euStatusAtivo" class="toggle-btn sel" onclick="euSetStatus(true)">✔ Ativo</button>
+          <button type="button" id="euStatusInativo" class="toggle-btn" onclick="euSetStatus(false)">✕ Inativo</button>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:18px;">
+        <button class="btn-primary" style="flex:1;" onclick="salvarEdicaoUsuario()">Salvar alterações</button>
+        <button class="btn-secondary" style="flex:1;" onclick="fecharEditUser()">Cancelar</button>
       </div>
     </div>
   </div>
@@ -807,7 +837,7 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
           <div class="card-title">Usu&aacute;rios Cadastrados</div>
           <div style="overflow-x:auto;">
             <table class="users">
-              <thead><tr><th>Nome</th><th>Login</th><th>E-mail</th><th>Perfil</th><th>Status senha</th><th>Ações</th></tr></thead>
+              <thead><tr><th>Nome</th><th>Login</th><th>E-mail</th><th>Perfil</th><th>Status</th><th>Ações</th></tr></thead>
               <tbody id="usersTable"></tbody>
             </table>
           </div>
@@ -2590,47 +2620,90 @@ function statusSenha(u){
 
 function renderUsuarios(){
   fillPerfis();
-  var opts = orgaos.slice(); opts.push('ADMIN');
   var html = usuarios.map(function(u){
-    var sel = '<select class="form-input" style="padding:6px 8px;font-size:12px;" onchange="mudarPerfil(\''+u.login+'\',this.value)">'+
-      opts.map(function(o){ return '<option value="'+o+'"'+(u.profile===o?' selected':'')+'>'+o+'</option>'; }).join('')+'</select>';
     var emailTxt = u.email ? u.email : '<span style="color:#bbb;">—</span>';
-    return '<tr><td>'+u.name+'</td><td>'+u.login+'</td><td style="font-size:12px;">'+emailTxt+'</td><td>'+sel+'</td><td>'+statusSenha(u)+'</td>'+
+    var statusTxt = (u.ativo === false)
+      ? '<span style="color:#b91c1c;font-weight:600;">● Inativo</span>'
+      : '<span style="color:#14693c;font-weight:600;">● Ativo</span>';
+    return '<tr><td>'+u.name+'</td><td>'+u.login+'</td><td style="font-size:12px;">'+emailTxt+'</td>'+
+      '<td><span class="badge-setor">'+u.profile+'</span></td><td>'+statusTxt+'</td>'+
       '<td style="white-space:nowrap;">'+
-      '<button class="btn-small" style="background:#0d3b5c;color:#fff;margin-right:6px;" onclick="editarContatoUsuario(\''+u.login+'\')">Editar contato</button>'+
-      '<button class="btn-small" style="background:var(--cor-secundaria);color:#fff;margin-right:6px;" onclick="redefinirSenha(\''+u.login+'\')">Redefinir senha</button>'+
+      '<button class="btn-small" style="background:#0d3b5c;color:#fff;margin-right:6px;" onclick="editarContatoUsuario(\''+u.login+'\')">✏️ Editar</button>'+
       '<button class="btn-danger" onclick="excluirUsuario(\''+u.login+'\')">Excluir</button></td></tr>';
   }).join('');
   document.getElementById('usersTable').innerHTML = html;
 }
+
+var _euStatus = true;
 
 function editarContatoUsuario(loginU){
   var u = null;
   for(var i=0;i<usuarios.length;i++){ if(usuarios[i].login===loginU){ u=usuarios[i]; break; } }
   if(!u) return;
 
-  var novoEmail = prompt('E-mail de "'+u.name+'":', u.email||'');
-  if(novoEmail===null) return; // cancelou
-  novoEmail = novoEmail.trim().toLowerCase();
-  if(novoEmail){
-    var reEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if(!reEmail.test(novoEmail)){ alert('E-mail inválido!'); return; }
-    for(var j=0;j<usuarios.length;j++){ if(usuarios[j].login!==loginU && usuarios[j].email && usuarios[j].email.toLowerCase()===novoEmail){ alert('E-mail já usado por outro usuário!'); return; } }
-  }
-  var novoCpf = prompt('CPF de "'+u.name+'" (só números):', u.cpf||'');
-  if(novoCpf===null) return;
-  novoCpf = novoCpf.replace(/\D/g,'');
-  if(novoCpf && novoCpf.length!==11){ alert('CPF deve ter 11 dígitos!'); return; }
-  var novoTel = prompt('WhatsApp de "'+u.name+'":', u.telefone||'');
-  if(novoTel===null) return;
+  // Preencher campos
+  document.getElementById('euLogin').value = u.login;
+  document.getElementById('euLoginView').value = u.login;
+  document.getElementById('euNome').value = u.name || '';
+  document.getElementById('euEmail').value = u.email || '';
+  document.getElementById('euCpf').value = u.cpf || '';
+  document.getElementById('euTelefone').value = u.telefone || '';
 
-  var antes = 'email:'+(u.email||'—')+' cpf:'+(u.cpf||'—')+' tel:'+(u.telefone||'—');
-  u.email = novoEmail; u.cpf = novoCpf; u.telefone = novoTel.trim();
-  var depois = 'email:'+(u.email||'—')+' cpf:'+(u.cpf||'—')+' tel:'+(u.telefone||'—');
+  // Popular select de perfil (mesmos valores do cadastro)
+  var opts = orgaos.slice(); opts.push('ADMIN');
+  var sel = document.getElementById('euPerfil');
+  sel.innerHTML = opts.map(function(o){ return '<option value="'+o+'"'+(u.profile===o?' selected':'')+'>'+o+'</option>'; }).join('');
+
+  // Status (default ativo se não definido)
+  euSetStatus(u.ativo !== false);
+
+  document.getElementById('editUserOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function euSetStatus(ativo){
+  _euStatus = ativo;
+  document.getElementById('euStatusAtivo').classList.toggle('sel', ativo);
+  document.getElementById('euStatusInativo').classList.toggle('sel', !ativo);
+}
+
+function fecharEditUser(){
+  document.getElementById('editUserOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function salvarEdicaoUsuario(){
+  var loginU = document.getElementById('euLogin').value;
+  var u = null;
+  for(var i=0;i<usuarios.length;i++){ if(usuarios[i].login===loginU){ u=usuarios[i]; break; } }
+  if(!u) return;
+
+  var nome = document.getElementById('euNome').value.trim();
+  var email = document.getElementById('euEmail').value.trim().toLowerCase();
+  var cpf = document.getElementById('euCpf').value.replace(/\D/g,'');
+  var telefone = document.getElementById('euTelefone').value.trim();
+  var perfil = document.getElementById('euPerfil').value;
+
+  if(!nome){ alert('Informe o nome!'); return; }
+  if(!email){ alert('Informe o e-mail!'); return; }
+  var reEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if(!reEmail.test(email)){ alert('E-mail inválido!'); return; }
+  for(var j=0;j<usuarios.length;j++){
+    if(usuarios[j].login!==loginU && usuarios[j].email && usuarios[j].email.toLowerCase()===email){ alert('E-mail já usado por outro usuário!'); return; }
+  }
+  if(cpf && cpf.length!==11){ alert('CPF deve ter 11 dígitos!'); return; }
+
+  var antes = 'nome:'+u.name+' email:'+(u.email||'—')+' cpf:'+(u.cpf||'—')+' tel:'+(u.telefone||'—')+' perfil:'+u.profile+' ativo:'+(u.ativo!==false);
+  u.name = nome; u.email = email; u.cpf = cpf; u.telefone = telefone; u.profile = perfil; u.ativo = _euStatus;
+  var depois = 'nome:'+u.name+' email:'+u.email+' cpf:'+(u.cpf||'—')+' tel:'+(u.telefone||'—')+' perfil:'+u.profile+' ativo:'+u.ativo;
+
   saveUsers();
-  registrarLogAcesso(currentUser.name, 'EDITOU CONTATO de '+u.name+' ['+antes+' -> '+depois+']');
+  registrarLogAcesso(currentUser.name, 'EDITOU USUÁRIO '+u.name+' ['+antes+' -> '+depois+']');
+  // Se editou o próprio usuário logado, atualizar currentUser
+  if(currentUser.login===loginU){ currentUser = u; }
+  fecharEditUser();
   renderUsuarios();
-  alert('Contato atualizado e registrado no log de auditoria.');
+  mostrarNotificacao('Dados atualizados com sucesso.');
 }
 
 function salvarMeusDados(){
