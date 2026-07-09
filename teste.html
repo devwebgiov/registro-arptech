@@ -27,15 +27,29 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Roboto',sans-ser
 .login-top-logo .logo-sub { font-size:11px; color:rgba(255,255,255,0.45); letter-spacing:3px; margin-top:6px; text-transform:uppercase; }
 .login-cards { display:flex; gap:24px; width:100%; max-width:760px; align-items:stretch; }
 .lcard {
+  position:relative; overflow:hidden;
   flex:1; min-width:0;
   background:rgba(255,255,255,0.09);
   border:1px solid rgba(255,255,255,0.16);
   border-radius:20px; padding:40px 32px 32px;
   display:flex; flex-direction:column; align-items:center; text-align:center;
-  box-shadow:0 6px 40px rgba(0,0,0,0.32);
-  transition:box-shadow .2s, transform .2s;
+  /* Sombra colorida sutil no estado normal (verde/azul ARP TECH) */
+  box-shadow:0 6px 40px rgba(0,0,0,0.32), 0 0 0 1px rgba(1,101,53,0.15), 0 8px 30px rgba(26,82,118,0.12);
+  transition:transform .3s ease, box-shadow .3s ease;
 }
-.lcard:hover { box-shadow:0 10px 52px rgba(0,0,0,0.42); transform:translateY(-2px); }
+/* Camada do brilho holográfico (verde -> ciano -> azul, identidade ARP TECH) */
+.lcard::before {
+  content:""; position:absolute; inset:0;
+  background:linear-gradient(135deg, rgba(1,101,53,0.28), rgba(0,200,180,0.22), rgba(26,82,118,0.28));
+  opacity:0; transition:opacity .3s ease; z-index:0; pointer-events:none;
+}
+/* Garante que o conteúdo do card fique acima do brilho */
+.lcard > * { position:relative; z-index:1; }
+.lcard:hover {
+  transform:translateY(-4px) scale(1.03);
+  box-shadow:0 16px 60px rgba(0,0,0,0.45), 0 0 28px rgba(0,200,180,0.45), 0 0 40px rgba(1,101,53,0.25);
+}
+.lcard:hover::before { opacity:1; }
 .lcard-icon {
   width:76px; height:76px; border-radius:50%;
   background:rgba(255,255,255,0.11); border:2px solid rgba(255,255,255,0.2);
