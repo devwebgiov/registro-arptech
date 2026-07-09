@@ -25,31 +25,74 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Roboto',sans-ser
 .login-top-logo .logo-mark { font-size:36px; font-weight:800; color:#fff; letter-spacing:4px; }
 .login-top-logo .logo-mark img { max-height:56px; }
 .login-top-logo .logo-sub { font-size:11px; color:rgba(255,255,255,0.45); letter-spacing:3px; margin-top:6px; text-transform:uppercase; }
-.login-cards { display:flex; gap:24px; width:100%; max-width:760px; align-items:stretch; }
+/* Container com perspectiva 3D para os cards levitarem com profundidade */
+.login-cards { display:flex; gap:24px; width:100%; max-width:760px; align-items:stretch; perspective:1400px; }
 .lcard {
-  position:relative; overflow:hidden;
+  position:relative;
   flex:1; min-width:0;
-  background:rgba(255,255,255,0.09);
-  border:1px solid rgba(255,255,255,0.16);
   border-radius:20px; padding:40px 32px 32px;
   display:flex; flex-direction:column; align-items:center; text-align:center;
-  /* Sombra colorida sutil no estado normal (verde/azul ARP TECH) */
-  box-shadow:0 6px 40px rgba(0,0,0,0.32), 0 0 0 1px rgba(1,101,53,0.15), 0 8px 30px rgba(26,82,118,0.12);
-  transition:transform .3s ease, box-shadow .3s ease;
+  transform-style:preserve-3d;
+  transform:rotateX(5deg) translateZ(0);
+  transition:transform .45s cubic-bezier(.2,.7,.2,1), box-shadow .45s ease;
+  will-change:transform;
+  overflow:hidden;
 }
-/* Camada do brilho holográfico (verde -> ciano -> azul, identidade ARP TECH) */
-.lcard::before {
-  content:""; position:absolute; inset:0;
-  background:linear-gradient(135deg, rgba(1,101,53,0.28), rgba(0,200,180,0.22), rgba(26,82,118,0.28));
+/* CARD ESCURO (identidade do cartão de visita preto ARP TECH) */
+.lcard.lcard-dark {
+  background:linear-gradient(160deg, #16181a 0%, #0d0e10 100%);
+  border:1px solid rgba(255,255,255,0.08);
+  box-shadow:0 6px 40px rgba(0,0,0,0.45), 0 0 0 1px rgba(1,101,53,0.12), 0 8px 30px rgba(0,0,0,0.3);
+}
+/* CARD CLARO (identidade do cartão branco/cinza geométrico) */
+.lcard.lcard-clean {
+  background:#f4f6f7;
+  border:1px solid rgba(0,0,0,0.06);
+  box-shadow:0 6px 40px rgba(0,0,0,0.35), 0 0 0 1px rgba(26,82,118,0.12), 0 8px 30px rgba(26,82,118,0.12);
+}
+/* Recorte geométrico cinza do cartão claro (canto superior direito) */
+.lcard.lcard-clean::before {
+  content:""; position:absolute; top:0; right:0; width:55%; height:100%;
+  background:
+    linear-gradient(135deg, transparent 45%, rgba(180,190,196,0.55) 45%, rgba(180,190,196,0.55) 58%, transparent 58%),
+    linear-gradient(115deg, transparent 60%, rgba(200,208,213,0.45) 60%);
+  opacity:0; transition:opacity .4s ease; z-index:0; pointer-events:none;
+}
+/* Brilho holográfico do card escuro */
+.lcard.lcard-dark::before {
+  content:""; position:absolute; inset:0; border-radius:20px;
+  background:linear-gradient(135deg, rgba(1,101,53,0.30), rgba(0,200,180,0.20), rgba(26,82,118,0.28));
   opacity:0; transition:opacity .3s ease; z-index:0; pointer-events:none;
 }
-/* Garante que o conteúdo do card fique acima do brilho */
-.lcard > * { position:relative; z-index:1; }
+/* Face lateral 3D (profundidade/parede do bloco) */
+.lcard::after {
+  content:""; position:absolute; left:0; right:0; bottom:-1px; height:14px;
+  border-radius:0 0 20px 20px;
+  transform:translateZ(-14px) translateY(6px);
+  opacity:0; transition:opacity .45s ease;
+  z-index:-1; pointer-events:none;
+}
+.lcard.lcard-dark::after { background:linear-gradient(180deg, rgba(1,60,32,0.9), rgba(0,0,0,0.8)); }
+.lcard.lcard-clean::after { background:linear-gradient(180deg, rgba(150,165,175,0.8), rgba(110,125,135,0.7)); }
+/* Conteúdo acima do brilho, herdando leve profundidade */
+.lcard > * { position:relative; z-index:1; transform:translateZ(20px); }
 .lcard:hover {
-  transform:translateY(-4px) scale(1.03);
-  box-shadow:0 16px 60px rgba(0,0,0,0.45), 0 0 28px rgba(0,200,180,0.45), 0 0 40px rgba(1,101,53,0.25);
+  transform:rotateX(2deg) translateY(-10px) translateZ(40px) scale(1.03);
+}
+.lcard.lcard-dark:hover {
+  box-shadow:0 30px 70px rgba(0,0,0,0.6), 0 0 32px rgba(0,200,180,0.4), 0 0 48px rgba(1,101,53,0.28);
+}
+.lcard.lcard-clean:hover {
+  box-shadow:0 30px 70px rgba(20,40,60,0.35), 0 0 30px rgba(26,82,118,0.3), 0 0 44px rgba(180,190,196,0.4);
 }
 .lcard:hover::before { opacity:1; }
+.lcard:hover::after { opacity:1; }
+/* Cores de texto por variante */
+.lcard.lcard-clean .lcard-title { color:#1a2b3c; }
+.lcard.lcard-clean .lcard-sub { color:rgba(30,50,70,0.72); }
+.lcard.lcard-clean .lcard-note { color:rgba(30,50,70,0.5); }
+.lcard.lcard-clean .lcard-icon { background:rgba(26,82,118,0.08); border:2px solid rgba(26,82,118,0.2); }
+.lcard.lcard-clean .lcard-note svg path { stroke:rgba(30,50,70,0.5); }
 .lcard-icon {
   width:76px; height:76px; border-radius:50%;
   background:rgba(255,255,255,0.11); border:2px solid rgba(255,255,255,0.2);
@@ -207,7 +250,10 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
 
 /* ─── RESPONSIVIDADE ─────────────────────────────── */
 @media (max-width:680px){
-  .login-cards { flex-direction:column; max-width:420px; }
+  .login-cards { flex-direction:column; max-width:420px; perspective:none; }
+  .lcard { transform:none; }
+  .lcard > * { transform:none; }
+  .lcard:hover { transform:translateY(-6px) scale(1.02); }
   .lcard { padding:32px 24px 28px; }
   .login-top-logo { margin-bottom:28px; }
   .login-top-logo .logo-mark { font-size:28px; }
@@ -249,7 +295,7 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
   <div class="login-cards">
 
     <!-- CARD 1: Acesso interno -->
-    <div class="lcard">
+    <div class="lcard lcard-dark">
       <div class="lcard-icon">
         <svg viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
           <rect x="6" y="15" width="22" height="16" rx="3" stroke="rgba(255,255,255,0.85)" stroke-width="2"/>
@@ -264,14 +310,14 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
     </div>
 
     <!-- CARD 2: Solicitação externa -->
-    <div class="lcard">
+    <div class="lcard lcard-clean">
       <div class="lcard-icon">
         <svg viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect x="5" y="4" width="20" height="26" rx="3" stroke="rgba(255,255,255,0.85)" stroke-width="2"/>
-          <line x1="9" y1="11" x2="21" y2="11" stroke="rgba(255,255,255,0.85)" stroke-width="1.8" stroke-linecap="round"/>
-          <line x1="9" y1="16" x2="21" y2="16" stroke="rgba(255,255,255,0.85)" stroke-width="1.8" stroke-linecap="round"/>
-          <line x1="9" y1="21" x2="16" y2="21" stroke="rgba(255,255,255,0.85)" stroke-width="1.8" stroke-linecap="round"/>
-          <circle cx="26" cy="26" r="6" fill="#016535" stroke="rgba(255,255,255,0.7)" stroke-width="1.5"/>
+          <rect x="5" y="4" width="20" height="26" rx="3" stroke="#1a5276" stroke-width="2"/>
+          <line x1="9" y1="11" x2="21" y2="11" stroke="#1a5276" stroke-width="1.8" stroke-linecap="round"/>
+          <line x1="9" y1="16" x2="21" y2="16" stroke="#1a5276" stroke-width="1.8" stroke-linecap="round"/>
+          <line x1="9" y1="21" x2="16" y2="21" stroke="#1a5276" stroke-width="1.8" stroke-linecap="round"/>
+          <circle cx="26" cy="26" r="6" fill="#016535" stroke="#fff" stroke-width="1.5"/>
           <line x1="26" y1="23.5" x2="26" y2="28.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/>
           <line x1="23.5" y1="26" x2="28.5" y2="26" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/>
         </svg>
