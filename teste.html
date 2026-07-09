@@ -963,14 +963,10 @@ var relAccess = JSON.parse(localStorage.getItem('hml_arp_rel_access') || '[]');
 function saveRelAccess(){ localStorage.setItem('hml_arp_rel_access', JSON.stringify(relAccess)); }
 function temRelatorio(){ return currentUser.profile==='ADMIN' || relAccess.indexOf(currentUser.login)>=0; }
 
-var DEFAULT_USERS = [
-  {login:'ayrton',   name:'Ayrton',        pass:'ayrton123',    profile:'SEMED',   email:'', cpf:'', telefone:'', mustChange:false},
-  {login:'giovanna', name:'Giovanna',      pass:'giovanna123',  profile:'SEMED',   email:'', cpf:'', telefone:'', mustChange:false},
-  {login:'neudson',  name:'Neudson',       pass:'neudson123',   profile:'ARPTECH', email:'', cpf:'', telefone:'', mustChange:false},
-  {login:'rodrigo',  name:'Rodrigo',       pass:'rodrigo123',   profile:'ARPTECH', email:'', cpf:'', telefone:'', mustChange:false},
-  {login:'admin',    name:'Administrador', pass:'admin@arptech',profile:'ADMIN',   email:'', cpf:'', telefone:'', mustChange:false},
-  {login:'fiscal',   name:'Fiscal SEMED',  pass:'Fiscal@2026!', profile:'FISCAL',  email:'', cpf:'', telefone:'', mustChange:true}
-];
+// Lista inicial mínima. Os usuários reais (com e-mail) ficam na nuvem, que exige
+// autenticação para ler. Não embutimos senhas nem e-mails aqui por segurança —
+// o login é por código enviado ao e-mail (OTP), validado no servidor.
+var DEFAULT_USERS = [];
 var usuarios = JSON.parse(localStorage.getItem('hml_arp_users') || 'null') || DEFAULT_USERS;
 var orgaos = JSON.parse(localStorage.getItem('hml_arp_orgaos') || 'null') || ['SEMED','ARPTECH','FISCAL'];
 var empresa = JSON.parse(localStorage.getItem('hml_arp_empresa') || 'null') || {cnpj:'', ie:'', email:'', tel:'', end:''};
