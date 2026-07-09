@@ -1046,32 +1046,7 @@ function senhaExpirada(u){
 
 function toggleSidebar(){ document.getElementById('sidebar').classList.toggle('open'); }
 
-function esqueciSenha(){
-  var u = (document.getElementById('loginUser').value||'').trim().toLowerCase();
-  if(u === 'admin'){
-    var email = localStorage.getItem('hml_arp_admin_email') || '';
-    if(!email){ alert('Nenhum e-mail de recupera\u00e7\u00e3o cadastrado. Cadastre em Minha Conta ao acessar o sistema.'); return; }
-    var codigo = String(Math.floor(100000 + Math.random()*900000));
-    LS('arp_reset_code', codigo);
-    LS('arp_reset_time', String(Date.now()));
-    window.location.href = 'mailto:'+email+'?subject=Redefini\u00e7\u00e3o de senha - ARP TECH&body=Seu c\u00f3digo: '+codigo+'%0AExpira em 15 minutos.';
-    setTimeout(function(){
-      var entrado = prompt('Um c\u00f3digo foi enviado para '+email+'.\n\nDigite o c\u00f3digo:');
-      if(!entrado) return;
-      if(Date.now() - parseInt(localStorage.getItem('arp_reset_time')||'0') > 900000){ alert('C\u00f3digo expirado.'); return; }
-      if(entrado.trim() !== localStorage.getItem('arp_reset_code')){ alert('C\u00f3digo incorreto!'); return; }
-      var nova = prompt('Nova senha (m\u00edn. 8, mai\u00fascula, min\u00fascula, n\u00famero e especial):');
-      if(!nova) return;
-      if(!senhaForte(nova)){ alert('Senha fraca!'); return; }
-      for(var i=0;i<usuarios.length;i++){ if(usuarios[i].login==='admin'){ usuarios[i].pass=nova; usuarios[i].mustChange=false; break; } }
-      saveUsers();
-      localStorage.removeItem('arp_reset_code');
-      alert('Senha redefinida!');
-    }, 800);
-  } else {
-    alert('Para redefinir sua senha, entre em contato com o Administrador do sistema.');
-  }
-}
+// (esqueciSenha removida — sistema usa OTP por e-mail, sem senha)
 
 // ===== SESSAO: reset completo de UI =====
 function resetUI(){
@@ -1118,7 +1093,7 @@ function recuperarEmail(){
   var soDigitos = v.replace(/\D/g,'');
   var resDiv = document.getElementById('recEmailResultado');
   if(soDigitos.length < 10){
-    alert('Informe um CPF (11 dígitos) ou WhatsApp válido.');
+    uiAlert('Informe um CPF (11 dígitos) ou WhatsApp válido.');
     return;
   }
   resDiv.style.display='block';
@@ -1176,7 +1151,7 @@ function resetarTimeoutInatividade(){
   if(_timeoutInatividade) clearTimeout(_timeoutInatividade);
   _timeoutInatividade = setTimeout(function(){
     if(currentUser){
-      alert('Sessão encerrada por inatividade. Faça login novamente.');
+      uiAlert('Sessão encerrada por inatividade. Faça login novamente.');
       logout();
     }
   }, INATIVIDADE_MIN * 60000);
@@ -1553,11 +1528,13 @@ function editarRegistro(id){
 }
 
 function excluirRegistro(id){
-  if(!confirm('Excluir este registro? Esta a\u00e7\u00e3o n\u00e3o pode ser desfeita.')) return;
-  records = records.filter(function(r){ return r.id!==id; });
-  LS('hml_arp_rec', JSON.stringify(records));
-  loadDashboard();
-  renderListTab();
+  uiConfirm('Excluir este registro? Esta a\u00e7\u00e3o n\u00e3o pode ser desfeita.').then(function(ok){
+    if(!ok) return;
+      records = records.filter(function(r){ return r.id!==id; });
+      LS('hml_arp_rec', JSON.stringify(records));
+      loadDashboard();
+      renderListTab();
+  });
 }
 
 function pagButtons(total, page, fnName){
@@ -1627,17 +1604,17 @@ function salvarRegistro(){
   var resp;
   if(currentUser.profile==='ADMIN'){
     resp = document.getElementById('newRegRespSel').value;
-    if(!resp){ alert('Selecione o respons\u00e1vel!'); return; }
+    if(!resp){ uiAlert('Selecione o respons\u00e1vel!'); return; }
   } else { resp = currentUser.name; }
   var locIdx = document.getElementById('newRegLocal').value;
   if(locIdx==='' && document.getElementById('newRegLocalBusca').value.trim()){
-    alert('Selecione um local da lista de sugestões!'); return;
+    uiAlert('Selecione um local da lista de sugestões!'); return;
   }
   var type = document.getElementById('newRegType').value;
   var desc = document.getElementById('newRegDesc').value.trim();
   var dataV = document.getElementById('newRegData').value;
   var horaV = document.getElementById('newRegHora').value;
-  if(locIdx==='' || locIdx===null || !desc || !dataV || !horaV){ alert('Preencha local, data, hor\u00e1rio e descri\u00e7\u00e3o!'); return; }
+  if(locIdx==='' || locIdx===null || !desc || !dataV || !horaV){ uiAlert('Preencha local, data, hor\u00e1rio e descri\u00e7\u00e3o!'); return; }
   var loc = locais[parseInt(locIdx)];
   if(!type){ type = loc.tipo; }
   var pd = dataV.split('-');
@@ -1651,14 +1628,14 @@ function salvarRegistro(){
     }
     EDIT_REG_ID=null;
     LS('hml_arp_rec', JSON.stringify(records));
-    alert('Registro atualizado!');
+    uiAlert('Registro atualizado!');
   } else {
     records.push({ id:Date.now(), resp:resp, local:loc.nome, locType:type, desc:desc,
       date: pd[2]+'/'+pd[1]+'/'+pd[0], start: horaV,
     status: (document.getElementById('newRegStatus')||{value:'Concluido'}).value
   });
     LS('hml_arp_rec', JSON.stringify(records));
-    alert('Registro salvo!');
+    uiAlert('Registro salvo!');
   }
   document.getElementById('newRegLocalBusca').value='';
   fillLocais();
@@ -1708,13 +1685,13 @@ function abrirOS(){
   var tecnico;
   if(currentUser.profile==='ADMIN'){
     tecnico = document.getElementById('osTecSel').value;
-    if(!tecnico){ alert('Selecione o t\u00e9cnico!'); return; }
+    if(!tecnico){ uiAlert('Selecione o t\u00e9cnico!'); return; }
   } else { tecnico = currentUser.name; }
   var servico = document.getElementById('osServico').value;
-  if(!servico){ alert('Selecione o servi\u00e7o!'); return; }
+  if(!servico){ uiAlert('Selecione o servi\u00e7o!'); return; }
   if(servico==='outro'){
     var outro = document.getElementById('osServicoOutro').value.trim();
-    if(!outro){ alert('Descreva o servi\u00e7o!'); return; }
+    if(!outro){ uiAlert('Descreva o servi\u00e7o!'); return; }
     servico = outro;
   }
   var cliente = document.getElementById('osCliente').value.trim();
@@ -1723,14 +1700,14 @@ function abrirOS(){
   var email = document.getElementById('osEmail').value.trim();
   var desc = document.getElementById('osDesc').value.trim();
   var valor = parseFloat(document.getElementById('osValor').value||'0');
-  if(!cliente || !tel || !desc){ alert('Preencha cliente, telefone e descri\u00e7\u00e3o!'); return; }
+  if(!cliente || !tel || !desc){ uiAlert('Preencha cliente, telefone e descri\u00e7\u00e3o!'); return; }
   var os = { id:'OS-'+Date.now(), cliente:cliente, doc:doc, telefone:tel, email:email, desc:desc,
     servico:servico, tipo:OS_TIPO, materiais:[],
     valor: isNaN(valor)?0:valor, status:'Em Aberto',
     dataCriacao:new Date().toLocaleDateString('pt-BR'), tecnico: tecnico };
   osOrdens.push(os);
   LS('hml_arp_os', JSON.stringify(osOrdens));
-  alert('OS '+os.id+' aberta com sucesso!');
+  uiAlert('OS '+os.id+' aberta com sucesso!');
   ['osCliente','osDoc','osTelefone','osEmail','osDesc','osValor','osServicoOutro'].forEach(function(id){ document.getElementById(id).value=''; });
   setOsTipo('interno');
 }
@@ -1810,10 +1787,12 @@ function atualizarPendentes(){
 
 function assumirAtendimento(idx, tel){
   var nome = currentUser ? currentUser.name : 'Tecnico';
-  if(!confirm('Assumir atendimento de '+tel+'?\nO cliente sera notificado.')) return;
-  // Marca como lido e notifica via Apps Script
-  marcarLido(idx);
-  alert('Atendimento assumido!\n\nO cliente '+tel+' sera notificado pelo WhatsApp que '+nome+' esta em atendimento.\n\nEntre em contato diretamente pelo WhatsApp para continuar.');
+  uiConfirm('Assumir atendimento de '+tel+'?\nO cliente sera notificado.').then(function(ok){
+    if(!ok) return;
+      // Marca como lido e notifica via Apps Script
+      marcarLido(idx);
+      uiAlert('Atendimento assumido!\n\nO cliente '+tel+' sera notificado pelo WhatsApp que '+nome+' esta em atendimento.\n\nEntre em contato diretamente pelo WhatsApp para continuar.');
+  });
 }
 
 function marcarLido(idx){
@@ -1848,7 +1827,7 @@ function salvarCadClienteOS(){
   var end   = document.getElementById('cadCliEnd').value.trim();
   var emp   = document.getElementById('cadCliEmp').value.trim();
 
-  if(!nome){ alert('Informe o nome do cliente!'); return; }
+  if(!nome){ uiAlert('Informe o nome do cliente!'); return; }
 
   // Verificar se ja existe por telefone
   var usuarios_local = JSON.parse(localStorage.getItem('hml_arp_clientes') || '[]');
@@ -1883,7 +1862,7 @@ function salvarCadClienteOS(){
 
   fecharCadClienteOS();
   renderOS('aberta'); renderOS('andamento'); renderOS('concluida');
-  alert('Cliente "'+nome+'" cadastrado e vinculado à OS '+osId+'!');
+  uiAlert('Cliente "'+nome+'" cadastrado e vinculado à OS '+osId+'!');
 }
 
 function fecharPainelObs(){
@@ -1915,7 +1894,7 @@ function renderPainelObs(o){
 function salvarNovaObs(){
   var id = document.getElementById('obsOverlay').getAttribute('data-osid');
   var texto = document.getElementById('obsTextoNovo').value.trim();
-  if(!texto){ alert('Digite uma observação!'); return; }
+  if(!texto){ uiAlert('Digite uma observação!'); return; }
   var o=null;
   for(var i=0;i<osOrdens.length;i++){ if(osOrdens[i].id===id){ o=osOrdens[i]; break; } }
   if(!o) return;
@@ -1935,43 +1914,53 @@ function editarEntradaObs(osId, idx){
   var o=null;
   for(var i=0;i<osOrdens.length;i++){ if(osOrdens[i].id===osId){ o=osOrdens[i]; break; } }
   if(!o||!o.obsLog||!o.obsLog[idx]) return;
-  var nova = prompt('Editar observação:', o.obsLog[idx].texto);
-  if(nova===null||!nova.trim()) return;
-  var agora = new Date();
-  var dt = agora.toLocaleDateString('pt-BR')+' às '+
-    agora.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-  o.obsLog[idx].anterior = o.obsLog[idx].texto;
-  o.obsLog[idx].texto    = nova.trim();
-  o.obsLog[idx].editado  = 'Editado em '+dt+' por '+currentUser.name;
-  LS('hml_arp_os', JSON.stringify(osOrdens));
-  renderPainelObs(o);
+  uiPrompt([{id:'texto', label:'Observação', valor:o.obsLog[idx].texto, tipo:'textarea'}],
+    {titulo:'Editar observação', icone:'✏️', validar:function(r){ if(!r.texto) return 'A observação não pode ficar vazia.'; }}
+  ).then(function(res){
+    if(!res) return;
+    var agora = new Date();
+    var dt = agora.toLocaleDateString('pt-BR')+' às '+
+      agora.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+    o.obsLog[idx].anterior = o.obsLog[idx].texto;
+    o.obsLog[idx].texto    = res.texto;
+    o.obsLog[idx].editado  = 'Editado em '+dt+' por '+currentUser.name;
+    LS('hml_arp_os', JSON.stringify(osOrdens));
+    renderPainelObs(o);
+  });
 }
 
 function excluirEntradaObs(osId, idx){
-  if(!confirm('Excluir esta observação?')) return;
-  var o=null;
-  for(var i=0;i<osOrdens.length;i++){ if(osOrdens[i].id===osId){ o=osOrdens[i]; break; } }
-  if(!o) return;
-  o.obsLog.splice(idx,1);
-  LS('hml_arp_os', JSON.stringify(osOrdens));
-  renderPainelObs(o);
+  uiConfirm('Excluir esta observação?').then(function(ok){
+    if(!ok) return;
+      var o=null;
+      for(var i=0;i<osOrdens.length;i++){ if(osOrdens[i].id===osId){ o=osOrdens[i]; break; } }
+      if(!o) return;
+      o.obsLog.splice(idx,1);
+      LS('hml_arp_os', JSON.stringify(osOrdens));
+      renderPainelObs(o);
+  });
 }
 
 function addMaterialOS(id){
   var o=null;
   for(var i=0;i<osOrdens.length;i++){ if(osOrdens[i].id===id){ o=osOrdens[i]; break; } }
   if(!o) return;
-  var nome = prompt('Nome do material/equipamento:');
-  if(!nome || !nome.trim()) return;
-  var v = prompt('Valor do material (R$):', '0');
-  if(v===null) return;
-  var n = parseFloat(String(v).replace(',','.'));
-  if(isNaN(n) || n<0){ alert('Valor inv\u00e1lido!'); return; }
-  if(!o.materiais) o.materiais=[];
-  o.materiais.push({nome:nome.trim(), valor:n});
-  LS('hml_arp_os', JSON.stringify(osOrdens));
-  renderOS('aberta'); renderOS('andamento'); renderOS('concluida');
-  alert('Material adicionado!');
+  uiPrompt([
+    {id:'nome', label:'Nome do material/equipamento', tipo:'text', placeholder:'Ex: Toner, cabo de rede...'},
+    {id:'valor', label:'Valor do material (R$)', tipo:'text', valor:'0'}
+  ], {titulo:'Adicionar material', icone:'📦', validar:function(r){
+    if(!r.nome) return 'Informe o nome do material.';
+    var n = parseFloat(String(r.valor).replace(',','.'));
+    if(isNaN(n) || n<0) return 'Valor inválido.';
+  }}).then(function(res){
+    if(!res) return;
+    var n = parseFloat(String(res.valor).replace(',','.'));
+    if(!o.materiais) o.materiais=[];
+    o.materiais.push({nome:res.nome, valor:n});
+    LS('hml_arp_os', JSON.stringify(osOrdens));
+    renderOS('aberta'); renderOS('andamento'); renderOS('concluida');
+    uiAlert('Material adicionado!');
+  });
 }
 
 function setSituacao(id, val){
@@ -1984,21 +1973,26 @@ function concluirOS(id){
   for(var i=0;i<osOrdens.length;i++){ if(osOrdens[i].id===id){ o=osOrdens[i]; break; } }
   if(!o) return;
   var atual = o.valor ? o.valor.toFixed(2) : '';
-  var v = prompt('Valor final do servi\u00e7o (R$):', atual);
-  if(v===null) return;
-  var n = parseFloat(String(v).replace(',','.'));
-  if(!isNaN(n) && n>=0) o.valor = n;
-  o.status='Conclu\u00edda';
-  o.dataConclusao=new Date().toLocaleDateString('pt-BR');
-  LS('hml_arp_os', JSON.stringify(osOrdens));
-  renderOS('andamento');
+  uiPrompt([{id:'valor', label:'Valor final do serviço (R$)', tipo:'text', valor:atual}],
+    {titulo:'Concluir Ordem de Serviço', icone:'✅', okLabel:'Concluir'}
+  ).then(function(res){
+    if(!res) return;
+    var n = parseFloat(String(res.valor).replace(',','.'));
+    if(!isNaN(n) && n>=0) o.valor = n;
+    o.status='Concluída';
+    o.dataConclusao=new Date().toLocaleDateString('pt-BR');
+    LS('hml_arp_os', JSON.stringify(osOrdens));
+    renderOS('andamento');
+  });
 }
 
 function excluirOS(id){
-  if(!confirm('Excluir esta ordem de servi\u00e7o? Esta a\u00e7\u00e3o n\u00e3o pode ser desfeita.')) return;
-  osOrdens = osOrdens.filter(function(o){ return o.id!==id; });
-  LS('hml_arp_os', JSON.stringify(osOrdens));
-  renderOS('aberta'); renderOS('andamento'); renderOS('concluida');
+  uiConfirm('Excluir esta ordem de servi\u00e7o? Esta a\u00e7\u00e3o n\u00e3o pode ser desfeita.').then(function(ok){
+    if(!ok) return;
+      osOrdens = osOrdens.filter(function(o){ return o.id!==id; });
+      LS('hml_arp_os', JSON.stringify(osOrdens));
+      renderOS('aberta'); renderOS('andamento'); renderOS('concluida');
+  });
 }
 
 function osCard(o, acoes){
@@ -2143,7 +2137,7 @@ function fillNfOs(){
 
 function emitirNF(){
   var osId = document.getElementById('nfOsSel').value;
-  if(!osId){ alert('Selecione uma OS!'); return; }
+  if(!osId){ uiAlert('Selecione uma OS!'); return; }
   var o = null;
   for(var i=0;i<osOrdens.length;i++){ if(osOrdens[i].id===osId){ o=osOrdens[i]; break; } }
   if(!o) return;
@@ -2160,7 +2154,7 @@ function emitirNF(){
   notas.push(nf);
   saveNotas();
   renderNotas();
-  alert('Nota n\u00ba '+nf.numero+' emitida!');
+  uiAlert('Nota n\u00ba '+nf.numero+' emitida!');
 }
 
 function renderNotas(){
@@ -2199,37 +2193,39 @@ function renderNotas(){
 function editarNF(num){
   var n = getNf(num);
   if(!n) return;
-  var cliente = prompt('Cliente:', n.cliente);
-  if(cliente===null) return;
-  var doc = prompt('CPF/CNPJ:', n.doc||'');
-  if(doc===null) return;
-  var tel = prompt('Telefone:', n.telefone||'');
-  if(tel===null) return;
-  var email = prompt('E-mail:', n.email||'');
-  if(email===null) return;
-  var srv = prompt('Servi\u00e7o:', n.servico||'');
-  if(srv===null) return;
-  var vs = prompt('Valor do servi\u00e7o (R$):', n.valorServico ? n.valorServico.toFixed(2) : '0');
-  if(vs===null) return;
-  var nv = parseFloat(String(vs).replace(',','.'));
-  if(isNaN(nv) || nv<0){ alert('Valor inv\u00e1lido!'); return; }
-  n.cliente = cliente.trim() || n.cliente;
-  n.doc = doc.trim();
-  n.telefone = tel.trim() || n.telefone;
-  n.email = email.trim();
-  n.servico = srv.trim();
-  n.valorServico = nv;
-  n.total = nv + (n.valorMateriais||0);
-  saveNotas();
-  renderNotas();
-  alert('Nota n\u00ba '+n.numero+' atualizada!');
+  uiPrompt([
+    {id:'cliente', label:'Cliente', tipo:'text', valor:n.cliente},
+    {id:'doc', label:'CPF/CNPJ', tipo:'text', valor:n.doc||''},
+    {id:'tel', label:'Telefone', tipo:'text', valor:n.telefone||''},
+    {id:'email', label:'E-mail', tipo:'email', valor:n.email||''},
+    {id:'srv', label:'Serviço', tipo:'text', valor:n.servico||''},
+    {id:'vs', label:'Valor do serviço (R$)', tipo:'text', valor:n.valorServico ? n.valorServico.toFixed(2) : '0'}
+  ], {titulo:'Editar Nota nº '+n.numero, icone:'📄', validar:function(r){
+    var nv = parseFloat(String(r.vs).replace(',','.'));
+    if(isNaN(nv) || nv<0) return 'Valor do serviço inválido.';
+  }}).then(function(res){
+    if(!res) return;
+    var nv = parseFloat(String(res.vs).replace(',','.'));
+    n.cliente = res.cliente || n.cliente;
+    n.doc = res.doc;
+    n.telefone = res.tel || n.telefone;
+    n.email = res.email;
+    n.servico = res.srv;
+    n.valorServico = nv;
+    n.total = nv + (n.valorMateriais||0);
+    saveNotas();
+    renderNotas();
+    uiAlert('Nota nº '+n.numero+' atualizada!');
+  });
 }
 
 function excluirNF(num){
-  if(!confirm('Excluir a nota n\u00ba '+num+'? Esta a\u00e7\u00e3o n\u00e3o pode ser desfeita.')) return;
-  notas = notas.filter(function(n){ return n.numero!==num; });
-  saveNotas();
-  renderNotas();
+  uiConfirm('Excluir a nota n\u00ba '+num+'? Esta a\u00e7\u00e3o n\u00e3o pode ser desfeita.').then(function(ok){
+    if(!ok) return;
+      notas = notas.filter(function(n){ return n.numero!==num; });
+      saveNotas();
+      renderNotas();
+  });
 }
 
 function getNf(num){
@@ -2281,7 +2277,7 @@ function enviarNfWhats(num){
 function enviarNfEmail(num){
   var n = getNf(num);
   if(!n) return;
-  if(!n.email){ alert('Esta nota n\u00e3o possui e-mail do cliente.'); return; }
+  if(!n.email){ uiAlert('Esta nota n\u00e3o possui e-mail do cliente.'); return; }
   var corpo = 'Ol\u00e1 '+n.cliente+',%0A%0ASegue sua nota n\u00ba '+n.numero+' (s\u00e9rie '+n.serie+') referente \u00e0 '+n.osId+'.%0ATotal: R$ '+n.total.toFixed(2)+'%0A%0AARP TECH Amaz\u00f4nia';
   window.location.href = 'mailto:'+n.email+'?subject=Nota Fiscal n\u00ba '+n.numero+' - ARP TECH&body='+corpo;
 }
@@ -2306,7 +2302,7 @@ function processarAnexosPdf(input){
   var pendentes = arquivos.length;
   arquivos.forEach(function(f){
     if(f.size > 2*1024*1024){
-      alert('O arquivo "'+f.name+'" excede 2MB e n\u00e3o ser\u00e1 anexado.');
+      uiAlert('O arquivo "'+f.name+'" excede 2MB e n\u00e3o ser\u00e1 anexado.');
       pendentes--;
       if(pendentes===0){ saveNotas(); renderNotas(); }
       return;
@@ -2315,7 +2311,7 @@ function processarAnexosPdf(input){
     reader.onload = function(ev){
       n.anexosPdf.push({nome:f.name, data:ev.target.result});
       pendentes--;
-      if(pendentes===0){ saveNotas(); renderNotas(); alert('Anexo(s) salvo(s)!'); }
+      if(pendentes===0){ saveNotas(); renderNotas(); uiAlert('Anexo(s) salvo(s)!'); }
     };
     reader.readAsDataURL(f);
   });
@@ -2336,10 +2332,12 @@ function abrirAnexoPdf(num, idx){
 function removerAnexoPdf(num, idx){
   var n = getNf(num);
   if(!n || !n.anexosPdf) return;
-  if(!confirm('Remover o anexo "'+n.anexosPdf[idx].nome+'"?')) return;
-  n.anexosPdf.splice(idx,1);
-  saveNotas();
-  renderNotas();
+  uiConfirm('Remover o anexo "'+n.anexosPdf[idx].nome+'"?').then(function(ok){
+    if(!ok) return;
+      n.anexosPdf.splice(idx,1);
+      saveNotas();
+      renderNotas();
+  });
 }
 function imprimirRecibo(num){
   var n = getNf(num);
@@ -2404,17 +2402,19 @@ function toggleNfAccess(loginU){
 }
 
 function excluirFechamento(mes){
-  if(!confirm('Excluir o fechamento de '+mes+'?')) return;
-  comFechamentos = comFechamentos.filter(function(f){ return f.mes!==mes; });
-  saveComFechamentos();
-  renderComissoes();
+  uiConfirm('Excluir o fechamento de '+mes+'?').then(function(ok){
+    if(!ok) return;
+      comFechamentos = comFechamentos.filter(function(f){ return f.mes!==mes; });
+      saveComFechamentos();
+      renderComissoes();
+  });
 }
 function salvarComissao(){
   var v = parseFloat(document.getElementById('comPercent').value);
-  if(isNaN(v) || v<0 || v>100){ alert('Percentual inv\u00e1lido!'); return; }
+  if(isNaN(v) || v<0 || v>100){ uiAlert('Percentual inv\u00e1lido!'); return; }
   COMISSAO_PERCENT = v;
   LS('hml_comissao_percent', String(v));
-  alert('Percentual salvo: '+v+'%');
+  uiAlert('Percentual salvo: '+v+'%');
   renderComissoes();
 }
 
@@ -2423,38 +2423,44 @@ var comFechamentos = JSON.parse(localStorage.getItem('hml_arp_com_fechamentos') 
 function saveComFechamentos(){ LS('hml_arp_com_fechamentos', JSON.stringify(comFechamentos)); }
 
 function fecharMesComissao(){
-  var mes = prompt('Informe o mês/ano a encerrar (ex: 06/2026):');
-  if(!mes || !mes.match(/^\d{2}\/\d{4}$/)) return alert('Formato inválido! Use MM/AAAA');
-  for(var i=0;i<comFechamentos.length;i++){ if(comFechamentos[i].mes===mes){ alert('Mês já encerrado!'); return; } }
-  var partes = mes.split('/');
-  var mm = parseInt(partes[0])-1; var aaaa = parseInt(partes[1]);
-  var ini = new Date(aaaa,mm,1); var fim = new Date(aaaa,mm+1,0,23,59,59);
-  var osMes = osOrdens.filter(function(o){
-    if(o.status!=='Concluída' || !o.dataConclusao) return false;
-    var p = o.dataConclusao.split('/');
-    if(p.length!==3) return false;
-    var d = new Date(+p[2],+p[1]-1,+p[0]);
-    return d>=ini && d<=fim;
+  uiPrompt([{id:'mes', label:'Mês/ano a encerrar', tipo:'text', placeholder:'MM/AAAA (ex: 06/2026)'}],
+    {titulo:'Encerrar mês de comissão', icone:'🔒', validar:function(r){
+      if(!r.mes || !r.mes.match(/^\d{2}\/\d{4}$/)) return 'Formato inválido! Use MM/AAAA';
+      for(var i=0;i<comFechamentos.length;i++){ if(comFechamentos[i].mes===r.mes) return 'Este mês já foi encerrado.'; }
+    }}
+  ).then(function(res){
+    if(!res) return;
+    var mes = res.mes;
+    var partes = mes.split('/');
+    var mm = parseInt(partes[0])-1; var aaaa = parseInt(partes[1]);
+    var ini = new Date(aaaa,mm,1); var fim = new Date(aaaa,mm+1,0,23,59,59);
+    var osMes = osOrdens.filter(function(o){
+      if(o.status!=='Concluída' || !o.dataConclusao) return false;
+      var p = o.dataConclusao.split('/');
+      if(p.length!==3) return false;
+      var d = new Date(+p[2],+p[1]-1,+p[0]);
+      return d>=ini && d<=fim;
+    });
+    var porTec = {};
+    osMes.forEach(function(o){
+      var tot=(o.valor||0); if(o.materiais) o.materiais.forEach(function(m){ tot+=m.valor; });
+      if(!porTec[o.tecnico]) porTec[o.tecnico]={qtd:0,total:0,os:[]};
+      porTec[o.tecnico].qtd++; porTec[o.tecnico].total+=tot; porTec[o.tecnico].os.push(o.id);
+    });
+    comFechamentos.push({ mes:mes, percent:COMISSAO_PERCENT, tecnicos:porTec, fechadoEm:new Date().toLocaleDateString('pt-BR'), fechadoPor:currentUser.name });
+    saveComFechamentos();
+    renderComissoes();
+    uiAlert('Mês '+mes+' encerrado com sucesso!');
   });
-  var porTec = {};
-  osMes.forEach(function(o){
-    var tot=(o.valor||0); if(o.materiais) o.materiais.forEach(function(m){ tot+=m.valor; });
-    if(!porTec[o.tecnico]) porTec[o.tecnico]={qtd:0,total:0,os:[]};
-    porTec[o.tecnico].qtd++; porTec[o.tecnico].total+=tot; porTec[o.tecnico].os.push(o.id);
-  });
-  comFechamentos.push({ mes:mes, percent:COMISSAO_PERCENT, tecnicos:porTec, fechadoEm:new Date().toLocaleDateString('pt-BR'), fechadoPor:currentUser.name });
-  saveComFechamentos();
-  renderComissoes();
-  alert('Mês '+mes+' encerrado com sucesso!');
 }
 function salvarPagamentoTec(tec){
   var el = document.getElementById('pay_'+tec.replace(/ /g,'_'));
   if(!el) return;
   var v = parseFloat(String(el.value).replace(',','.'));
-  if(isNaN(v) || v<0){ alert('Valor inv\u00e1lido!'); return; }
+  if(isNaN(v) || v<0){ uiAlert('Valor inv\u00e1lido!'); return; }
   comPagamentos[tec] = v;
   LS('hml_arp_com_pay', JSON.stringify(comPagamentos));
-  alert('Valor a pagar de '+tec+' definido: R$ '+v.toFixed(2));
+  uiAlert('Valor a pagar de '+tec+' definido: R$ '+v.toFixed(2));
   renderComissoes();
 }
 
@@ -2541,15 +2547,21 @@ function fillPerfis(){
 }
 
 function novoOrgao(){
-  var nome = prompt('Nome do novo \u00f3rg\u00e3o (ex: SEMSA):');
-  if(!nome) return;
-  nome = nome.trim().toUpperCase();
-  if(!nome || orgaos.indexOf(nome)>=0) return alert('\u00d3rg\u00e3o inv\u00e1lido ou j\u00e1 existe.');
-  orgaos.push(nome);
-  saveOrgaos();
-  fillPerfis();
-  renderUsuarios();
-  alert('\u00d3rg\u00e3o "'+nome+'" adicionado!');
+  uiPrompt([{id:'nome', label:'Nome do novo \u00f3rg\u00e3o', tipo:'text', placeholder:'Ex: SEMSA'}],
+    {titulo:'Novo \u00f3rg\u00e3o', icone:'\ud83c\udfe2', validar:function(r){
+      var nm = (r.nome||'').trim().toUpperCase();
+      if(!nm) return 'Informe o nome do \u00f3rg\u00e3o.';
+      if(orgaos.indexOf(nm)>=0) return 'Esse \u00f3rg\u00e3o j\u00e1 existe.';
+    }}
+  ).then(function(res){
+    if(!res) return;
+    var nome = res.nome.trim().toUpperCase();
+    orgaos.push(nome);
+    saveOrgaos();
+    fillPerfis();
+    renderUsuarios();
+    uiAlert('\u00d3rg\u00e3o "'+nome+'" adicionado!');
+  });
 }
 
 function cadastrarUsuario(){
@@ -2558,11 +2570,11 @@ function cadastrarUsuario(){
   var cpf = document.getElementById('gCpf').value.replace(/\D/g,'');
   var telefone = document.getElementById('gTelefone').value.trim();
   var perfil = document.getElementById('gPerfil').value;
-  if(!nome || !email){ alert('Preencha nome e e-mail!'); return; }
+  if(!nome || !email){ uiAlert('Preencha nome e e-mail!'); return; }
   var reEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if(!reEmail.test(email)){ alert('E-mail inválido!'); return; }
-  for(var j=0;j<usuarios.length;j++){ if(usuarios[j].email && usuarios[j].email.toLowerCase()===email){ alert('Este e-mail já está cadastrado!'); return; } }
-  if(cpf && cpf.length !== 11){ alert('CPF deve ter 11 dígitos!'); return; }
+  if(!reEmail.test(email)){ uiAlert('E-mail inválido!'); return; }
+  for(var j=0;j<usuarios.length;j++){ if(usuarios[j].email && usuarios[j].email.toLowerCase()===email){ uiAlert('Este e-mail já está cadastrado!'); return; } }
+  if(cpf && cpf.length !== 11){ uiAlert('CPF deve ter 11 dígitos!'); return; }
   // Login derivado do e-mail (parte antes do @), garantindo unicidade
   var baseLogin = email.split('@')[0].replace(/[^a-z0-9]/g,'');
   var loginU = baseLogin, n = 1;
@@ -2572,28 +2584,20 @@ function cadastrarUsuario(){
   ['gNome','gEmail','gCpf','gTelefone'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
   renderUsuarios();
   registrarLogAcesso(currentUser.name, 'CADASTROU usuário '+nome+' ('+email+')');
-  alert('Usuário cadastrado! O acesso será feito por código enviado ao e-mail/WhatsApp.');
+  uiAlert('Usuário cadastrado! O acesso será feito por código enviado ao e-mail/WhatsApp.');
 }
 
 function excluirUsuario(loginU){
-  if(loginU==='admin'){ alert('N\u00e3o \u00e9 poss\u00edvel excluir o Administrador.'); return; }
-  if(!confirm('Excluir usu\u00e1rio "'+loginU+'"?')) return;
-  usuarios = usuarios.filter(function(u){ return u.login!==loginU; });
-  saveUsers();
-  renderUsuarios();
+  if(loginU==='admin'){ uiAlert('N\u00e3o \u00e9 poss\u00edvel excluir o Administrador.'); return; }
+  uiConfirm('Excluir usu\u00e1rio "'+loginU+'"?').then(function(ok){
+    if(!ok) return;
+      usuarios = usuarios.filter(function(u){ return u.login!==loginU; });
+      saveUsers();
+      renderUsuarios();
+  });
 }
 
-function redefinirSenha(loginU){
-  var nova = prompt('Nova senha tempor\u00e1ria para "'+loginU+'":');
-  if(!nova) return;
-  if(!senhaForte(nova)){ alert('Senha fraca!'); return; }
-  for(var i=0;i<usuarios.length;i++){
-    if(usuarios[i].login===loginU){ usuarios[i].pass=nova; usuarios[i].mustChange=true; usuarios[i].passSetAt=Date.now(); break; }
-  }
-  saveUsers();
-  renderUsuarios();
-  alert('Senha redefinida! Validade: '+EXPIRA_DIAS+' dias.');
-}
+// (redefinirSenha removida — sistema usa OTP por e-mail, sem senha)
 
 function mudarPerfil(loginU, novo){
   for(var i=0;i<usuarios.length;i++){ if(usuarios[i].login===loginU){ usuarios[i].profile=novo; break; } }
@@ -2673,14 +2677,14 @@ function salvarEdicaoUsuario(){
   var telefone = document.getElementById('euTelefone').value.trim();
   var perfil = document.getElementById('euPerfil').value;
 
-  if(!nome){ alert('Informe o nome!'); return; }
-  if(!email){ alert('Informe o e-mail!'); return; }
+  if(!nome){ uiAlert('Informe o nome!'); return; }
+  if(!email){ uiAlert('Informe o e-mail!'); return; }
   var reEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if(!reEmail.test(email)){ alert('E-mail inválido!'); return; }
+  if(!reEmail.test(email)){ uiAlert('E-mail inválido!'); return; }
   for(var j=0;j<usuarios.length;j++){
-    if(usuarios[j].login!==loginU && usuarios[j].email && usuarios[j].email.toLowerCase()===email){ alert('E-mail já usado por outro usuário!'); return; }
+    if(usuarios[j].login!==loginU && usuarios[j].email && usuarios[j].email.toLowerCase()===email){ uiAlert('E-mail já usado por outro usuário!'); return; }
   }
-  if(cpf && cpf.length!==11){ alert('CPF deve ter 11 dígitos!'); return; }
+  if(cpf && cpf.length!==11){ uiAlert('CPF deve ter 11 dígitos!'); return; }
 
   var antes = 'nome:'+u.name+' email:'+(u.email||'—')+' cpf:'+(u.cpf||'—')+' tel:'+(u.telefone||'—')+' perfil:'+u.profile+' ativo:'+(u.ativo!==false);
   u.name = nome; u.email = email; u.cpf = cpf; u.telefone = telefone; u.profile = perfil; u.ativo = _euStatus;
@@ -2698,13 +2702,13 @@ function salvarEdicaoUsuario(){
 function salvarMeusDados(){
   var email = document.getElementById('mcEmail').value.trim().toLowerCase();
   var telefone = document.getElementById('mcTelefone').value.trim();
-  if(!email){ alert('Informe seu e-mail!'); return; }
+  if(!email){ uiAlert('Informe seu e-mail!'); return; }
   var reEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if(!reEmail.test(email)){ alert('E-mail inválido!'); return; }
+  if(!reEmail.test(email)){ uiAlert('E-mail inválido!'); return; }
   // Verificar duplicidade de e-mail
   for(var j=0;j<usuarios.length;j++){
     if(usuarios[j].login!==currentUser.login && usuarios[j].email && usuarios[j].email.toLowerCase()===email){
-      alert('Este e-mail já está em uso por outro usuário!'); return;
+      uiAlert('Este e-mail já está em uso por outro usuário!'); return;
     }
   }
   var antes = 'email:'+(currentUser.email||'—')+' tel:'+(currentUser.telefone||'—');
@@ -2716,7 +2720,7 @@ function salvarMeusDados(){
   }
   saveUsers();
   registrarLogAcesso(currentUser.name, 'ALTEROU PRÓPRIOS DADOS ['+antes+' -> email:'+email+' tel:'+(telefone||'—')+']');
-  alert('Dados salvos! Você receberá o código de acesso nesses contatos.');
+  uiAlert('Dados salvos! Você receberá o código de acesso nesses contatos.');
 }
 
 function carregarMeusDados(){
@@ -2737,23 +2741,25 @@ function carregarMeusDados(){
 function cadastrarLocal(){
   var nome = document.getElementById('locNome').value.trim();
   var tipo = document.getElementById('locTipo').value;
-  if(!nome || !tipo){ alert('Preencha nome e tipo!'); return; }
-  for(var i=0;i<locais.length;i++){ if(locais[i].nome.toLowerCase()===nome.toLowerCase()){ alert('Local j\u00e1 cadastrado!'); return; } }
+  if(!nome || !tipo){ uiAlert('Preencha nome e tipo!'); return; }
+  for(var i=0;i<locais.length;i++){ if(locais[i].nome.toLowerCase()===nome.toLowerCase()){ uiAlert('Local j\u00e1 cadastrado!'); return; } }
   locais.push({nome:nome, tipo:tipo});
   saveLocais();
   fillLocais();
   document.getElementById('locNome').value='';
   document.getElementById('locTipo').selectedIndex=0;
   renderLocais();
-  alert('Local cadastrado!');
+  uiAlert('Local cadastrado!');
 }
 
 function excluirLocal(idx){
-  if(!confirm('Excluir o local "'+locais[idx].nome+'"?')) return;
-  locais.splice(idx,1);
-  saveLocais();
-  fillLocais();
-  renderLocais();
+  uiConfirm('Excluir o local "'+locais[idx].nome+'"?').then(function(ok){
+    if(!ok) return;
+      locais.splice(idx,1);
+      saveLocais();
+      fillLocais();
+      renderLocais();
+  });
 }
 
 function renderLocais(){
@@ -2775,23 +2781,25 @@ function renderLocais(){
 function cadastrarServico(){
   var nome = document.getElementById('srvNome').value.trim();
   var tipo = document.getElementById('srvTipo').value;
-  if(!nome || !tipo){ alert('Preencha nome e categoria!'); return; }
-  for(var i=0;i<servicos.length;i++){ if(servicos[i].nome.toLowerCase()===nome.toLowerCase() && servicos[i].tipo===tipo){ alert('Servi\u00e7o j\u00e1 cadastrado!'); return; } }
+  if(!nome || !tipo){ uiAlert('Preencha nome e categoria!'); return; }
+  for(var i=0;i<servicos.length;i++){ if(servicos[i].nome.toLowerCase()===nome.toLowerCase() && servicos[i].tipo===tipo){ uiAlert('Servi\u00e7o j\u00e1 cadastrado!'); return; } }
   servicos.push({nome:nome, tipo:tipo});
   saveServicos();
   document.getElementById('srvNome').value='';
   document.getElementById('srvTipo').selectedIndex=0;
   renderServicos();
   fillServicos();
-  alert('Servi\u00e7o cadastrado!');
+  uiAlert('Servi\u00e7o cadastrado!');
 }
 
 function excluirServico(idx){
-  if(!confirm('Excluir o servi\u00e7o "'+servicos[idx].nome+'"?')) return;
-  servicos.splice(idx,1);
-  saveServicos();
-  renderServicos();
-  fillServicos();
+  uiConfirm('Excluir o servi\u00e7o "'+servicos[idx].nome+'"?').then(function(ok){
+    if(!ok) return;
+      servicos.splice(idx,1);
+      saveServicos();
+      renderServicos();
+      fillServicos();
+  });
 }
 
 function renderServicos(){
@@ -2811,7 +2819,7 @@ function salvarCores(){
   cores.login = document.getElementById('corLogin').value;
   LS('hml_arp_cores', JSON.stringify(cores));
   aplicarCores();
-  alert('Cores salvas!');
+  uiAlert('Cores salvas!');
 }
 
 function resetCores(){
@@ -2822,19 +2830,19 @@ function resetCores(){
   document.getElementById('corAcento').value = cores.acento;
   document.getElementById('corLogin').value = cores.login;
   aplicarCores();
-  alert('Cores restauradas!');
+  uiAlert('Cores restauradas!');
 }
 
 function uploadLogo(key, fieldId, input){
   var file = input.files[0];
   if(!file) return;
-  if(file.size > 500*1024){ alert('Imagem muito grande. Use até 500KB.'); return; }
+  if(file.size > 500*1024){ uiAlert('Imagem muito grande. Use até 500KB.'); return; }
   var reader = new FileReader();
   reader.onload = function(ev){
     LS(key, ev.target.result);
     document.getElementById(fieldId).value = '(arquivo carregado)';
     aplicarLogo();
-    alert('Logo salva!');
+    uiAlert('Logo salva!');
   };
   reader.readAsDataURL(file);
 }
@@ -2846,7 +2854,7 @@ function salvarLogos(){
   if(urlOs && !urlOs.startsWith('(')) LS('hml_arp_logo_os', urlOs);
   if(urlR && !urlR.startsWith('(')) LS('hml_arp_logo_recibo', urlR);
   aplicarLogo();
-  alert('Logos salvas!');
+  uiAlert('Logos salvas!');
 }
 function salvarLogo(){ salvarLogos(); }
 
@@ -2857,7 +2865,7 @@ function salvarEmpresa(){
   empresa.tel = document.getElementById('empTel').value.trim();
   empresa.end = document.getElementById('empEnd').value.trim();
   LS('hml_arp_empresa', JSON.stringify(empresa));
-  alert('Dados da empresa salvos!');
+  uiAlert('Dados da empresa salvos!');
 }
 
 // ===== SINCRONIZACAO ENTRE DISPOSITIVOS =====
@@ -2985,6 +2993,117 @@ function pullNuvem(silencioso){
     .catch(function(){});
 }
 
+// ===== SISTEMA DE DIÁLOGOS UNIFICADO =====
+// uiAlert(msg, opts) -> Promise que resolve ao clicar OK
+// uiConfirm(msg, opts) -> Promise que resolve true/false
+// uiPrompt(campos, opts) -> Promise que resolve objeto {campo:valor} ou null
+var _uiDlgResolve = null;
+
+function _uiFecharDialog(valor){
+  var ov = document.getElementById('uiDialogOverlay');
+  ov.classList.remove('open');
+  var r = _uiDlgResolve; _uiDlgResolve = null;
+  if(r) r(valor);
+}
+
+function _uiPrepararHeader(tipo, icone, titulo){
+  var h = document.getElementById('uiDialogHeader');
+  h.className = 'ui-dialog-header' + (tipo ? ' '+tipo : '');
+  document.getElementById('uiDialogIcon').textContent = icone || '💬';
+  document.getElementById('uiDialogTitle').textContent = titulo || 'Aviso';
+}
+
+function uiAlert(msg, opts){
+  opts = opts || {};
+  return new Promise(function(resolve){
+    _uiDlgResolve = resolve;
+    var tipo = opts.tipo || 'sucesso';
+    _uiPrepararHeader(tipo, opts.icone || (tipo==='sucesso'?'✅':(tipo==='perigo'?'⚠️':'ℹ️')), opts.titulo || (tipo==='sucesso'?'Sucesso':'Aviso'));
+    document.getElementById('uiDialogMsg').innerHTML = String(msg||'').replace(/\n/g,'<br>');
+    document.getElementById('uiDialogFields').style.display='none';
+    var f = document.getElementById('uiDialogFooter');
+    f.innerHTML = '';
+    var ok = document.createElement('button');
+    ok.className = 'ui-dlg-btn ' + (tipo==='perigo'?'perigo':(tipo==='sucesso'?'sucesso':'primary'));
+    ok.textContent = opts.okLabel || 'OK';
+    ok.onclick = function(){ _uiFecharDialog(true); };
+    f.appendChild(ok);
+    document.getElementById('uiDialogOverlay').classList.add('open');
+    setTimeout(function(){ ok.focus(); }, 100);
+    // Fechamento automático opcional
+    if(opts.autoFechar){ setTimeout(function(){ if(_uiDlgResolve) _uiFecharDialog(true); }, opts.autoFechar); }
+  });
+}
+
+function uiConfirm(msg, opts){
+  opts = opts || {};
+  return new Promise(function(resolve){
+    _uiDlgResolve = resolve;
+    var tipo = opts.tipo || 'perigo';
+    _uiPrepararHeader(tipo, opts.icone || '❓', opts.titulo || 'Confirmar ação');
+    document.getElementById('uiDialogMsg').innerHTML = String(msg||'').replace(/\n/g,'<br>');
+    document.getElementById('uiDialogFields').style.display='none';
+    var f = document.getElementById('uiDialogFooter');
+    f.innerHTML = '';
+    var cancel = document.createElement('button');
+    cancel.className = 'ui-dlg-btn cancel';
+    cancel.textContent = opts.cancelLabel || 'Cancelar';
+    cancel.onclick = function(){ _uiFecharDialog(false); };
+    var conf = document.createElement('button');
+    conf.className = 'ui-dlg-btn ' + (tipo==='perigo'?'perigo':(tipo==='sucesso'?'sucesso':'primary'));
+    conf.textContent = opts.okLabel || 'Confirmar';
+    conf.onclick = function(){ _uiFecharDialog(true); };
+    f.appendChild(cancel); f.appendChild(conf);
+    document.getElementById('uiDialogOverlay').classList.add('open');
+    setTimeout(function(){ conf.focus(); }, 100);
+  });
+}
+
+// campos: array de {id, label, valor, tipo:'text'|'textarea'|'number'|'email', placeholder}
+// ou string única (vira um campo de texto simples)
+function uiPrompt(campos, opts){
+  opts = opts || {};
+  if(typeof campos === 'string'){ campos = [{id:'valor', label:campos, valor:opts.valorInicial||'', tipo:opts.tipoCampo||'text'}]; }
+  return new Promise(function(resolve){
+    _uiDlgResolve = resolve;
+    _uiPrepararHeader(opts.tipo || 'primary', opts.icone || '✏️', opts.titulo || 'Informe os dados');
+    document.getElementById('uiDialogMsg').innerHTML = opts.descricao ? String(opts.descricao).replace(/\n/g,'<br>') : '';
+    var fld = document.getElementById('uiDialogFields');
+    fld.style.display='block';
+    fld.innerHTML = campos.map(function(c){
+      var input = (c.tipo === 'textarea')
+        ? '<textarea id="uiF_'+c.id+'" rows="3" placeholder="'+(c.placeholder||'')+'">'+(c.valor||'')+'</textarea>'
+        : '<input type="'+(c.tipo||'text')+'" id="uiF_'+c.id+'" value="'+String(c.valor||'').replace(/"/g,'&quot;')+'" placeholder="'+(c.placeholder||'')+'">';
+      return '<label>'+(c.label||'')+'</label>'+input;
+    }).join('');
+    var f = document.getElementById('uiDialogFooter');
+    f.innerHTML = '';
+    var cancel = document.createElement('button');
+    cancel.className = 'ui-dlg-btn cancel';
+    cancel.textContent = opts.cancelLabel || 'Cancelar';
+    cancel.onclick = function(){ _uiFecharDialog(null); };
+    var save = document.createElement('button');
+    save.className = 'ui-dlg-btn ' + (opts.tipo==='perigo'?'perigo':'primary');
+    save.textContent = opts.okLabel || 'Salvar';
+    save.onclick = function(){
+      var res = {};
+      for(var i=0;i<campos.length;i++){
+        var el = document.getElementById('uiF_'+campos[i].id);
+        res[campos[i].id] = el ? el.value.trim() : '';
+      }
+      // Validação opcional
+      if(opts.validar){
+        var erro = opts.validar(res);
+        if(erro){ uiAlert(erro, {tipo:'perigo', titulo:'Atenção'}); return; }
+      }
+      _uiFecharDialog(res);
+    };
+    f.appendChild(cancel); f.appendChild(save);
+    document.getElementById('uiDialogOverlay').classList.add('open');
+    setTimeout(function(){ var el=document.getElementById('uiF_'+campos[0].id); if(el){ el.focus(); el.select&&el.select(); } }, 100);
+  });
+}
+
 function mostrarNotificacao(msg){
   var el = document.getElementById('waNotif');
   if(!el){
@@ -3033,15 +3152,15 @@ function salvarSyncUrl(){
   var url = document.getElementById('syncUrl').value.trim();
   localStorage.setItem('hml_arp_sync_url', url);
   SYNC_URL = url;
-  alert(url ? 'Sincroniza\u00e7\u00e3o configurada! Os dados ser\u00e3o enviados \u00e0 nuvem automaticamente.' : 'Sincroniza\u00e7\u00e3o desativada.');
+  uiAlert(url ? 'Sincroniza\u00e7\u00e3o configurada! Os dados ser\u00e3o enviados \u00e0 nuvem automaticamente.' : 'Sincroniza\u00e7\u00e3o desativada.');
   if(url) pushNuvem();
 }
 
 function sincronizarAgora(){
-  if(!SYNC_URL){ alert('Configure primeiro a URL de sincroniza\u00e7\u00e3o.'); return; }
+  if(!SYNC_URL){ uiAlert('Configure primeiro a URL de sincroniza\u00e7\u00e3o.'); return; }
   pushNuvem();
   setTimeout(pullNuvem, 1500);
-  alert('Sincronização iniciada!');
+  uiAlert('Sincronização iniciada!');
 }
 
 pullNuvem();
@@ -3096,9 +3215,9 @@ function confirmarTransferencia(){
   var motivo  = document.getElementById('transfMotivo').value;
   var outro   = document.getElementById('transfMotivoOutro').value.trim();
 
-  if(!novoTec){ alert('Selecione o técnico para transferência!'); return; }
-  if(!motivo) { alert('Selecione o motivo da transferência!'); return; }
-  if(motivo==='Outro' && !outro){ alert('Especifique o motivo!'); return; }
+  if(!novoTec){ uiAlert('Selecione o técnico para transferência!'); return; }
+  if(!motivo) { uiAlert('Selecione o motivo da transferência!'); return; }
+  if(motivo==='Outro' && !outro){ uiAlert('Especifique o motivo!'); return; }
 
   var motivoFinal = motivo==='Outro' ? outro : motivo;
   var agora = new Date();
@@ -3197,11 +3316,11 @@ function enviarSolicitacaoExt(){
   var endereco = (document.getElementById('solEndereco').value||'').trim();
   var desc     = (document.getElementById('solDesc').value||'').trim();
 
-  if(tel.length < 10){ alert('Informe um WhatsApp válido (com DDD).'); return; }
-  if(nome.length < 3){ alert('Informe seu nome completo.'); return; }
-  if(!endereco){ alert('Informe o endereço ou localização.'); return; }
-  if(!_solTipoExt){ alert('Selecione o tipo de atendimento.'); return; }
-  if(desc.length < 10){ alert('Descreva o problema com mais detalhes.'); return; }
+  if(tel.length < 10){ uiAlert('Informe um WhatsApp válido (com DDD).'); return; }
+  if(nome.length < 3){ uiAlert('Informe seu nome completo.'); return; }
+  if(!endereco){ uiAlert('Informe o endereço ou localização.'); return; }
+  if(!_solTipoExt){ uiAlert('Selecione o tipo de atendimento.'); return; }
+  if(desc.length < 10){ uiAlert('Descreva o problema com mais detalhes.'); return; }
 
   var btn = document.getElementById('btnEnviarSol');
   btn.textContent = 'Enviando...';
@@ -3354,7 +3473,7 @@ function filtrarRelatorio(){
 
 function exportarRelatorio(tipo){
   var lista = filtrarRelatorio();
-  if(!lista.length){ alert('Nenhum registro encontrado para o per\u00edodo selecionado.'); return; }
+  if(!lista.length){ uiAlert('Nenhum registro encontrado para o per\u00edodo selecionado.'); return; }
 
   if(tipo==='pdf'){
     gerarRelatorioPDF(lista);
@@ -3464,7 +3583,7 @@ function gerarRelatorioDocx(lista){
   s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
   s.onload = function(){ _gerarDocxComJSZip(lista); };
   s.onerror = function(){
-    alert('N\u00e3o foi poss\u00edvel carregar o gerador. Use "Exportar PDF" por enquanto.');
+    uiAlert('N\u00e3o foi poss\u00edvel carregar o gerador. Use "Exportar PDF" por enquanto.');
   };
   document.head.appendChild(s);
 }
@@ -3629,7 +3748,7 @@ function _gerarDocxComJSZip(lista){
       document.body.appendChild(a); a.click();
       document.body.removeChild(a);
       setTimeout(function(){ URL.revokeObjectURL(url); }, 3000);
-    }).catch(function(e){ alert('Erro ao gerar .docx: '+e.message); });
+    }).catch(function(e){ uiAlert('Erro ao gerar .docx: '+e.message); });
 }
 
 // =============================================================
@@ -3754,7 +3873,7 @@ function getFiscalLista(){
 
 function exportarFiscalPDF(){
   var lista = getFiscalLista();
-  if(!lista.length){ alert('Nenhum registro no per\u00edodo.'); return; }
+  if(!lista.length){ uiAlert('Nenhum registro no per\u00edodo.'); return; }
   var logoUrl = localStorage.getItem('hml_arp_logo') || '';
   var logoHtml = logoUrl ? '<img src="'+logoUrl+'" style="max-height:66px;max-width:200px;">' : '<b style="font-size:22px;color:#016535;">ARP TECH</b>';
   var tec   = document.getElementById('fiscalTecnico').value || 'Todos';
@@ -3826,7 +3945,7 @@ function exportarFiscalPDF(){
 function exportarFiscalDocx(){
   // Reutiliza o mesmo gerador de DOCX mas com coluna Status adicional
   var lista = getFiscalLista();
-  if(!lista.length){ alert('Nenhum registro no per\u00edodo.'); return; }
+  if(!lista.length){ uiAlert('Nenhum registro no per\u00edodo.'); return; }
   // Reusar gerarRelatorioDocx (lista e passada via variavel global temporaria)
   window._fiscalLista = lista;
   window._fiscalMode  = true;
@@ -4007,28 +4126,32 @@ function assumirSolicitacao(id){
   if(!sol) return;
 
   if(sol.status==='Em Atendimento'){
-    alert('Esta solicitação já está sendo atendida por '+sol.tecnico+'.');
+    uiAlert('Esta solicitação já está sendo atendida por '+sol.tecnico+'.');
     return;
   }
 
-  if(!confirm('Assumir a solicitação '+id+' de '+sol.cliente+'?\nVocê será registrado como responsável.')) return;
+  uiConfirm('Assumir a solicitação '+id+' de '+sol.cliente+'?\nVocê será registrado como responsável.').then(function(ok){
+    if(!ok) return;
 
-  var agora = new Date();
-  sol.tecnico    = currentUser.name;
-  sol.status     = 'Em Atendimento';
-  sol.dtAssumido = agora.toLocaleDateString('pt-BR')+' às '+agora.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-  saveSolicitacoes();
-  renderSolicitacoes();
-  alert('Você assumiu a solicitação '+id+'!\nAgora pode convertê-la em Ordem de Serviço.');
+      var agora = new Date();
+      sol.tecnico    = currentUser.name;
+      sol.status     = 'Em Atendimento';
+      sol.dtAssumido = agora.toLocaleDateString('pt-BR')+' às '+agora.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+      saveSolicitacoes();
+      renderSolicitacoes();
+      uiAlert('Você assumiu a solicitação '+id+'!\nAgora pode convertê-la em Ordem de Serviço.');
+  });
 }
 
 function cancelarSolicitacao(id){
-  if(!confirm('Cancelar a solicitação '+id+'?')) return;
-  for(var i=0;i<solicitacoes.length;i++){
-    if(solicitacoes[i].id===id){ solicitacoes[i].status='Cancelado'; break; }
-  }
-  saveSolicitacoes();
-  renderSolicitacoes();
+  uiConfirm('Cancelar a solicitação '+id+'?').then(function(ok){
+    if(!ok) return;
+      for(var i=0;i<solicitacoes.length;i++){
+        if(solicitacoes[i].id===id){ solicitacoes[i].status='Cancelado'; break; }
+      }
+      saveSolicitacoes();
+      renderSolicitacoes();
+  });
 }
 
 function converterParaOS(id){
@@ -4037,45 +4160,47 @@ function converterParaOS(id){
   if(!sol) return;
 
   if(sol.osVinculada){
-    alert('Esta solicitação já foi convertida para a OS '+sol.osVinculada+'.');
+    uiAlert('Esta solicitação já foi convertida para a OS '+sol.osVinculada+'.');
     return;
   }
 
-  if(!confirm('Converter a solicitação '+id+' em Ordem de Serviço?\n\nIsso criará uma OS oficial no sistema.')) return;
+  uiConfirm('Converter a solicitação '+id+' em Ordem de Serviço?\n\nIsso criará uma OS oficial no sistema.').then(function(ok){
+    if(!ok) return;
 
-  var agora = new Date();
-  var novaOS = {
-    id:          'OS-'+agora.getTime(),
-    cliente:     sol.cliente,
-    doc:         sol.empresa||'',
-    telefone:    sol.telefone,
-    email:       sol.email||'',
-    desc:        sol.descricao||sol.desc||'',
-    servico:     sol.servico||sol.tipoServico||'',
-    tipo:        'externo',
-    materiais:   [],
-    valor:       0,
-    status:      'Em Andamento',
-    situacao:    '',
-    dataCriacao: agora.toLocaleDateString('pt-BR'),
-    tecnico:     sol.tecnico||currentUser.name,
-    obs:         'Convertida da solicitação '+id,
-    obsLog:      [],
-    origem:      'Site / Portal Externo',
-    _ts:         agora.getTime()
-  };
+      var agora = new Date();
+      var novaOS = {
+        id:          'OS-'+agora.getTime(),
+        cliente:     sol.cliente,
+        doc:         sol.empresa||'',
+        telefone:    sol.telefone,
+        email:       sol.email||'',
+        desc:        sol.descricao||sol.desc||'',
+        servico:     sol.servico||sol.tipoServico||'',
+        tipo:        'externo',
+        materiais:   [],
+        valor:       0,
+        status:      'Em Andamento',
+        situacao:    '',
+        dataCriacao: agora.toLocaleDateString('pt-BR'),
+        tecnico:     sol.tecnico||currentUser.name,
+        obs:         'Convertida da solicitação '+id,
+        obsLog:      [],
+        origem:      'Site / Portal Externo',
+        _ts:         agora.getTime()
+      };
 
-  osOrdens.push(novaOS);
-  LS('hml_arp_os', JSON.stringify(osOrdens));
+      osOrdens.push(novaOS);
+      LS('hml_arp_os', JSON.stringify(osOrdens));
 
-  // Marcar solicitação como concluída/vinculada
-  sol.status      = 'Concluido';
-  sol.osVinculada = novaOS.id;
-  saveSolicitacoes();
+      // Marcar solicitação como concluída/vinculada
+      sol.status      = 'Concluido';
+      sol.osVinculada = novaOS.id;
+      saveSolicitacoes();
 
-  renderSolicitacoes();
-  renderOS('andamento');
-  alert('OS '+novaOS.id+' criada com sucesso!\nDisponível na aba Ordens de Serviço → Em Andamento.');
+      renderSolicitacoes();
+      renderOS('andamento');
+      uiAlert('OS '+novaOS.id+' criada com sucesso!\nDisponível na aba Ordens de Serviço → Em Andamento.');
+  });
 }
 
 aplicarLogo();
@@ -4116,5 +4241,46 @@ aplicarLogo();
   </div>
 </div>
 <input type="file" id="nfFileInput" accept="application/pdf" multiple style="display:none;" onchange="processarAnexosPdf(this)">
+
+<!-- ===== SISTEMA DE DIÁLOGOS UNIFICADO (substitui alert/confirm/prompt) ===== -->
+<div class="ui-dialog-overlay" id="uiDialogOverlay">
+  <div class="ui-dialog" id="uiDialogBox">
+    <div class="ui-dialog-header" id="uiDialogHeader">
+      <span id="uiDialogIcon">💬</span>
+      <span id="uiDialogTitle">Aviso</span>
+    </div>
+    <div class="ui-dialog-body">
+      <div id="uiDialogMsg"></div>
+      <div id="uiDialogFields" style="display:none;margin-top:14px;"></div>
+    </div>
+    <div class="ui-dialog-footer" id="uiDialogFooter"></div>
+  </div>
+</div>
+
+<style>
+.ui-dialog-overlay{display:none;position:fixed;inset:0;background:rgba(4,14,26,0.78);z-index:9998;align-items:center;justify-content:center;padding:16px;}
+.ui-dialog-overlay.open{display:flex;animation:uiFade .18s ease;}
+.ui-dialog{background:#fff;border-radius:16px;width:100%;max-width:440px;box-shadow:0 32px 80px rgba(0,0,0,0.55);animation:uiPop .2s ease;overflow:hidden;}
+.ui-dialog-header{padding:18px 24px;display:flex;align-items:center;gap:10px;font-size:16px;font-weight:700;color:#fff;background:linear-gradient(135deg,#0d3b5c 0%,#1a5276 100%);}
+.ui-dialog-header.sucesso{background:linear-gradient(135deg,#016535 0%,#14693c 100%);}
+.ui-dialog-header.perigo{background:linear-gradient(135deg,#b91c1c 0%,#dc2626 100%);}
+.ui-dialog-header #uiDialogIcon{font-size:20px;}
+.ui-dialog-body{padding:22px 24px;font-size:14px;color:#333;line-height:1.6;}
+.ui-dialog-body input,.ui-dialog-body textarea{width:100%;padding:11px 13px;border:1.5px solid #d0d7de;border-radius:9px;font-size:14px;box-sizing:border-box;margin-top:4px;font-family:inherit;}
+.ui-dialog-body input:focus,.ui-dialog-body textarea:focus{outline:none;border-color:#1a5276;}
+.ui-dialog-body label{font-size:12px;font-weight:600;color:#555;display:block;margin-bottom:2px;margin-top:10px;}
+.ui-dialog-body label:first-child{margin-top:0;}
+.ui-dialog-footer{padding:6px 24px 22px;display:flex;gap:10px;justify-content:flex-end;}
+.ui-dlg-btn{padding:11px 22px;border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;transition:filter .15s;}
+.ui-dlg-btn:hover{filter:brightness(1.08);}
+.ui-dlg-btn.primary{background:#1a5276;color:#fff;}
+.ui-dlg-btn.sucesso{background:#016535;color:#fff;}
+.ui-dlg-btn.perigo{background:#dc2626;color:#fff;}
+.ui-dlg-btn.cancel{background:#e6e9ec;color:#444;}
+@keyframes uiFade{from{opacity:0}to{opacity:1}}
+@keyframes uiPop{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:none}}
+@media (max-width:680px){.ui-dialog{max-width:100%;border-radius:14px;}.ui-dialog-footer{flex-direction:column-reverse;}.ui-dlg-btn{width:100%;}}
+</style>
+
 </body>
 </html>
