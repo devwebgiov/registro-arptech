@@ -139,7 +139,7 @@ footer { text-align:center; padding:20px; font-size:11px; color:#aaa; }
       </div>
 
       <div class="form-group">
-        <label class="form-label">Endereço / Localização (opcional)</label>
+        <label class="form-label">Endereço / Localização <span style="color:#dc2626">*</span></label>
         <input type="text" id="p2End" class="form-input" placeholder="Rua, número, bairro ou setor...">
       </div>
 
@@ -170,7 +170,7 @@ footer { text-align:center; padding:20px; font-size:11px; color:#aaa; }
 <footer>ARP TECH Amazônia — Rua 5 de Setembro, 384, Centro — Humaitá/AM | (97) 98429-4519</footer>
 
 <script>
-// >>> SUBSTITUIR APÓS MIGRAÇÃO <<< URL do Apps Script de HOMOLOGAÇÃO (mesma da teste.html - conta devwebgio@gmail.com)
+// URL do Apps Script de Homologação (mesma da teste.html)
 var SYNC_URL  = 'https://script.google.com/macros/s/AKfycbxHszPUxnIGn_fxAoKaS45rxiZMJIjbnRU0veEBaL0_aMa2-90PTQB4IZmNQeZPuHWE/exec';
 var dadosCliente = null;
 var tipoServico  = '';
@@ -215,6 +215,8 @@ function enviarSolicitacao(){
   if(!tipoServico){ alert('Selecione o tipo de atendimento!'); return; }
   var desc = (document.getElementById('p2Desc').value||'').trim();
   if(desc.length < 10){ alert('Descreva o problema com mais detalhes!'); return; }
+  var end     = (document.getElementById('p2End').value||'').trim();
+  if(!end){ alert('Informe o endereço ou localização para o atendimento!'); return; }
 
   var btn = document.getElementById('btnEnviar');
   btn.textContent = 'Enviando...';
@@ -224,7 +226,6 @@ function enviarSolicitacao(){
   var dataBR  = agora.toLocaleDateString('pt-BR');
   var horaBR  = agora.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
   var solId   = 'SOL-' + agora.getTime();
-  var end     = (document.getElementById('p2End').value||'').trim();
 
   // Monta objeto de solicitação — sem criar OS, apenas solicitação pendente
   var sol = {
