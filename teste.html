@@ -348,7 +348,7 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
       <div id="otpEtapa1">
         <div class="form-group">
           <label class="form-label">E-mail</label>
-          <input type="text" id="loginUser" class="form-input" placeholder="Digite seu e-mail" autocapitalize="none" autocomplete="username" inputmode="email">
+          <input type="text" id="loginUser" class="form-input" placeholder="Digite seu e-mail" autocapitalize="none" autocomplete="username" inputmode="email" onkeydown="if(event.key==='Enter'){event.preventDefault();otpSolicitar();}">
           <div style="font-size:12px;color:#888;margin-top:8px;line-height:1.5;">📧 Enviaremos um código de acesso de 6 dígitos para o seu e-mail.</div>
         </div>
       </div>
@@ -358,7 +358,7 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
         <p style="font-size:13px;color:#555;margin-bottom:14px;line-height:1.6;">Enviamos um código de 6 dígitos para <b id="otpDestinoLabel"></b>. Digite abaixo (válido por 5 minutos).</p>
         <div class="form-group">
           <label class="form-label">Código de verificação</label>
-          <input type="text" id="otpCodigo" class="form-input" placeholder="000000" inputmode="numeric" maxlength="6" style="letter-spacing:8px;font-size:22px;text-align:center;font-weight:700;">
+          <input type="text" id="otpCodigo" class="form-input" placeholder="000000" inputmode="numeric" maxlength="6" style="letter-spacing:8px;font-size:22px;text-align:center;font-weight:700;" onkeydown="if(event.key==='Enter'){event.preventDefault();otpValidar();}">
         </div>
         <div style="text-align:center;font-size:12px;color:#888;">
           <span id="otpReenviar" class="link" onclick="otpReenviarCodigo()">Reenviar código</span>
@@ -635,7 +635,7 @@ table.users td { padding:10px 8px; border-bottom:1px solid #e7eeec; }
           </div>
           <div class="form-group"><label class="form-label">Local</label>
             <input type="text" id="newRegLocalBusca" class="form-input" placeholder="Digite para buscar..." autocomplete="off"
-              oninput="filtrarLocaisAC(this.value)" onfocus="filtrarLocaisAC(this.value)" onblur="setTimeout(function(){document.getElementById('acDropdown').style.display='none';},200)">
+              oninput="filtrarLocaisAC(this.value)" onfocus="filtrarLocaisAC(this.value)" onkeydown="acTeclado(event)" onblur="setTimeout(function(){document.getElementById('acDropdown').style.display='none';},200)">
             <div id="acDropdown" style="display:none;position:absolute;z-index:999;background:#fff;border:2px solid var(--cor-acento);border-radius:8px;max-height:200px;overflow-y:auto;box-shadow:0 4px 12px rgba(0,0,0,0.15);min-width:280px;"></div>
             <input type="hidden" id="newRegLocal">
           </div>
@@ -1263,6 +1263,7 @@ function otpSolicitar(){
       document.getElementById('otpBtnValidar').style.display='block';
       document.getElementById('otpDestinoLabel').textContent = res.mensagem ? res.mensagem.replace('Código enviado para ','') : email;
       otpLimparMsg();
+      otpIniciarContador(60); // inicia contagem regressiva de reenvio
       setTimeout(function(){ var el=document.getElementById('otpCodigo'); if(el) el.focus(); }, 120);
     })
     .catch(function(){
@@ -1271,16 +1272,54 @@ function otpSolicitar(){
     });
 }
 
+var _otpContadorTimer = null;
+
+function otpIniciarContador(segundos){
+  var span = document.getElementById('otpReenviar');
+  if(!span) return;
+  if(_otpContadorTimer){ clearInterval(_otpContadorTimer); }
+  var restante = segundos;
+  span.style.pointerEvents = 'none';
+  span.style.opacity = '0.55';
+  span.style.cursor = 'default';
+  function tick(){
+    if(restante <= 0){
+      clearInterval(_otpContadorTimer); _otpContadorTimer = null;
+      span.textContent = 'Reenviar código';
+      span.style.pointerEvents = '';
+      span.style.opacity = '';
+      span.style.cursor = 'pointer';
+      otpLimparMsg();
+      return;
+    }
+    span.textContent = 'Aguarde ' + restante + (restante===1?' segundo...':' segundos...');
+    restante--;
+  }
+  tick();
+  _otpContadorTimer = setInterval(tick, 1000);
+}
+
 function otpReenviarCodigo(){
+  // Se o contador está ativo, ignora o clique
+  if(_otpContadorTimer) return;
   otpMostrarMsg('Reenviando...', 'info');
   otpSolicitarSilencioso();
 }
+
 function otpSolicitarSilencioso(){
   var url = SYNC_URL + (SYNC_URL.indexOf('?')<0?'?':'&') +
     'action=solicitarOTP&email=' + encodeURIComponent(_otpEmail) +
     '&canal=' + encodeURIComponent(_otpCanal) + '&_cb=' + Date.now();
   fetch(url, {cache:'no-store'}).then(function(r){return r.json();}).then(function(res){
-    otpMostrarMsg(res.ok ? 'Novo código enviado.' : (res.erro||'Falha ao reenviar.'), res.ok?'ok':'erro');
+    if(res.ok){
+      otpMostrarMsg('Novo código enviado.', 'ok');
+      otpIniciarContador(60); // inicia contagem de 60s após reenvio
+    } else {
+      // Se o erro trouxer "Aguarde Xs", inicia o contador com esse valor
+      var m = (res.erro||'').match(/(\d+)\s*s/);
+      if(m){ otpIniciarContador(parseInt(m[1])); }
+      else { otpMostrarMsg(res.erro||'Falha ao reenviar.', 'erro'); }
+    }
   }).catch(function(){ otpMostrarMsg('Erro de conexão.', 'erro'); });
 }
 
@@ -1367,6 +1406,9 @@ function logout(){
 
 function fillLocais(){}
 function filtrarLocais(){}
+var _acItens = [];      // índices dos locais atualmente filtrados
+var _acAtivo = -1;      // item destacado pelo teclado
+
 function filtrarLocaisAC(q){
   var drop = document.getElementById('acDropdown');
   var lista = locais.map(function(l,i){ return {l:l, i:i}; });
@@ -1374,16 +1416,50 @@ function filtrarLocaisAC(q){
     var f = q.toLowerCase();
     lista = lista.filter(function(x){ return x.l.nome.toLowerCase().indexOf(f)>=0; });
   }
-  if(!lista.length){ drop.style.display='none'; return; }
-  drop.innerHTML = lista.slice(0,10).map(function(x){
+  if(!lista.length){ drop.style.display='none'; _acItens=[]; _acAtivo=-1; return; }
+  var vis = lista.slice(0,10);
+  _acItens = vis.map(function(x){ return x.i; });
+  _acAtivo = -1;
+  drop.innerHTML = vis.map(function(x, pos){
     var ti = tipoInfo(x.l.tipo);
-    return '<div style="padding:10px 14px;cursor:pointer;border-bottom:1px solid #f0f0f0;font-size:13px;" '+
-      'onmousedown="selecionarLocal('+x.i+')" '+
-      'style="cursor:pointer;">'+
+    return '<div class="ac-item" data-pos="'+pos+'" style="padding:10px 14px;cursor:pointer;border-bottom:1px solid #f0f0f0;font-size:13px;" '+
+      'onmousedown="selecionarLocal('+x.i+')" onmouseover="_acHover('+pos+')">'+
       '<b>'+x.l.nome+'</b><br><span class="badge '+ti.cls+'" style="margin-top:4px;">'+ti.label+'</span></div>';
   }).join('');
   drop.style.display='block';
 }
+
+function _acHover(pos){
+  _acAtivo = pos;
+  _acRealce();
+}
+function _acRealce(){
+  var itens = document.querySelectorAll('#acDropdown .ac-item');
+  for(var i=0;i<itens.length;i++){
+    itens[i].style.background = (i===_acAtivo) ? '#eaf6ef' : '#fff';
+  }
+  if(_acAtivo>=0 && itens[_acAtivo]){ itens[_acAtivo].scrollIntoView({block:'nearest'}); }
+}
+
+// Navegação por teclado no campo de busca de local
+function acTeclado(event){
+  var drop = document.getElementById('acDropdown');
+  var aberto = drop && drop.style.display !== 'none' && _acItens.length;
+  if(event.key === 'ArrowDown'){
+    event.preventDefault();
+    if(!aberto){ filtrarLocaisAC(document.getElementById('newRegLocalBusca').value); return; }
+    _acAtivo = Math.min(_acAtivo+1, _acItens.length-1); _acRealce();
+  } else if(event.key === 'ArrowUp'){
+    event.preventDefault();
+    if(!aberto) return;
+    _acAtivo = Math.max(_acAtivo-1, 0); _acRealce();
+  } else if(event.key === 'Enter'){
+    if(aberto && _acAtivo>=0){ event.preventDefault(); selecionarLocal(_acItens[_acAtivo]); }
+  } else if(event.key === 'Escape'){
+    if(aberto){ event.preventDefault(); drop.style.display='none'; _acAtivo=-1; }
+  }
+}
+
 function selecionarLocal(idx){
   var loc = locais[idx];
   document.getElementById('newRegLocalBusca').value = loc.nome;
@@ -3053,11 +3129,52 @@ function pullNuvem(silencioso){
     .catch(function(){});
 }
 
-// ===== SISTEMA DE DIÁLOGOS UNIFICADO =====
-// uiAlert(msg, opts) -> Promise que resolve ao clicar OK
-// uiConfirm(msg, opts) -> Promise que resolve true/false
-// uiPrompt(campos, opts) -> Promise que resolve objeto {campo:valor} ou null
-var _uiDlgResolve = null;
+// ===== NAVEGAÇÃO GLOBAL POR TECLADO =====
+document.addEventListener('keydown', function(ev){
+  // 1) Modal de diálogo unificado (uiAlert/uiConfirm/uiPrompt) aberto
+  var dlg = document.getElementById('uiDialogOverlay');
+  if(dlg && dlg.classList.contains('open')){
+    if(ev.key === 'Escape'){
+      ev.preventDefault();
+      // Esc = cancelar (equivale ao botão cancelar/negativo)
+      _uiFecharDialog(_uiDlgTipoPrompt ? null : false);
+      return;
+    }
+    if(ev.key === 'Enter'){
+      // Enter confirma — a menos que o foco esteja num textarea (permite quebra de linha)
+      if(document.activeElement && document.activeElement.tagName === 'TEXTAREA') return;
+      var footer = document.getElementById('uiDialogFooter');
+      if(footer){
+        var btns = footer.querySelectorAll('button');
+        // o último botão é sempre o de ação principal (OK/Confirmar/Salvar)
+        if(btns.length){ ev.preventDefault(); btns[btns.length-1].click(); }
+      }
+      return;
+    }
+  }
+  // 2) Esc fecha modais principais abertos
+  if(ev.key === 'Escape'){
+    var modais = [
+      {ov:'loginModalOverlay', cls:'open'},
+      {ov:'recEmailOverlay', cls:'open'},
+      {ov:'transfModalOverlay', cls:'open'},
+      {ov:'editUserOverlay', cls:'open'},
+      {ov:'solModalOverlay', cls:'open'}
+    ];
+    for(var i=0;i<modais.length;i++){
+      var el = document.getElementById(modais[i].ov);
+      if(el && el.classList.contains(modais[i].cls)){
+        el.classList.remove(modais[i].cls);
+        document.body.style.overflow = '';
+        ev.preventDefault();
+        return;
+      }
+    }
+  }
+});
+
+// Marca se o diálogo atual é um prompt (para o Esc devolver null em vez de false)
+var _uiDlgTipoPrompt = false;
 
 function _uiFecharDialog(valor){
   var ov = document.getElementById('uiDialogOverlay');
@@ -3076,7 +3193,7 @@ function _uiPrepararHeader(tipo, icone, titulo){
 function uiAlert(msg, opts){
   opts = opts || {};
   return new Promise(function(resolve){
-    _uiDlgResolve = resolve;
+    _uiDlgResolve = resolve; _uiDlgTipoPrompt = false;
     var tipo = opts.tipo || 'sucesso';
     _uiPrepararHeader(tipo, opts.icone || (tipo==='sucesso'?'✅':(tipo==='perigo'?'⚠️':'ℹ️')), opts.titulo || (tipo==='sucesso'?'Sucesso':'Aviso'));
     document.getElementById('uiDialogMsg').innerHTML = String(msg||'').replace(/\n/g,'<br>');
@@ -3098,7 +3215,7 @@ function uiAlert(msg, opts){
 function uiConfirm(msg, opts){
   opts = opts || {};
   return new Promise(function(resolve){
-    _uiDlgResolve = resolve;
+    _uiDlgResolve = resolve; _uiDlgTipoPrompt = false;
     var tipo = opts.tipo || 'perigo';
     _uiPrepararHeader(tipo, opts.icone || '❓', opts.titulo || 'Confirmar ação');
     document.getElementById('uiDialogMsg').innerHTML = String(msg||'').replace(/\n/g,'<br>');
@@ -3125,7 +3242,7 @@ function uiPrompt(campos, opts){
   opts = opts || {};
   if(typeof campos === 'string'){ campos = [{id:'valor', label:campos, valor:opts.valorInicial||'', tipo:opts.tipoCampo||'text'}]; }
   return new Promise(function(resolve){
-    _uiDlgResolve = resolve;
+    _uiDlgResolve = resolve; _uiDlgTipoPrompt = true;
     _uiPrepararHeader(opts.tipo || 'primary', opts.icone || '✏️', opts.titulo || 'Informe os dados');
     document.getElementById('uiDialogMsg').innerHTML = opts.descricao ? String(opts.descricao).replace(/\n/g,'<br>') : '';
     var fld = document.getElementById('uiDialogFields');
