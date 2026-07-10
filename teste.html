@@ -1373,6 +1373,7 @@ function otpEntrarNoSistema(found){
   registrarLogAcesso(found.name, 'LOGIN (OTP)');
   resetUI();
   currentUser = found;
+  salvarSessao(found);  // persiste a sessão para sobreviver ao F5
   var lmo = document.getElementById('loginModalOverlay');
   if(lmo) lmo.classList.remove('open');
   document.body.style.overflow = '';
@@ -1390,9 +1391,67 @@ function otpEntrarNoSistema(found){
   iniciarTimeoutInatividade();
 }
 
+// ===== PERSISTÊNCIA DE SESSÃO (sobrevive a F5, troca de aba, reabrir navegador) =====
+var SESSAO_VALIDADE_HORAS = 12;  // sessão válida por 12h desde o login
+
+function salvarSessao(user){
+  try{
+    var sessao = {
+      login: user.login,
+      email: user.email || '',
+      criadaEm: Date.now(),
+      abaAtual: (typeof _abaAtual!=='undefined' ? _abaAtual : 'dashboard')
+    };
+    localStorage.setItem('hml_arp_sessao', JSON.stringify(sessao));
+  }catch(e){}
+}
+
+function limparSessao(){
+  try{ localStorage.removeItem('hml_arp_sessao'); }catch(e){}
+}
+
+function restaurarSessao(){
+  var sessao = null;
+  try{ sessao = JSON.parse(localStorage.getItem('hml_arp_sessao')||'null'); }catch(e){ return false; }
+  if(!sessao || !sessao.login) return false;
+
+  // Verificar validade (expira após SESSAO_VALIDADE_HORAS)
+  var idadeMs = Date.now() - (sessao.criadaEm||0);
+  if(idadeMs > SESSAO_VALIDADE_HORAS*3600000){ limparSessao(); return false; }
+
+  // Localizar o usuário (por login) — pode estar na lista local ou na nuvem
+  var found = null;
+  for(var i=0;i<usuarios.length;i++){
+    if(usuarios[i].login === sessao.login){ found = usuarios[i]; break; }
+  }
+  // Se o usuário foi desativado ou removido, não restaura (revogação de acesso)
+  if(!found || found.ativo === false){ limparSessao(); return false; }
+
+  // Restaurar sem pedir novo código
+  currentUser = found;
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('systemWrapper').classList.add('active');
+  var ini = (found.name||'?').charAt(0).toUpperCase();
+  var _av=document.getElementById('userAvatar'); if(_av) _av.textContent=ini;
+  var _nm=document.getElementById('userNome');   if(_nm) _nm.textContent=found.name||found.login;
+  var _pf=document.getElementById('userPerfil'); if(_pf) _pf.textContent=found.profile||'';
+  var _ui=document.getElementById('userInfo');   if(_ui) _ui.innerHTML=found.name+'<br><small style="color:#9fb6c6">'+found.profile+'</small>';
+  applyPermissions();
+  iniciarTimeoutInatividade();
+  // Voltar para a aba onde estava
+  if(sessao.abaAtual){
+    var menuItem = document.getElementById('m-'+sessao.abaAtual);
+    setTimeout(function(){
+      try{ goTab(sessao.abaAtual, menuItem, ''); }catch(e){}
+    }, 60);
+  }
+  return true;
+}
+
 function logout(){
   if(currentUser) registrarLogAcesso(currentUser.name, 'LOGOUT');
   currentUser=null;
+  limparSessao();  // remove a sessão persistida
   resetUI();
   if(_timeoutInatividade){ clearTimeout(_timeoutInatividade); _timeoutInatividade=null; }
   // Retornar à tela inicial com os dois cards (modal fechado)
@@ -1566,7 +1625,15 @@ function atualizarBotaoNovo(tab){
   document.getElementById('btnNovoTop').style.display = mostrar ? 'inline-block' : 'none';
 }
 
+var _abaAtual = 'dashboard';
+
 function goTab(tab, el, title){
+  _abaAtual = tab;
+  // Atualiza a aba na sessão persistida (para o F5 voltar aqui)
+  try{
+    var sx = JSON.parse(localStorage.getItem('hml_arp_sessao')||'null');
+    if(sx){ sx.abaAtual = tab; localStorage.setItem('hml_arp_sessao', JSON.stringify(sx)); }
+  }catch(e){}
   document.querySelectorAll('.tab-content').forEach(function(t){ t.classList.remove('active'); });
   document.getElementById(tab).classList.add('active');
   document.getElementById('pageTitle').innerHTML = title || tab;
@@ -4381,6 +4448,9 @@ function converterParaOS(id){
 }
 
 aplicarLogo();
+
+// ===== RESTAURAR SESSÃO AO CARREGAR (F5, reabrir navegador) =====
+try{ restaurarSessao(); }catch(e){}
 </script>
 <div id="cadClienteOverlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:500;align-items:center;justify-content:center;padding:16px;">
   <div style="background:#fff;border-radius:12px;width:100%;max-width:500px;box-shadow:0 10px 40px rgba(0,0,0,0.3);">
